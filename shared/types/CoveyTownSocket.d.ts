@@ -52,13 +52,12 @@ export type ChatMessage = {
 };
 
 export type Poll = {
-	id: string,
+	pollId: string,
 	creatorId: string,
   dateCreated: Date,
 	question: string,
 	options: string[],
-	votes: string[][],
-  voters: string[]
+	votes: string[][]
 };
 
 export interface ConversationArea {

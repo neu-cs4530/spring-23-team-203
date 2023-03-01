@@ -4,7 +4,7 @@ import { TownEmitter, Poll as PollModel } from '../types/CoveyTownSocket';
 export default class Poll {
   private _townEmitter: TownEmitter;
 
-  private _id: string;
+  private _pollId: string;
 
   private _creatorId: string;
 
@@ -12,12 +12,12 @@ export default class Poll {
 
   private _options: string[];
 
-  private _votes: string[][]; // list of (list of votedId] corresponding to options
+  private _votes: string[][];
 
   private _dateCreated: Date;
 
-  public get id() {
-    return this._id;
+  public get pollId() {
+    return this._pollId;
   }
 
   public get creatorId() {
@@ -43,13 +43,20 @@ export default class Poll {
   /**
    * Create a new Poll
    *
+   * @param pollId string id of poll
    * @param creatorId string creator of poll's id
    * @param question string poll question
    * @param options list of string answer options with length between 2-4
+   * @param votes list of [list of votedId] of length # of options
+   * @param dateCreated date of poll creation
    */
-  public constructor({ creatorId, question, options }: PollModel, townEmitter: TownEmitter) {
+  public constructor(
+    { pollId, creatorId, question, options, votes, dateCreated }: PollModel,
+    townEmitter: TownEmitter,
+  ) {
     // , coveyTownController: TownController) {
     // this._coveyTownController = coveyTownController;
+    this._pollId = pollId;
     // TODO check if creatorId is in the IDs of one of the players in the town?
     this._creatorId = creatorId;
     this._question = question;
@@ -60,11 +67,25 @@ export default class Poll {
     }
     this._options = options;
     // set  dateCreated to current time
-    this._dateCreated = new Date();
+    this._dateCreated = dateCreated;
     // initialize no votes for each option
-    this._votes = new Array(this._options.length).fill([]);
+    this._votes = votes; // new Array(this._options.length).fill([]);
 
     this._townEmitter = townEmitter;
+  }
+
+  /**
+   * Get the list of all unique voters
+   *
+   */
+  public getVoters(): string[] {
+    const voters = new Set<string>();
+    this._votes.forEach(opt => {
+      opt.forEach(o => {
+        voters.add(o);
+      });
+    });
+    return Array.from(voters.values());
   }
 
   /**
@@ -73,7 +94,7 @@ export default class Poll {
    */
   public toModel(): PollModel {
     return {
-      id: this._id,
+      pollId: this._pollId,
       creatorId: this._creatorId,
       question: this._question,
       options: this._options,
