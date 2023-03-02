@@ -13,8 +13,6 @@ export type PollEvents = {
 export default class PollController extends (EventEmitter as new () => TypedEventEmitter<PollEvents>) {
   private _model: PollModel;
 
-  private _playersWhoStarred: string[];
-
   /**
    * Constructs a new PollController, initialized with the state of the
    * provided pollModel.
