@@ -13,7 +13,7 @@ import { Button, styled, Theme, useMediaQuery, Menu as MenuContainer, MenuItem, 
 import { isSupported } from '@twilio/video-processors';
 
 import { useAppState } from '../../../state';
-import useChatContext from '../../../hooks/useChatContext/useChatContext';
+import useServiceContext from '../../../hooks/useServiceContext/useServiceContext';
 import useIsRecording from '../../../hooks/useIsRecording/useIsRecording';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
 import FlipCameraIcon from '../../../icons/FlipCameraIcon';
@@ -35,7 +35,7 @@ export default function Menu(props: { buttonClassName?: string }) {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const { isFetching, updateRecordingRules, roomType } = useAppState();
-  const { setIsChatWindowOpen } = useChatContext();
+  const { setIsChatWindowOpen } = useServiceContext();
   const isRecording = useIsRecording();
   const { room, setIsBackgroundSelectionOpen } = useVideoContext();
 

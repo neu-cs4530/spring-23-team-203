@@ -18,24 +18,24 @@ const useStyles = makeStyles(() =>
     text: {
       fontWeight: 'bold',
     },
-    closeChatWindow: {
+    closePollsWindow: {
       cursor: 'pointer',
       display: 'flex',
       background: 'transparent',
       border: '0',
       padding: '0.4em',
     },
-  })
+  }),
 );
 
-export default function ChatWindowHeader() {
+export default function PollsWindowHeader() {
   const classes = useStyles();
-  const { setIsChatWindowOpen } = useServiceContext();
+  const { setIsPollsWindowOpen } = useServiceContext();
 
   return (
     <div className={classes.container}>
-      <div className={classes.text}>Chat</div>
-      <button className={classes.closeChatWindow} onClick={() => setIsChatWindowOpen(false)}>
+      <div className={classes.text}>Polls</div>
+      <button className={classes.closePollsWindow} onClick={() => setIsPollsWindowOpen(false)}>
         <CloseIcon />
       </button>
     </div>

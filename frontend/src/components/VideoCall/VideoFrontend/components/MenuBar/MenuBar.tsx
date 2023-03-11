@@ -13,7 +13,7 @@ import ToggleChatButton from '../Buttons/ToggleChatButton/ToggleChatButton';
 import ToggleVideoButton from '../Buttons/ToggleVideoButton/ToggleVideoButton';
 import ToggleScreenShareButton from '../Buttons/ToogleScreenShareButton/ToggleScreenShareButton';
 import TownSettings from '../../../../Login/TownSettings';
-import TogglePollButton from '../Buttons/TogglePollButton/TogglePollButton';
+import TogglePollsButton from '../Buttons/TogglePollsButton/TogglePollsButton';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -95,7 +95,7 @@ export default function MenuBar() {
               {!isSharingScreen && !isMobile && (
                 <ToggleScreenShareButton disabled={isReconnecting} />
               )}
-              <TogglePollButton />
+              <TogglePollsButton />
               <Hidden smDown>
                 <Menu />
                 <TownSettings />

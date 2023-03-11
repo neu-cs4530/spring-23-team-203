@@ -3,20 +3,24 @@ import TextConversation from '../../../../../classes/TextConversation';
 import useTownController from '../../../../../hooks/useTownController';
 import { ChatMessage } from '../../../../../types/CoveyTownSocket';
 
-type ChatContextType = {
+type ServiceContextType = {
   isChatWindowOpen: boolean;
   setIsChatWindowOpen: (isChatWindowOpen: boolean) => void;
+  isPollsWindowOpen: boolean;
+  setIsPollsWindowOpen: (isPollsWindowOpen: boolean) => void;
   hasUnreadMessages: boolean;
   messages: ChatMessage[];
   conversation: TextConversation | null;
 };
 
-export const ChatContext = createContext<ChatContextType>(null!);
+export const ServiceContext = createContext<ServiceContextType>(null!);
 
-export const ChatProvider: React.FC = ({ children }) => {
+export const ServiceProvider: React.FC = ({ children }) => {
   const coveyTownController = useTownController();
   const isChatWindowOpenRef = useRef(false);
   const [isChatWindowOpen, setIsChatWindowOpen] = useState(false);
+  const isPollsWindowOpenRef = useRef(false);
+  const [isPollsWindowOpen, setIsPollsWindowOpen] = useState(false);
   const [conversation, setConversation] = useState<TextConversation | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
@@ -47,6 +51,10 @@ export const ChatProvider: React.FC = ({ children }) => {
   }, [isChatWindowOpen]);
 
   useEffect(() => {
+    isPollsWindowOpenRef.current = isPollsWindowOpen;
+  }, [isPollsWindowOpen]);
+
+  useEffect(() => {
     const conv = new TextConversation(coveyTownController);
     setConversation(conv);
     return () => {
@@ -55,15 +63,17 @@ export const ChatProvider: React.FC = ({ children }) => {
   }, [coveyTownController, setConversation]);
 
   return (
-    <ChatContext.Provider
+    <ServiceContext.Provider
       value={{
         isChatWindowOpen,
         setIsChatWindowOpen,
+        isPollsWindowOpen,
+        setIsPollsWindowOpen,
         hasUnreadMessages,
         messages,
         conversation,
       }}>
       {children}
-    </ChatContext.Provider>
+    </ServiceContext.Provider>
   );
 };
