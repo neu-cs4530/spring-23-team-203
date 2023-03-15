@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Poll } from '../../../../../../types/CoveyTownSocket';
+import CloseIcon from '../../../icons/CloseIcon';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -57,6 +58,17 @@ const useStyles = makeStyles({
     gridRow: '2 / span 1',
     gridColumn: '2 / span 1',
   },
+  closePollsWindow: {
+    cursor: 'pointer',
+    margin: '0.5rem',
+    display: 'flex',
+    background: 'transparent',
+    border: '0',
+    float: 'right',
+    padding: '0.4em',
+    gridRow: '1 / span 1',
+    gridColumn: '2 / span 1',
+  },
 });
 
 interface PollCardProps {
@@ -80,6 +92,9 @@ export default function PollCard({ body, isCreator }: PollCardProps) {
     <div>
       <div className={classes.pollCard}>
         <div className={classes.question}>{body.question}</div>
+        <button className={classes.closePollsWindow}>
+          <CloseIcon />
+        </button>
         <div className={classes.info}>
           <div className={classes.creatorInfo}>Asked by {body.creatorId}</div>
           <div> {totalVotes(body.votes)} votes</div>
