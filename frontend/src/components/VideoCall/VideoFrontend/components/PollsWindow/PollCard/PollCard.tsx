@@ -25,6 +25,9 @@ const useStyles = makeStyles({
     width: '300px',
     borderRadius: '20px',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gridTemplateRows: 'repeat(2, 1fr)',
   },
   info: {
     textAlign: 'left',
@@ -32,20 +35,27 @@ const useStyles = makeStyles({
     fontWeight: 'bold',
     padding: '0 1em 1em 1em',
     color: '#6080AA',
+    gridRow: '2 / span 1',
+    gridColumn: '1 / span 1',
   },
   question: {
     textAlign: 'left',
     fontWeight: 'bold',
     fontSize: 18,
     padding: '1em 1em 0.1em 0.8em',
+    gridRow: '1 / span 1',
+    gridColumn: '1 / span 2',
   },
   creatorInfo: {
     fontStyle: 'italic',
   },
   button: {
+    margin: '0.5rem',
     textAlign: 'right',
     flexDirection: 'column',
     float: 'right',
+    gridRow: '2 / span 1',
+    gridColumn: '2 / span 1',
   },
 });
 
@@ -74,7 +84,7 @@ export default function PollCard({ body, isCreator }: PollCardProps) {
           <div className={classes.creatorInfo}>Asked by {body.creatorId}</div>
           <div> {totalVotes(body.votes)} votes</div>
         </div>
-        <Button colorScheme='blue' mr={3}>
+        <Button colorScheme='blue' mr={3} borderRadius={20} className={classes.button}>
           View Results
         </Button>
       </div>
