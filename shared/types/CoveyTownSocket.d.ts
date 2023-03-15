@@ -51,6 +51,15 @@ export type ChatMessage = {
   interactableId?: string;
 };
 
+export type Poll = {
+	pollId: string,
+	creatorId: string,
+  dateCreated: Date,
+	question: string,
+	options: string[],
+	votes: string[][]
+};
+
 export interface ConversationArea {
   id: string;
   topic?: string;

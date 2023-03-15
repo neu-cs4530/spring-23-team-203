@@ -20,6 +20,8 @@ import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
+import Poll from './Poll';
+
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -68,6 +70,10 @@ export default class Town {
     return this._interactables;
   }
 
+  get polls(): Poll[] {
+    return this._polls;
+  }
+
   /** The list of players currently in the town * */
   private _players: Player[] = [];
 
@@ -75,6 +81,8 @@ export default class Town {
   private _videoClient: IVideoClient = TwilioVideo.getInstance();
 
   private _interactables: InteractableArea[] = [];
+
+  private _polls: Poll[] = [];
 
   private readonly _townID: string;
 
@@ -372,6 +380,21 @@ export default class Town {
     return ret;
   }
 
+  /**
+   * Find a poll by its ID
+   *
+   * @param id
+   * @returns the poll
+   * @throws Error if no such poll exists
+   */
+  public getPoll(id: string): Poll {
+    const ret = this._polls.find(eachPoll => eachPoll.pollId === id);
+    if (!ret) {
+      throw new Error(`No such poll with id ${id}`);
+    }
+    return ret;
+  }
+  
   /**
    * Informs all players' clients that they are about to be disconnected, and then
    * disconnects all players.
