@@ -5,7 +5,7 @@ import React, { useCallback, useState } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import './App.css';
 import TownController from './classes/TownController';
-import { ChatProvider } from './components/VideoCall/VideoFrontend/components/ChatProvider';
+import { ServiceProvider } from './components/VideoCall/VideoFrontend/components/ServiceProvider';
 import ErrorDialog from './components/VideoCall/VideoFrontend/components/ErrorDialog/ErrorDialog';
 import PreJoinScreens from './components/VideoCall/VideoFrontend/components/PreJoinScreens/PreJoinScreens';
 import UnsupportedBrowserWarning from './components/VideoCall/VideoFrontend/components/UnsupportedBrowserWarning/UnsupportedBrowserWarning';
@@ -32,10 +32,10 @@ function App() {
   if (townController) {
     page = (
       <TownControllerContext.Provider value={townController}>
-        <ChatProvider>
+        <ServiceProvider>
           <TownMap />
           <VideoOverlay preferredMode='fullwidth' />
-        </ChatProvider>
+        </ServiceProvider>
       </TownControllerContext.Provider>
     );
   } else {

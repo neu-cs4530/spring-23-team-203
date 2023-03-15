@@ -5,13 +5,14 @@ import ChatWindow from '../ChatWindow/ChatWindow';
 import ParticipantList from '../ParticipantList/ParticipantList';
 import MainParticipant from '../MainParticipant/MainParticipant';
 import BackgroundSelectionDialog from '../BackgroundSelectionDialog/BackgroundSelectionDialog';
-import useChatContext from '../../hooks/useChatContext/useChatContext';
+import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
+import PollsWindow from '../PollsWindow/PollsWindow';
 
 const useStyles = makeStyles((theme: Theme) => {
-  const totalMobileSidebarHeight = `${theme.sidebarMobileHeight +
-    theme.sidebarMobilePadding * 2 +
-    theme.participantBorderWidth}px`;
+  const totalMobileSidebarHeight = `${
+    theme.sidebarMobileHeight + theme.sidebarMobilePadding * 2 + theme.participantBorderWidth
+  }px`;
   // return {
   //   container: {
   //     position: 'relative',
@@ -26,35 +27,39 @@ const useStyles = makeStyles((theme: Theme) => {
   //   },
   //   rightDrawerOpen: { gridTemplateColumns: `1fr ${theme.sidebarWidth}px ${theme.rightDrawerWidth}px` },
   // };
-    return {container: (props) => ({
-      
-    position: 'relative',
-    height: '100%',
-    display: 'grid',
-    gridTemplateColumns: `1fr ${theme.sidebarWidth}px`,
-    gridTemplateRows: '100%',
-    [theme.breakpoints.down('sm')]: {
-      gridTemplateColumns: '100%',
-      // gridTemplateRows: `1fr ${theme.sidebarMobileHeight + 26}px`,
-      gridTemplateRows: `calc(100% - ${totalMobileSidebarHeight}) ${totalMobileSidebarHeight}`,
-      overflow: 'auto',
+  return {
+    container: props => ({
+      position: 'relative',
+      height: '100%',
+      display: 'grid',
+      gridTemplateColumns: `1fr ${theme.sidebarWidth}px`,
+      gridTemplateRows: '100%',
+      [theme.breakpoints.down('sm')]: {
+        gridTemplateColumns: '100%',
+        // gridTemplateRows: `1fr ${theme.sidebarMobileHeight + 26}px`,
+        gridTemplateRows: `calc(100% - ${totalMobileSidebarHeight}) ${totalMobileSidebarHeight}`,
+        overflow: 'auto',
+      },
+    }),
+    rightDrawerOpen: {
+      gridTemplateColumns: `1fr ${theme.sidebarWidth}px ${theme.rightDrawerWidth}px`,
     },
-  }), rightDrawerOpen: { gridTemplateColumns: `1fr ${theme.sidebarWidth}px ${theme.rightDrawerWidth}px` },}
+  };
 });
 
 export default function Room() {
   const classes = useStyles();
-  const { isChatWindowOpen } = useChatContext();
+  const { isChatWindowOpen } = useServiceContext();
   const { isBackgroundSelectionOpen } = useVideoContext();
   return (
     <div
       className={clsx(classes.container, {
         [classes.rightDrawerOpen]: isChatWindowOpen || isBackgroundSelectionOpen,
-      })}
-    >
+      })}>
       {/* <MainParticipant /> */}
       <ParticipantList />
       <ChatWindow />
+      <PollsWindow />
       <BackgroundSelectionDialog />
     </div>
   );

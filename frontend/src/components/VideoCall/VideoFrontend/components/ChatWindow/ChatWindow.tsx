@@ -4,7 +4,7 @@ import ChatWindowHeader from './ChatWindowHeader/ChatWindowHeader';
 import ChatInput from './ChatInput/ChatInput';
 import clsx from 'clsx';
 import MessageList from './MessageList/MessageList';
-import useChatContext from '../../hooks/useChatContext/useChatContext';
+import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export default function ChatWindow() {
   const classes = useStyles();
-  const { isChatWindowOpen, messages, conversation } = useChatContext();
+  const { isChatWindowOpen, messages, conversation } = useServiceContext();
 
   return (
     <aside className={clsx(classes.chatWindowContainer, { [classes.hide]: !isChatWindowOpen })}>
