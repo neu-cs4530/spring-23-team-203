@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
+import { Button } from '@chakra-ui/react';
+import { CreatePollModal } from './CreatePoll/CreatePollModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,13 +43,20 @@ const useStyles = makeStyles((theme: Theme) =>
 export default function PollsWindow() {
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
       <PollsWindowHeader />
-      {/*
-      <PollsList polls={polls} />
-      */}
+      <Button
+        onClick={() => {
+          setIsCreateModalOpen(true);
+        }}>
+        Create Poll
+      </Button>
+      {isCreateModalOpen && (
+        <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      )}
     </aside>
   );
 }
