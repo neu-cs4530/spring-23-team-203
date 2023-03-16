@@ -14,11 +14,9 @@ export default function PollsList({ polls }: PollsListProps) {
   const players = usePlayers();
 
   return (
-    //<div className={classes.outerContainer}>
     <div>
       {polls.map(poll => {
-        // const isLocalParticipant = localParticipant.identity === message.author;
-
+        // TODO: conditional rendering based on vote/creator status
         // const isCreator = p.id === poll.creatorId;
 
         return (
