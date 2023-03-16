@@ -45,10 +45,6 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-// In this component, we are toggling the visibility of the PollsWindow with CSS instead of
-// conditionally rendering the component in the DOM. This is done so that the PollsWindow is
-// not unmounted while a file upload is in progress.
-
 const poll = {
   pollId: '1',
   creatorId: '00000',
@@ -58,10 +54,25 @@ const poll = {
   votes: [['00000', '01111'], ['00001']],
 };
 
+const poll2 = {
+  pollId: '2',
+  creatorId: '00001',
+  dateCreated: new Date(500000000000),
+  question: 'Do you like bees?',
+  options: ['Yes', 'No'],
+  votes: [
+    ['00000', '01111', '12345', '11111', '33333', '21324'],
+    ['00001', '54321', '22222'],
+  ],
+};
+
+// In this component, we are toggling the visibility of the PollsWindow with CSS instead of
+// conditionally rendering the component in the DOM. This is done so that the PollsWindow is
+// not unmounted while a file upload is in progress.
 export default function PollsWindow() {
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
-  const polls: Poll[] = [poll];
+  const polls: Poll[] = [poll, poll2];
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
