@@ -363,7 +363,6 @@ export class TownsController extends Controller {
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
-
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
@@ -372,7 +371,24 @@ export class TownsController extends Controller {
     const voterID = player.id;
     const { option } = requestBody;
 
-    // TODO
+    // get the poll that was voted in
+    let poll = curTown.getPoll(pollID);
+
+    // if player has not already voted then their vote can still be cast
+    if (voterID !in poll.getVoters()) {
+
+      // check that option is in poll
+      if (option !in poll.options) {
+        throw new InvalidParametersError('Invalid poll option');
+      }
+
+      // add player's vote 
+      poll.vote(voterID, option);
+      
+      // update polls
+      // TODO
+    }
+
   }
 
   /**

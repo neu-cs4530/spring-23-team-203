@@ -89,6 +89,24 @@ export default class Poll {
   }
 
   /**
+   * Get the index of the given option in the poll's options list
+   * @param option string option to find
+   */
+  public getOptionIndex(option: string) {
+    return this._options.indexOf(option);
+  }
+
+  /**
+   * Cast a vote for the given option and voter.
+   * @param voterID string userID of voter
+   * @param option string option to be voted for
+   */
+  public vote(voterID: string, option: string) {
+    const option_index = this.getOptionIndex(option);
+    this._votes[option_index].push(voterID);
+  }
+
+  /**
    * Convert this Poll instance to a simple PollModel suitable for
    * transporting over a socket to a client.
    */
