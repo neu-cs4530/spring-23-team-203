@@ -1,4 +1,3 @@
-import Player from '../lib/Player';
 import { TownEmitter, Poll as PollModel } from '../types/CoveyTownSocket';
 
 export default class Poll {
@@ -104,6 +103,15 @@ export default class Poll {
   public vote(voterID: string, option: string) {
     const option_index = this.getOptionIndex(option);
     this._votes[option_index].push(voterID);
+  }
+
+  /**
+   * Updates the state of this Poll, setting the votes properties
+   *
+   * @param updatedModel updated Poll model
+   */
+  public updateModel(updatedModel: Poll) {
+    this._votes = updatedModel.votes;
   }
 
   /**

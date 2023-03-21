@@ -20,6 +20,7 @@ import {
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import Town from './Town';
+import Poll from './Poll';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
