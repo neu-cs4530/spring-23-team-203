@@ -12,6 +12,7 @@ type HttpRequestConstructor = new (config: OpenAPIConfig) => BaseHttpRequest;
 export class TownsServiceClient {
 
     public readonly towns: TownsService;
+    // testing
 
     public readonly request: BaseHttpRequest;
 
