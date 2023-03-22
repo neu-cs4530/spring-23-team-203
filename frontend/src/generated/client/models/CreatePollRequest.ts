@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { PollOptions } from './PollOptions';
+import type { PollSettings } from './PollSettings';
 
 export type CreatePollRequest = {
     question: string;
     options: Array<string>;
-    settings: PollOptions;
+    settings: PollSettings;
 };
 

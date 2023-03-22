@@ -15,12 +15,14 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  PollSettings,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
 import Poll from './Poll';
+import { randomUUID } from 'crypto';
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -392,6 +394,30 @@ export default class Town {
       throw new Error(`No such poll with id ${id}`);
     }
     return ret;
+  }
+
+  public createPoll(
+    creatorId: string,
+    question: string,
+    options: string[],
+    settings: PollSettings,
+  ): string {
+    const randomID = randomUUID();
+    this._polls.push(
+      new Poll(
+        {
+          pollId: randomID,
+          creatorId,
+          question,
+          options,
+          votes: options.map(() => []),
+          dateCreated: new Date(),
+          settings,
+        },
+        this._broadcastEmitter,
+      ),
+    );
+    return randomID;
   }
 
   /**

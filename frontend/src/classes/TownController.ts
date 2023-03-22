@@ -20,7 +20,7 @@ import {
   CreatePollResponse,
   GetAllPollsResponseItem,
   GetPollResultsResponse,
-  PollOptions,
+  PollSettings,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
@@ -714,7 +714,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   public async createPoll(
     question: string,
     options: string[],
-    settings: PollOptions,
+    settings: PollSettings,
   ): Promise<CreatePollResponse> {
     return this._townsService.createPoll(this.townID, this.sessionToken, {
       question,

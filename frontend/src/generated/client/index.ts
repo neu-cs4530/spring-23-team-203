@@ -15,7 +15,7 @@ export type { CreatePollResponse } from './models/CreatePollResponse';
 export type { GetAllPollsResponseItem } from './models/GetAllPollsResponseItem';
 export type { GetPollResultsResponse } from './models/GetPollResultsResponse';
 export type { InvalidParametersError } from './models/InvalidParametersError';
-export type { PollOptions } from './models/PollOptions';
+export type { PollSettings } from './models/PollSettings';
 export type { PosterSessionArea } from './models/PosterSessionArea';
 export type { Town } from './models/Town';
 export type { TownCreateParams } from './models/TownCreateParams';

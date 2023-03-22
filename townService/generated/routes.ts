@@ -94,7 +94,7 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "PollOptions": {
+    "PollSettings": {
         "dataType": "refObject",
         "properties": {
             "anonymize": {"dataType":"boolean","required":true},
@@ -108,7 +108,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "question": {"dataType":"string","required":true},
             "options": {"dataType":"array","array":{"dataType":"string"},"required":true},
-            "settings": {"ref":"PollOptions","required":true},
+            "settings": {"ref":"PollSettings","required":true},
         },
         "additionalProperties": false,
     },

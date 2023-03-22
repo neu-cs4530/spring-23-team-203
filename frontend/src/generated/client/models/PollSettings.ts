@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type PollOptions = {
+export type PollSettings = {
     anonymize: boolean;
     multiSelect: boolean;
 };

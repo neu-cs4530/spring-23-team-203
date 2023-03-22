@@ -184,7 +184,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PollOptions": {
+			"PollSettings": {
 				"properties": {
 					"anonymize": {
 						"type": "boolean"
@@ -212,7 +212,7 @@
 						"type": "array"
 					},
 					"settings": {
-						"$ref": "#/components/schemas/PollOptions"
+						"$ref": "#/components/schemas/PollSettings"
 					}
 				},
 				"required": [
