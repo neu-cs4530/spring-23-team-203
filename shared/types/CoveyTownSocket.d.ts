@@ -106,6 +106,7 @@ export interface ClientToServerEvents {
 export interface CreatePollRequest {
   question: string;
   options: string[];
+  settings: PollOptions;
 }
 
 export interface CreatePollResponse {
@@ -130,4 +131,9 @@ export interface GetPollResultsResponse {
   question: string;
   options: string[];
   responses: number[];
+}
+
+export interface PollOptions {
+  anonymize: boolean;
+  multiSelect: boolean;
 }

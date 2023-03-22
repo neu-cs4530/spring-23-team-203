@@ -184,6 +184,22 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PollOptions": {
+				"properties": {
+					"anonymize": {
+						"type": "boolean"
+					},
+					"multiSelect": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"anonymize",
+					"multiSelect"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CreatePollRequest": {
 				"properties": {
 					"question": {
@@ -194,11 +210,15 @@
 							"type": "string"
 						},
 						"type": "array"
+					},
+					"settings": {
+						"$ref": "#/components/schemas/PollOptions"
 					}
 				},
 				"required": [
 					"question",
-					"options"
+					"options",
+					"settings"
 				],
 				"type": "object",
 				"additionalProperties": false

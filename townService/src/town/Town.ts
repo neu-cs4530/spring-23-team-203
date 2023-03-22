@@ -22,7 +22,6 @@ import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
 import Poll from './Poll';
 
-
 /**
  * The Town class implements the logic for each town: managing the various events that
  * can occur (e.g. joining a town, moving, leaving a town)
@@ -394,7 +393,7 @@ export default class Town {
     }
     return ret;
   }
-  
+
   /**
    * Informs all players' clients that they are about to be disconnected, and then
    * disconnects all players.
