@@ -125,10 +125,23 @@ export interface VoteRequest {
   option: number;
 }
 
+export interface PlayerPartial {
+  id: string;
+  name: string;
+}
+
+export interface PollSettings {
+  anyonymize: boolean;
+  multiSelect: boolean;
+}
+
+
 export interface GetPollResultsResponse {
   pollId: string;
   creatorName: string;
+  yourVote: number[]; // index of your votes
   question: string;
   options: string[];
-  responses: number[];
+  responses: PlayerPartial[][] | number[];
+  settings: PollSettings;
 }

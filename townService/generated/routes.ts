@@ -124,14 +124,34 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PlayerPartial": {
+        "dataType": "refObject",
+        "properties": {
+            "id": {"dataType":"string","required":true},
+            "name": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "PollSettings": {
+        "dataType": "refObject",
+        "properties": {
+            "anyonymize": {"dataType":"boolean","required":true},
+            "multiSelect": {"dataType":"boolean","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "GetPollResultsResponse": {
         "dataType": "refObject",
         "properties": {
             "pollId": {"dataType":"string","required":true},
             "creatorName": {"dataType":"string","required":true},
+            "yourVote": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "question": {"dataType":"string","required":true},
             "options": {"dataType":"array","array":{"dataType":"string"},"required":true},
-            "responses": {"dataType":"array","array":{"dataType":"double"},"required":true},
+            "responses": {"dataType":"union","subSchemas":[{"dataType":"array","array":{"dataType":"array","array":{"dataType":"refObject","ref":"PlayerPartial"}}},{"dataType":"array","array":{"dataType":"double"}}],"required":true},
+            "settings": {"ref":"PollSettings","required":true},
         },
         "additionalProperties": false,
     },

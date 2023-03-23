@@ -9,6 +9,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import useTownController from '../../../../../../hooks/useTownController';
+import { Player, PlayerPartial } from '../../../../../../types/CoveyTownSocket';
 
 interface ResultsModalProps {
   isOpen: boolean;
@@ -25,6 +26,7 @@ interface ResultsModalOutlineProps {
 interface ResultsDisplay {
   option: string;
   percentage: string;
+  names: string[];
 }
 
 const useStyles = makeStyles({
@@ -47,6 +49,10 @@ const useStyles = makeStyles({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '0.5rem',
+  },
+  bar: {
+    color: 'blue',
+    backgroundColor: 'blue',
   },
   optionText: {
     borderWidth: '2px',
@@ -79,11 +85,16 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
   const classes = useStyles();
 
   const [pollQuestion, setQuestion] = useState<string>('');
-  const [pollCreator, setPollCreator] = useState<string>('');
+  const [pollCreator, setCreator] = useState<string>('');
   const [pollOptions, setOptions] = useState<string[]>([]);
-  const [pollResponses, setResponses] = useState<number[]>([]);
+  const [pollAnonymousResponses, setAnonymousResponses] = useState<number[]>([]);
+  const [pollDisclosedResponses, setDisclosedResponses] = useState<string[][]>([]);
+
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [pollAnonymous, setAnonymous] = useState<boolean>(true);
+  const [pollYourVote, setYourVote] = useState<number[]>([]);
 
   const [resultsDisplay, setResultsDisplay] = useState<ResultsDisplay[]>([]);
   const [total, setTotal] = useState<number>();
@@ -103,15 +114,25 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     const getResults = async () => {
       try {
         const results = await coveyTownController.getPollResults(pollID);
-        const { question, creatorName, options, responses } = results;
+        const { creatorName, yourVote, question, options, responses, settings } = results;
+
+        if (!settings) {
+          setError(true);
+          return;
+        }
+
+        const { anyonymize } = settings;
 
         if (
-          !question ||
+          anyonymize === undefined ||
           !creatorName ||
+          !yourVote ||
+          !question ||
           !options ||
           !responses ||
           !options.length ||
           !responses.length ||
+          !yourVote.length ||
           options.length !== responses.length
         ) {
           setError(true);
@@ -119,9 +140,23 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
         }
 
         setQuestion(question);
-        setPollCreator(creatorName);
+        setCreator(creatorName);
         setOptions(options);
-        setResponses(responses);
+        setAnonymous(anyonymize);
+        setYourVote(yourVote);
+
+        if (anyonymize) {
+          setAnonymousResponses(responses as number[]);
+        } else {
+          setDisclosedResponses(
+            (responses as PlayerPartial[][]).map((ppl: PlayerPartial[]) =>
+              ppl.map((pp: PlayerPartial) => pp.name),
+            ),
+          );
+          setAnonymousResponses(
+            (responses as PlayerPartial[][]).map((ppl: PlayerPartial[]) => ppl.length),
+          );
+        }
       } catch (e) {
         setError(true);
       }
@@ -135,16 +170,21 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
   useEffect(() => {
     const newResults = [];
 
-    const newTotal = pollResponses.reduce((sofar: number, num: number) => sofar + num, 0);
+    const newTotal = pollAnonymousResponses.reduce((sofar: number, num: number) => sofar + num, 0);
+    console.log(pollAnonymousResponses);
     setTotal(newTotal);
 
     for (let i = 0; i < pollOptions.length; i++) {
-      const percentage = Math.round((pollResponses[i] / newTotal) * 1000) / 10;
-      newResults.push({ option: pollOptions[i], percentage: `${percentage}%` });
+      const percentage = Math.round((pollAnonymousResponses[i] / newTotal) * 1000) / 10;
+      newResults.push({
+        option: pollOptions[i],
+        percentage: `${percentage}%`,
+        names: pollDisclosedResponses[i],
+      });
     }
 
     setResultsDisplay(newResults);
-  }, [pollOptions, pollResponses]);
+  }, [pollOptions, pollAnonymousResponses, pollDisclosedResponses]);
 
   const closeModal = useCallback(() => {
     coveyTownController.unPause();
@@ -174,10 +214,10 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
         <div className={classes.pollCreator}>Asked by {pollCreator}</div>
         {resultsDisplay.map(result => (
           <div key={result.option} className={classes.optionContainer}>
-            <div style={{ width: result.percentage }} className={classes.optionText}>
-              {result.option}
-            </div>
+            <div style={{ width: result.percentage }} className={classes.bar}></div>
+            <div className={classes.optionText}>{result.option}</div>
             <div>{result.percentage}</div>
+            <div>{result.names}</div>
           </div>
         ))}
         <div className={classes.totalVotes}>{`${total} votes`}</div>

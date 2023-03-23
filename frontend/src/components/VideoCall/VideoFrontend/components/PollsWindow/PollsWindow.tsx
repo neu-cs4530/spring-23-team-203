@@ -67,7 +67,11 @@ export default function PollsWindow() {
         <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
       )}
       {isResultsModalOpen && (
-        <ResultsModal isOpen={isResultsModalOpen} onClose={() => setIsResultsModalOpen(false)} pollID={pollID} />
+        <ResultsModal
+          isOpen={isResultsModalOpen}
+          onClose={() => setIsResultsModalOpen(false)}
+          pollID={pollID}
+        />
       )}
     </aside>
   );
