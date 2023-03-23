@@ -5,6 +5,7 @@ import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
 import { Button } from '@chakra-ui/react';
 import { CreatePollModal } from './CreatePoll/CreatePollModal';
+import { ResultsModal } from './Results/ResultsModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,6 +45,8 @@ export default function PollsWindow() {
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
+  const pollID = 'test';
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
@@ -54,8 +57,17 @@ export default function PollsWindow() {
         }}>
         Create Poll
       </Button>
+      <Button
+        onClick={() => {
+          setIsResultsModalOpen(true);
+        }}>
+        View Results
+      </Button>
       {isCreateModalOpen && (
         <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      )}
+      {isResultsModalOpen && (
+        <ResultsModal isOpen={isResultsModalOpen} onClose={() => setIsResultsModalOpen(false)} pollID={pollID} />
       )}
     </aside>
   );

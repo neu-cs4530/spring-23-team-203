@@ -407,7 +407,13 @@ export class TownsController extends Controller {
     const userID = player.id;
     // TODO
 
-    return { pollId: 'hey', question: 'hey', options: [], responses: [] };
+    return {
+      pollId: 'hey',
+      creatorName: 'candis',
+      question: 'Do you like bean?',
+      options: ['yes', 'no'],
+      responses: [8, 11],
+    };
   }
 
   /**

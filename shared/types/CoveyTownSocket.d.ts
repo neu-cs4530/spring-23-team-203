@@ -127,6 +127,7 @@ export interface VoteRequest {
 
 export interface GetPollResultsResponse {
   pollId: string;
+  creatorName: string;
   question: string;
   options: string[];
   responses: number[];

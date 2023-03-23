@@ -254,6 +254,9 @@
 					"pollId": {
 						"type": "string"
 					},
+					"creatorName": {
+						"type": "string"
+					},
 					"question": {
 						"type": "string"
 					},
@@ -273,6 +276,7 @@
 				},
 				"required": [
 					"pollId",
+					"creatorName",
 					"question",
 					"options",
 					"responses"
