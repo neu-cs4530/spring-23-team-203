@@ -2,7 +2,7 @@ import { mock, mockClear } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import Player from '../lib/Player';
 import { getLastEmittedEvent } from '../TestUtils';
-import { TownEmitter } from '../types/CoveyTownSocket';
+import { PollSettings, TownEmitter } from '../types/CoveyTownSocket';
 import Poll from './Poll';
 
 /**
@@ -18,10 +18,14 @@ describe('Poll', () => {
   const creatorId = nanoid();
   const dateCreated = new Date();
   const votes = [['jess', 'danish'], [], ['tingwei'], ['david']];
+  const settings: PollSettings = { anonymize: false, multiSelect: false };
 
   beforeEach(() => {
     mockClear(townEmitter);
-    testPoll = new Poll({ pollId, creatorId, question, options, dateCreated, votes }, townEmitter);
+    testPoll = new Poll(
+      { pollId, creatorId, question, options, settings, dateCreated, votes },
+      townEmitter,
+    );
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
   });
 

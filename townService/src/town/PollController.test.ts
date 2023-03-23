@@ -1,11 +1,11 @@
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import { readFileSync } from 'fs';
+import { randomUUID } from 'crypto';
 import { Interactable, TownEmitter, PosterSessionArea } from '../types/CoveyTownSocket';
 import TownsStore from '../lib/TownsStore';
 import { getLastEmittedEvent, mockPlayer, MockedPlayer, isPosterSessionArea } from '../TestUtils';
 import { TownsController } from './TownsController';
-import { randomUUID } from 'crypto';
 
 type TestTownData = {
   friendlyName: string;
@@ -111,11 +111,11 @@ describe('TownsController integration tests', () => {
           options: ['Red', 'Blue', 'Green'],
           settings: { anonymize: false, multiSelect: false },
         };
-        for (let i = 0; i < 5; i += 1) {
+        [1, 2, 3, 4, 5].forEach(async _ => {
           const res = await controller.createPoll(testingTown.townID, sessionToken, poll);
           expect(res).toBeDefined();
           expect(res.pollId).not.toHaveLength(0);
-        }
+        });
       });
 
       it('Cannot make a poll with a bad town id', async () => {
