@@ -131,7 +131,7 @@ export interface PlayerPartial {
 }
 
 export interface PollSettings {
-  anyonymize: boolean;
+  anonymize: boolean;
   multiSelect: boolean;
 }
 

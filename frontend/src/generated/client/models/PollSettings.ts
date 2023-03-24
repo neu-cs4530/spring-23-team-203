@@ -3,7 +3,7 @@
 /* eslint-disable */
 
 export type PollSettings = {
-    anyonymize: boolean;
+    anonymize: boolean;
     multiSelect: boolean;
 };
 

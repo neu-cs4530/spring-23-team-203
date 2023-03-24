@@ -267,7 +267,7 @@
 			},
 			"PollSettings": {
 				"properties": {
-					"anyonymize": {
+					"anonymize": {
 						"type": "boolean"
 					},
 					"multiSelect": {
@@ -275,7 +275,7 @@
 					}
 				},
 				"required": [
-					"anyonymize",
+					"anonymize",
 					"multiSelect"
 				],
 				"type": "object",

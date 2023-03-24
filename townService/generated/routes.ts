@@ -136,7 +136,7 @@ const models: TsoaRoute.Models = {
     "PollSettings": {
         "dataType": "refObject",
         "properties": {
-            "anyonymize": {"dataType":"boolean","required":true},
+            "anonymize": {"dataType":"boolean","required":true},
             "multiSelect": {"dataType":"boolean","required":true},
         },
         "additionalProperties": false,

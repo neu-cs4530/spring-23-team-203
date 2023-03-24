@@ -428,7 +428,7 @@ export class TownsController extends Controller {
         [{ id: '100', name: 'aoun' }],
       ],
       settings: {
-        anyonymize: false,
+        anonymize: false,
         multiSelect: true,
       },
     };
