@@ -57,6 +57,7 @@ export type Poll = {
   dateCreated: Date,
 	question: string,
 	options: string[],
+  settings: PollSettings,
 	votes: string[][]
 };
 
@@ -106,6 +107,7 @@ export interface ClientToServerEvents {
 export interface CreatePollRequest {
   question: string;
   options: string[];
+  settings: PollSettings;
 }
 
 export interface CreatePollResponse {
@@ -144,4 +146,9 @@ export interface GetPollResultsResponse {
   options: string[];
   responses: PlayerPartial[][] | number[];
   settings: PollSettings;
+}
+
+export interface PollSettings {
+  anonymize: boolean;
+  multiSelect: boolean;
 }

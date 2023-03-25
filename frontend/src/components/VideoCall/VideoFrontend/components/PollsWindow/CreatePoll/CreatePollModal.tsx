@@ -50,9 +50,11 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
   const createPoll = useCallback(async () => {
     if (question && options.every(option => option.length > 0)) {
       try {
-        console.log('Creating poll with options: ', options);
-        console.log('Creating poll with question: ', question);
-        console.log('Creating poll with poll settings: %j', { allowMultiSelect, anonymizeResults });
+        await coveyTownController.createPoll(
+          question,
+          options,
+          {multiSelect: allowMultiSelect, anonymize: anonymizeResults},
+        );
         coveyTownController.unPause();
         closeModal();
       } catch (err) {

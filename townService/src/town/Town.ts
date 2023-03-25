@@ -1,6 +1,7 @@
 import { ITiledMap, ITiledMapObjectLayer } from '@jonbell/tiled-map-type-guard';
 import { nanoid } from 'nanoid';
 import { BroadcastOperator } from 'socket.io';
+import { randomUUID } from 'crypto';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
@@ -15,6 +16,7 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  PollSettings,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
@@ -392,6 +394,27 @@ export default class Town {
       throw new Error(`No such poll with id ${id}`);
     }
     return ret;
+  }
+
+  public createPoll(
+    creatorId: string,
+    question: string,
+    options: string[],
+    settings: PollSettings,
+  ): string {
+    const randomID = randomUUID();
+    this._polls.push(
+      new Poll({
+        pollId: randomID,
+        creatorId,
+        question,
+        options,
+        votes: options.map(() => []),
+        dateCreated: new Date(),
+        settings,
+      }),
+    );
+    return randomID;
   }
 
   /**
