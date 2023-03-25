@@ -46,25 +46,26 @@ interface GetResultsDisplayOutputs {
 }
 
 const useStyles = makeStyles({
-  message: {
-    fontSize: '1.5rem',
+  question: {
+    fontSize: '1.25rem',
     fontWeight: 600,
   },
   specialMessage: {
-    fontSize: '1.5rem',
+    fontSize: '1.25rem',
     fontWeight: 600,
     textAlign: 'center',
     margin: '3rem',
   },
   pollCreator: {
-    marginBottom: '1rem',
+    marginBottom: '1.5rem',
+    fontSize: '0.875rem',
   },
   optionListContainer: {
     display: 'flex',
     flexDirection: 'column',
   },
-  accordianButton: {
-    // padding: '0',
+  accordionButton: {
+    padding: 0,
   },
   optionContainer: {
     width: '100%',
@@ -72,7 +73,6 @@ const useStyles = makeStyles({
     display: 'grid',
     gridTemplateColumns: '1fr',
     gridTemplateRows: '1fr',
-    marginBottom: '0.5rem',
     alignItems: 'stretch',
   },
   bar: {
@@ -91,21 +91,41 @@ const useStyles = makeStyles({
     fontSize: '1rem',
     fontWeight: 700,
     color: 'black',
-    width: '80%',
   },
   percentage: {
     gridRow: '1 / 1',
     gridColumn: '1 / 1',
-    justifySelf: 'end',
-    paddingTop: '0.25rem',
-    paddingBottom: '0.25rem',
-    paddingRight: '1rem',
+    marginTop: '0.25rem',
+    marginBottom: '0.25rem',
     fontSize: '1rem',
     fontWeight: 700,
     color: 'black',
   },
   totalVotes: {
     marginTop: '1rem',
+    fontSize: '1rem',
+    fontWeight: 600,
+    textAlign: 'center',
+  },
+  rightSide: {
+    display: 'flex',
+    gridRow: '1 / 1',
+    gridColumn: '1 / 1',
+    justifySelf: 'end',
+    justifyContent: 'flex-end',
+    marginRight: '1rem',
+  },
+  accordionIcon: {
+    marginLeft: '0.5rem',
+    display: 'flex',
+    alignItems: 'center',
+  },
+  item: {
+    borderWidth: 0,
+    marginBottom: '0.5rem',
+  },
+  accordionPanel: {
+    padding: '0.5rem',
   },
 });
 
@@ -266,7 +286,7 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
 
   const isYourVote = (index: number) => yourVote.some((vote: number) => vote === index);
 
-  const singleOption = (result: ResultsDisplay, index: number) => {
+  const singleOption = (result: ResultsDisplay, index: number, accordion: boolean) => {
     return (
       <div className={classes.optionContainer}>
         <div
@@ -278,7 +298,14 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
           }}
           className={classes.bar}></div>
         <div className={classes.optionText}>{result.option}</div>
-        <div className={classes.percentage}>{result.percentage}</div>
+        <div className={classes.rightSide}>
+          <div className={classes.percentage}>{result.percentage}</div>
+          {accordion && (
+            <div className={classes.accordionIcon}>
+              <AccordionIcon />
+            </div>
+          )}
+        </div>
       </div>
     );
   };
@@ -287,16 +314,15 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     return (
       <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
         <div>
-          <div className={classes.message}>{question}</div>
+          <div className={classes.question}>{question}</div>
           <div className={classes.pollCreator}>Asked by {creator}</div>
           <Accordion allowMultiple>
             {resultsDisplay.map((result, index) => (
-              <AccordionItem key={result.option}>
-                <AccordionButton>
-                  {singleOption(result, index)}
-                  <AccordionIcon />
+              <AccordionItem key={result.option} style={{ borderWidth: 0, marginBottom: '0.5rem' }}>
+                <AccordionButton style={{ padding: 0 }}>
+                  {singleOption(result, index, true)}
                 </AccordionButton>
-                <AccordionPanel pb={4}>
+                <AccordionPanel style={{ padding: '0.5rem 1rem 0.5rem 1rem' }}>
                   <div>{result.names}</div>
                 </AccordionPanel>
               </AccordionItem>
@@ -311,11 +337,13 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
   return (
     <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
       <div>
-        <div className={classes.message}>{question}</div>
+        <div className={classes.question}>{question}</div>
         <div className={classes.pollCreator}>Asked by {creator}</div>
         <div className={classes.optionListContainer}>
           {resultsDisplay.map((result, index) => (
-            <div key={result.option}>{singleOption(result, index)}</div>
+            <div key={result.option} className={classes.item}>
+              {singleOption(result, index, false)}
+            </div>
           ))}
         </div>
         <div className={classes.totalVotes}>{`${total} votes`}</div>
