@@ -1,7 +1,6 @@
 import { mock, mockClear } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import Player from '../lib/Player';
-import { getLastEmittedEvent } from '../TestUtils';
 import { PollSettings, TownEmitter } from '../types/CoveyTownSocket';
 import Poll from './Poll';
 
@@ -24,7 +23,6 @@ describe('Poll', () => {
     mockClear(townEmitter);
     testPoll = new Poll(
       { pollId, creatorId, question, options, settings, dateCreated, votes },
-      townEmitter,
     );
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
   });

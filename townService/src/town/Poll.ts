@@ -2,8 +2,6 @@ import Player from '../lib/Player';
 import { TownEmitter, Poll as PollModel, PollSettings } from '../types/CoveyTownSocket';
 
 export default class Poll {
-  private _townEmitter: TownEmitter;
-
   private _pollId: string;
 
   private _creatorId: string;
@@ -53,10 +51,15 @@ export default class Poll {
    * @param votes list of [list of votedId] of length # of options
    * @param dateCreated date of poll creation
    */
-  public constructor(
-    { pollId, creatorId, question, options, votes, dateCreated, settings }: PollModel,
-    townEmitter: TownEmitter,
-  ) {
+  public constructor({
+    pollId,
+    creatorId,
+    question,
+    options,
+    votes,
+    dateCreated,
+    settings,
+  }: PollModel) {
     // this._coveyTownController = coveyTownController;
     this._pollId = pollId;
     this._creatorId = creatorId;
@@ -66,9 +69,7 @@ export default class Poll {
     // set dateCreated to current time
     this._dateCreated = dateCreated;
     // initialize no votes for each option
-    this._votes = votes; // new Array(this._options.length).fill([]);
-
-    this._townEmitter = townEmitter;
+    this._votes = votes;
   }
 
   /**
