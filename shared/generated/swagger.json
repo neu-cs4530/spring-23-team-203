@@ -285,22 +285,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"PollSettings": {
-				"properties": {
-					"anonymize": {
-						"type": "boolean"
-					},
-					"multiSelect": {
-						"type": "boolean"
-					}
-				},
-				"required": [
-					"anonymize",
-					"multiSelect"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"GetPollResultsResponse": {
 				"properties": {
 					"pollId": {

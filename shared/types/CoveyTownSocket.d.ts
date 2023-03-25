@@ -132,12 +132,6 @@ export interface PlayerPartial {
   name: string;
 }
 
-export interface PollSettings {
-  anonymize: boolean;
-  multiSelect: boolean;
-}
-
-
 export interface GetPollResultsResponse {
   pollId: string;
   creatorName: string;

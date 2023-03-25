@@ -418,32 +418,19 @@ export class TownsController extends Controller {
       yourVote: [0],
       question: 'Do you like bean?',
       options: ['yes', 'no', 'maybe', 'no comment'],
-      // responses: [
-      //   [
-      //     { id: '1', name: 'danish' },
-      //     { id: '2', name: 'jess' },
-      //     { id: '3', name: 'tingwei' },
-      //   ],
-      //   [
-      //     { id: '1', name: 'danish' },
-      //     { id: '4', name: 'david' },
-      //     { id: '5', name: 'logen' },
-      //   ],
-      //   [],
-      //   [{ id: '100', name: 'aoun' }],
-      // ],
       responses: [
         [
           { id: '1', name: 'danish' },
           { id: '2', name: 'jess' },
           { id: '3', name: 'tingwei' },
+        ],
+        [
           { id: '1', name: 'danish' },
           { id: '4', name: 'david' },
           { id: '5', name: 'logen' },
         ],
         [],
-        [],
-        [],
+        [{ id: '100', name: 'aoun' }],
       ],
       settings: {
         anonymize: false,
