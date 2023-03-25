@@ -5,6 +5,11 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Accordion,
+  AccordionItem,
+  AccordionButton,
+  AccordionPanel,
+  AccordionIcon,
 } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -26,7 +31,7 @@ interface ResultsModalOutlineProps {
 interface ResultsDisplay {
   option: string;
   percentage: string;
-  names: string[];
+  names: string;
 }
 
 interface GetResultsDisplayInputs {
@@ -58,7 +63,12 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
   },
+  accordianButton: {
+    // padding: '0',
+  },
   optionContainer: {
+    width: '100%',
+    height: '100%',
     display: 'grid',
     gridTemplateColumns: '1fr',
     gridTemplateRows: '1fr',
@@ -160,10 +170,11 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
 
       for (let i = 0; i < options.length; i++) {
         const percentage = Math.round((votes[i] / newTotal) * 1000) / 10;
+        const formattedNames = names[i].reduce((sofar, curr) => `${sofar}, ${curr}`, '');
         newResults.push({
           option: options[i],
           percentage: `${percentage}%`,
-          names: names[i],
+          names: formattedNames.length ? formattedNames.substring(2) : formattedNames,
         });
       }
 
@@ -255,6 +266,48 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
 
   const isYourVote = (index: number) => yourVote.some((vote: number) => vote === index);
 
+  const singleOption = (result: ResultsDisplay, index: number) => {
+    return (
+      <div className={classes.optionContainer}>
+        <div
+          style={{
+            width: result.percentage,
+            backgroundColor: isYourVote(index)
+              ? 'rgba(96, 128, 170, 0.80)'
+              : 'rgba(96, 128, 170, 0.20)',
+          }}
+          className={classes.bar}></div>
+        <div className={classes.optionText}>{result.option}</div>
+        <div className={classes.percentage}>{result.percentage}</div>
+      </div>
+    );
+  };
+
+  if (!anonymous) {
+    return (
+      <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
+        <div>
+          <div className={classes.message}>{question}</div>
+          <div className={classes.pollCreator}>Asked by {creator}</div>
+          <Accordion allowMultiple>
+            {resultsDisplay.map((result, index) => (
+              <AccordionItem key={result.option}>
+                <AccordionButton>
+                  {singleOption(result, index)}
+                  <AccordionIcon />
+                </AccordionButton>
+                <AccordionPanel pb={4}>
+                  <div>{result.names}</div>
+                </AccordionPanel>
+              </AccordionItem>
+            ))}
+          </Accordion>
+          <div className={classes.totalVotes}>{`${total} votes`}</div>
+        </div>
+      </ResultsModalOutline>
+    );
+  }
+
   return (
     <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
       <div>
@@ -262,19 +315,7 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
         <div className={classes.pollCreator}>Asked by {creator}</div>
         <div className={classes.optionListContainer}>
           {resultsDisplay.map((result, index) => (
-            <div key={result.option} className={classes.optionContainer}>
-              <div
-                style={{
-                  width: result.percentage,
-                  backgroundColor: isYourVote(index)
-                    ? 'rgba(96, 128, 170, 0.80)'
-                    : 'rgba(96, 128, 170, 0.20)',
-                }}
-                className={classes.bar}></div>
-              <div className={classes.optionText}>{result.option}</div>
-              <div className={classes.percentage}>{result.percentage}</div>
-              {/* <div>{result.names}</div> */}
-            </div>
+            <div key={result.option}>{singleOption(result, index)}</div>
           ))}
         </div>
         <div className={classes.totalVotes}>{`${total} votes`}</div>
