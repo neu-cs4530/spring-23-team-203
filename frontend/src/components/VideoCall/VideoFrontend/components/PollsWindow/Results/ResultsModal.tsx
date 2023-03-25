@@ -14,7 +14,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import useTownController from '../../../../../../hooks/useTownController';
-import { Player, PlayerPartial } from '../../../../../../types/CoveyTownSocket';
+import { PlayerPartial } from '../../../../../../types/CoveyTownSocket';
 
 interface ResultsModalProps {
   isOpen: boolean;
@@ -46,15 +46,15 @@ interface GetResultsDisplayOutputs {
 }
 
 const useStyles = makeStyles({
-  question: {
-    fontSize: '1.25rem',
-    fontWeight: 600,
-  },
   specialMessage: {
     fontSize: '1.25rem',
     fontWeight: 600,
     textAlign: 'center',
     margin: '3rem',
+  },
+  question: {
+    fontSize: '1.25rem',
+    fontWeight: 600,
   },
   pollCreator: {
     marginBottom: '1.5rem',
@@ -64,8 +64,8 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
   },
-  accordionButton: {
-    padding: 0,
+  optionOuterContainer: {
+    marginBottom: '0.5rem',
   },
   optionContainer: {
     width: '100%',
@@ -85,27 +85,12 @@ const useStyles = makeStyles({
     gridRow: '1 / 1',
     gridColumn: '1 /  1',
     justifySelf: 'start',
-    paddingTop: '0.25rem',
-    paddingBottom: '0.25rem',
-    paddingLeft: '1rem',
-    fontSize: '1rem',
-    fontWeight: 700,
-    color: 'black',
-  },
-  percentage: {
-    gridRow: '1 / 1',
-    gridColumn: '1 / 1',
     marginTop: '0.25rem',
     marginBottom: '0.25rem',
+    marginLeft: '1rem',
     fontSize: '1rem',
     fontWeight: 700,
     color: 'black',
-  },
-  totalVotes: {
-    marginTop: '1rem',
-    fontSize: '1rem',
-    fontWeight: 600,
-    textAlign: 'center',
   },
   rightSide: {
     display: 'flex',
@@ -115,17 +100,24 @@ const useStyles = makeStyles({
     justifyContent: 'flex-end',
     marginRight: '1rem',
   },
+  percentage: {
+    marginTop: '0.25rem',
+    marginBottom: '0.25rem',
+    fontSize: '1rem',
+    fontWeight: 700,
+    color: 'black',
+  },
   accordionIcon: {
     marginLeft: '0.5rem',
     display: 'flex',
     alignItems: 'center',
   },
-  item: {
-    borderWidth: 0,
-    marginBottom: '0.5rem',
-  },
-  accordionPanel: {
-    padding: '0.5rem',
+  totalVotes: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '1rem',
+    fontSize: '1rem',
+    fontWeight: 600,
   },
 });
 
@@ -166,16 +158,13 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     }
   }, [coveyTownController, isOpen]);
 
-  // const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
-  // 90% width
-
   const getResultsDisplay = useCallback(
     ({ anonymize, options, responses }: GetResultsDisplayInputs): GetResultsDisplayOutputs => {
       let names: string[][] = [];
       let votes: number[] = [];
 
+      // get the number of votes, and the names of those who voted for each option
       if (anonymize) {
-        // if this is an anonymous poll, create a list of empty lists for disclosed responses,
         names = (responses as number[]).map(() => []);
         votes = responses as number[];
       } else {
@@ -185,16 +174,21 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
         votes = (responses as PlayerPartial[][]).map((ppl: PlayerPartial[]) => ppl.length);
       }
 
-      const newResults = [];
+      // calculate the total number of votes
       const newTotal = votes.reduce((sofar: number, num: number) => sofar + num, 0);
 
+      // for each option, create an object with the option text, the percentage, and the names
+      const newResults = [];
       for (let i = 0; i < options.length; i++) {
         const percentage = Math.round((votes[i] / newTotal) * 1000) / 10;
-        const formattedNames = names[i].reduce((sofar, curr) => `${sofar}, ${curr}`, '');
+        const formattedNames = names[i]
+          .reduce((sofar, curr) => `${sofar}, ${curr}`, '')
+          .substring(2);
+
         newResults.push({
           option: options[i],
           percentage: `${percentage}%`,
-          names: formattedNames.length ? formattedNames.substring(2) : formattedNames,
+          names: formattedNames,
         });
       }
 
@@ -203,6 +197,7 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     [],
   );
 
+  // get results from the API and store them in React state
   useEffect(() => {
     const getResults = async () => {
       try {
@@ -268,6 +263,7 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     onClose();
   }, [coveyTownController, onClose]);
 
+  // loading message
   if (loading) {
     return (
       <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
@@ -276,6 +272,7 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     );
   }
 
+  // error message
   if (error) {
     return (
       <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
@@ -284,15 +281,14 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     );
   }
 
-  const isYourVote = (index: number) => yourVote.some((vote: number) => vote === index);
-
+  // all content for a single option
   const singleOption = (result: ResultsDisplay, index: number, accordion: boolean) => {
     return (
       <div className={classes.optionContainer}>
         <div
           style={{
             width: result.percentage,
-            backgroundColor: isYourVote(index)
+            backgroundColor: yourVote.some((vote: number) => vote === index)
               ? 'rgba(96, 128, 170, 0.80)'
               : 'rgba(96, 128, 170, 0.20)',
           }}
@@ -310,42 +306,43 @@ export function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
     );
   };
 
-  if (!anonymous) {
-    return (
-      <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
-        <div>
-          <div className={classes.question}>{question}</div>
-          <div className={classes.pollCreator}>Asked by {creator}</div>
-          <Accordion allowMultiple>
-            {resultsDisplay.map((result, index) => (
-              <AccordionItem key={result.option} style={{ borderWidth: 0, marginBottom: '0.5rem' }}>
-                <AccordionButton style={{ padding: 0 }}>
-                  {singleOption(result, index, true)}
-                </AccordionButton>
-                <AccordionPanel style={{ padding: '0.5rem 1rem 0.5rem 1rem' }}>
-                  <div>{result.names}</div>
-                </AccordionPanel>
-              </AccordionItem>
-            ))}
-          </Accordion>
-          <div className={classes.totalVotes}>{`${total} votes`}</div>
+  // the body of the results modal: using a vertical flexbox if anonymous,
+  // or an accordian if not anonymous
+  const resultsModalBody = () => {
+    if (anonymous) {
+      return (
+        <div className={classes.optionListContainer}>
+          {resultsDisplay.map((result, index) => (
+            <div key={result.option} className={classes.optionOuterContainer}>
+              {singleOption(result, index, false)}
+            </div>
+          ))}
         </div>
-      </ResultsModalOutline>
+      );
+    }
+
+    return (
+      <Accordion allowMultiple>
+        {resultsDisplay.map((result, index) => (
+          <AccordionItem key={result.option} style={{ borderWidth: 0, paddingBottom: '0.5rem' }}>
+            <AccordionButton style={{ padding: 0 }}>
+              {singleOption(result, index, true)}
+            </AccordionButton>
+            <AccordionPanel style={{ padding: '0.5rem 1rem 0.5rem 1rem' }}>
+              <div>{result.names}</div>
+            </AccordionPanel>
+          </AccordionItem>
+        ))}
+      </Accordion>
     );
-  }
+  };
 
   return (
     <ResultsModalOutline isOpen={isOpen} onClose={closeModal}>
       <div>
         <div className={classes.question}>{question}</div>
         <div className={classes.pollCreator}>Asked by {creator}</div>
-        <div className={classes.optionListContainer}>
-          {resultsDisplay.map((result, index) => (
-            <div key={result.option} className={classes.item}>
-              {singleOption(result, index, false)}
-            </div>
-          ))}
-        </div>
+        {resultsModalBody()}
         <div className={classes.totalVotes}>{`${total} votes`}</div>
       </div>
     </ResultsModalOutline>
