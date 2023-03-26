@@ -22,6 +22,7 @@ const useStyles = makeStyles({
     backgroundColor: '#F3F4FC',
     padding: '1%',
     margin: '1%',
+    marginBottom: '5%',
     width: '300px',
     borderRadius: '20px',
     boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
@@ -66,11 +67,7 @@ interface PollCardProps {
 
 // calculate the total number of votes of a poll given a list of votes
 function totalVotes(votes: string[][]) {
-  let count = 0;
-  votes.forEach(voteOption => {
-    voteOption.forEach(() => (count = count + 1));
-  });
-  return count;
+  return votes.reduce((count, voteOption) => count + voteOption.length, 0);
 }
 
 const viewResults = () => {
