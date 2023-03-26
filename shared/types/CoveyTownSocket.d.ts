@@ -146,3 +146,9 @@ export interface PollSettings {
   anonymize: boolean;
   multiSelect: boolean;
 }
+
+export interface ResultsDisplay {
+  option: string;
+  percentage: string;
+  names: string;
+}

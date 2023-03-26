@@ -5,7 +5,7 @@ import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
 import { Button } from '@chakra-ui/react';
 import { CreatePollModal } from './CreatePoll/CreatePollModal';
-import { ResultsModal } from './Results/ResultsModal';
+import ResultsModal from './Results/ResultsModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
