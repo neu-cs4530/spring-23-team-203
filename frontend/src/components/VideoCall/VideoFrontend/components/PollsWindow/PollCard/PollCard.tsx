@@ -63,6 +63,7 @@ const useStyles = makeStyles({
 interface PollCardProps {
   body: Poll;
   isCreator: boolean;
+  updateModalStatus: (modalOpen: boolean) => void;
 }
 
 // calculate the total number of votes of a poll given a list of votes
@@ -70,13 +71,15 @@ function totalVotes(votes: string[][]) {
   return votes.reduce((count, voteOption) => count + voteOption.length, 0);
 }
 
-const viewResults = () => {
-  // to be added later
-  // opens the view results modal
-};
-
-export default function PollCard({ body, isCreator }: PollCardProps) {
+export default function PollCard({ body, isCreator, updateModalStatus }: PollCardProps) {
   const classes = useStyles();
+
+  const viewResults = () => {
+    updateModalStatus(true);
+
+    // to be added later
+    // opens the view results modal
+  };
 
   return (
     <div>

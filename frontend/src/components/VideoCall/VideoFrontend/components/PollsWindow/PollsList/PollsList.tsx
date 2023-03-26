@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
 import { usePlayers } from '../../../../../../classes/TownController';
 import { Poll } from '../../../../../../types/CoveyTownSocket';
@@ -9,9 +9,15 @@ interface PollsListProps {
 }
 
 export default function PollsList({ polls }: PollsListProps) {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const { room } = useVideoContext();
 
   const players = usePlayers();
+
+  const updateModalStatus = (modalOpened: boolean) => {
+    setModalOpen(modalOpened);
+  };
 
   return (
     <div>
@@ -21,7 +27,7 @@ export default function PollsList({ polls }: PollsListProps) {
 
         return (
           <React.Fragment key={poll.pollId}>
-            <PollCard body={poll} isCreator={true} />
+            <PollCard body={poll} isCreator={true} updateModalStatus={updateModalStatus} />
           </React.Fragment>
         );
       })}
