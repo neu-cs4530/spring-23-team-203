@@ -107,8 +107,6 @@ describe('Town Selection', () => {
     mockLoginController = mock<LoginController>();
     mockLoginController.townsService = mockTownsService;
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     mockedTownController = mockTownController({ providerVideoToken: expectedProviderVideoToken });
 
     coveyTownControllerConstructorSpy = jest.spyOn(TownController, 'default');
