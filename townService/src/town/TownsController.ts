@@ -304,10 +304,15 @@ export class TownsController extends Controller {
     }
 
     const creatorID = player.id;
-    const { question, options } = requestBody;
-
-    // TODO
-    return { pollId: 'hey' };
+    const { question, options, settings } = requestBody;
+    if (question.length === 0 || options.some(opt => opt.length === 0)) {
+      throw new InvalidParametersError('Question and options must not be empty');
+    }
+    if (options.length < 2 || options.length > 8) {
+      throw new InvalidParametersError('Number of options must be between 2 and 8');
+    }
+    const pollId = curTown.createPoll(creatorID, question, options, settings);
+    return { pollId };
   }
 
   /**
@@ -407,7 +412,31 @@ export class TownsController extends Controller {
     const userID = player.id;
     // TODO
 
-    return { pollId: 'hey', question: 'hey', options: [], responses: [] };
+    return {
+      pollId: 'hey',
+      creatorName: 'candis',
+      yourVote: [0],
+      question: 'Do you like bean?',
+      options: ['yes', 'no', 'maybe', 'no comment'],
+      responses: [
+        [
+          { id: '1', name: 'danish' },
+          { id: '2', name: 'jess' },
+          { id: '3', name: 'tingwei' },
+        ],
+        [
+          { id: '1', name: 'danish' },
+          { id: '4', name: 'david' },
+          { id: '5', name: 'logen' },
+        ],
+        [],
+        [{ id: '100', name: 'aoun' }],
+      ],
+      settings: {
+        anonymize: false,
+        multiSelect: true,
+      },
+    };
   }
 
   /**

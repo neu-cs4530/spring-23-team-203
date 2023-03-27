@@ -184,6 +184,22 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PollSettings": {
+				"properties": {
+					"anonymize": {
+						"type": "boolean"
+					},
+					"multiSelect": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"anonymize",
+					"multiSelect"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"CreatePollRequest": {
 				"properties": {
 					"question": {
@@ -194,11 +210,15 @@
 							"type": "string"
 						},
 						"type": "array"
+					},
+					"settings": {
+						"$ref": "#/components/schemas/PollSettings"
 					}
 				},
 				"required": [
 					"question",
-					"options"
+					"options",
+					"settings"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -249,10 +269,36 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"PlayerPartial": {
+				"properties": {
+					"id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"id",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"GetPollResultsResponse": {
 				"properties": {
 					"pollId": {
 						"type": "string"
+					},
+					"creatorName": {
+						"type": "string"
+					},
+					"yourVote": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					},
 					"question": {
 						"type": "string"
@@ -264,18 +310,37 @@
 						"type": "array"
 					},
 					"responses": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array"
+						"anyOf": [
+							{
+								"items": {
+									"items": {
+										"$ref": "#/components/schemas/PlayerPartial"
+									},
+									"type": "array"
+								},
+								"type": "array"
+							},
+							{
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"settings": {
+						"$ref": "#/components/schemas/PollSettings"
 					}
 				},
 				"required": [
 					"pollId",
+					"creatorName",
+					"yourVote",
 					"question",
 					"options",
-					"responses"
+					"responses",
+					"settings"
 				],
 				"type": "object",
 				"additionalProperties": false
