@@ -1,8 +1,7 @@
-import { TownEmitter, Poll as PollModel } from '../types/CoveyTownSocket';
+import Player from '../lib/Player';
+import { TownEmitter, Poll as PollModel, PollSettings } from '../types/CoveyTownSocket';
 
 export default class Poll {
-  private _townEmitter: TownEmitter;
-
   private _pollId: string;
 
   private _creatorId: string;
@@ -10,6 +9,8 @@ export default class Poll {
   private _question: string;
 
   private _options: string[];
+
+  private _settings: PollSettings;
 
   private _votes: string[][];
 
@@ -46,31 +47,29 @@ export default class Poll {
    * @param creatorId string creator of poll's id
    * @param question string poll question
    * @param options list of string answer options with length between 2-4
+   * @param settings settings for the poll (e.g. anonymous, multiple choice)
    * @param votes list of [list of votedId] of length # of options
    * @param dateCreated date of poll creation
    */
-  public constructor(
-    { pollId, creatorId, question, options, votes, dateCreated }: PollModel,
-    townEmitter: TownEmitter,
-  ) {
-    // , coveyTownController: TownController) {
+  public constructor({
+    pollId,
+    creatorId,
+    question,
+    options,
+    votes,
+    dateCreated,
+    settings,
+  }: PollModel) {
     // this._coveyTownController = coveyTownController;
     this._pollId = pollId;
-    // TODO check if creatorId is in the IDs of one of the players in the town?
     this._creatorId = creatorId;
     this._question = question;
-    // enforce number of options be 2, 3, or 4
-    if (options.length < 2 || options.length > 4) {
-      // TODO - remove error bc its handled in frontend or make a specific type of error
-      throw Error('Number of options must be 2, 3, or 4');
-    }
     this._options = options;
-    // set  dateCreated to current time
+    this._settings = settings;
+    // set dateCreated to current time
     this._dateCreated = dateCreated;
     // initialize no votes for each option
-    this._votes = votes; // new Array(this._options.length).fill([]);
-
-    this._townEmitter = townEmitter;
+    this._votes = votes;
   }
 
   /**
@@ -144,6 +143,7 @@ export default class Poll {
       question: this._question,
       options: this._options,
       votes: this._votes,
+      settings: this._settings,
       dateCreated: this._dateCreated,
     };
   }

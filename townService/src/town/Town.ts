@@ -1,6 +1,7 @@
 import { ITiledMap, ITiledMapObjectLayer } from '@jonbell/tiled-map-type-guard';
 import { nanoid } from 'nanoid';
 import { BroadcastOperator } from 'socket.io';
+import { randomUUID } from 'crypto';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
@@ -15,13 +16,13 @@ import {
   SocketData,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  PollSettings,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
 import Poll from './Poll';
-
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -395,14 +396,6 @@ export default class Town {
     return ret;
   }
 
-  /**
-   * Create a poll with given parameters
-   * @param creatorId player id of creator
-   * @param question 
-   * @param options list of string options
-   * @param settings 
-   * @returns string id of the created poll
-   */
   public createPoll(
     creatorId: string,
     question: string,
@@ -423,7 +416,6 @@ export default class Town {
     );
     return randomID;
   }
-  
   /**
    * Casts vote for the given option by the given voter in the given poll
    * @param voterID player id of voter
