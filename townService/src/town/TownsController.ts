@@ -379,7 +379,7 @@ export class TownsController extends Controller {
     // TODO
     
 
-    curTown.voteInPoll(voterID, pollID, option);
+    curTown.voteInPoll(voterID, pollID, parseInt(option));
 
   }
 

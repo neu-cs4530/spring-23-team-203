@@ -113,15 +113,6 @@ export default class Poll {
     return this._options.indexOf(option);
   }
 
-  /**
-   * Cast a vote for the given option and voter.
-   * @param voterID string userID of voter
-   * @param option string option to be voted for
-   */
-  public vote(voterID: string, option: string) {
-    const option_index = this.getOptionIndex(option);
-    this._votes[option_index].push(voterID);
-  }
 
   /**
    * Updates the state of this Poll, setting the votes properties
