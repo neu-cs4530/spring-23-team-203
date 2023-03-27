@@ -321,7 +321,7 @@ export class TownsService {
      * @returns void
      * @throws ApiError
      */
-    public vote(
+    public voteInPoll(
         townId: string,
         pollId: string,
         xSessionToken: string,

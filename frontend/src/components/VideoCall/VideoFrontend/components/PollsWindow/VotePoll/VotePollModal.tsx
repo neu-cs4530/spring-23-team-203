@@ -87,8 +87,8 @@ import {
           coveyTownController.unPause();
           closeModal();
           toast({
-            title: 'Unable to vote in poll',
-            description: `Congratulations! You voted for ${option} in poll ${question}`,
+            title: 'Successful vote',
+            description: `Congratulations! You voted for "${option}" in poll "${question}"`,
             status: 'success',
           });
         } catch (err) {
