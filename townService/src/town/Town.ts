@@ -404,18 +404,15 @@ export default class Town {
   ): string {
     const randomID = randomUUID();
     this._polls.push(
-      new Poll(
-        {
-          pollId: randomID,
-          creatorId,
-          question,
-          options,
-          votes: options.map(() => []),
-          dateCreated: new Date(),
-          settings,
-        },
-        this._broadcastEmitter,
-      ),
+      new Poll({
+        pollId: randomID,
+        creatorId,
+        question,
+        options,
+        votes: options.map(() => []),
+        dateCreated: new Date(),
+        settings,
+      }),
     );
     return randomID;
   }

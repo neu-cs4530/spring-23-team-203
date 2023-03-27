@@ -17,7 +17,7 @@ import {
   ModalOverlay,
   useToast,
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useTownController from '../../../../../../hooks/useTownController';
 
 interface CreatePollModalProps {
@@ -160,6 +160,7 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
 
               {options.map((option, index) => (
                 <div
+                  key={option}
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -183,9 +184,9 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
                       <path
                         d='M9.5835 11.5833V20.3333M15.4168 11.5833V20.3333M21.2502 5.75V23.25C21.2502 24.8608 19.9443 26.1667 18.3335 26.1667H6.66683C5.056 26.1667 3.75016 24.8608 3.75016 23.25V5.75M0.833496 5.75H24.1668M16.8752 5.75V4.29167C16.8752 2.68084 15.5693 1.375 13.9585 1.375H11.0418C9.431 1.375 8.12516 2.68084 8.12516 4.29167V5.75'
                         stroke={options.length == 2 ? '#a4a6aa' : '#0C1B29'}
-                        stroke-width='1.5'
-                        stroke-linecap='round'
-                        stroke-linejoin='round'
+                        strokeWidth='1.5'
+                        strokeLinecap='round'
+                        strokeLinejoin='round'
                       />
                     </svg>
                   </div>

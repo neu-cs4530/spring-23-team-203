@@ -7,6 +7,7 @@ import PollsList from './PollsList/PollsList';
 import { Poll } from '../../../../../types/CoveyTownSocket';
 import { Button } from '@chakra-ui/react';
 import { CreatePollModal } from './CreatePoll/CreatePollModal';
+import ResultsModal from './Results/ResultsModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,6 +55,7 @@ const poll = {
   question: 'Do you like beans?',
   options: ['Yes', 'No'],
   votes: [['00000', '01111'], ['00001']],
+  settings: { anonymize: false, multiSelect: false },
 };
 
 const poll2 = {
@@ -66,6 +68,7 @@ const poll2 = {
     ['00000', '01111', '12345', '11111', '33333', '21324'],
     ['00001', '54321', '22222'],
   ],
+  settings: { anonymize: false, multiSelect: false },
 };
 
 // In this component, we are toggling the visibility of the PollsWindow with CSS instead of
