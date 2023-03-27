@@ -353,7 +353,7 @@ export class TownsController extends Controller {
    */
   @Post('{townID}/polls/{pollID}/vote')
   @Response<InvalidParametersError>(400, 'Invalid values specified')
-  public async vote(
+  public async voteInPoll(
     @Path() townID: string,
     @Path() pollID: string,
     @Header('X-Session-Token') sessionToken: string,
@@ -371,23 +371,10 @@ export class TownsController extends Controller {
     const voterID = player.id;
     const { option } = requestBody;
 
-    // get the poll that was voted in
-    let poll = curTown.getPoll(pollID);
+    // TODO
+    
 
-    // if player has not already voted then their vote can still be cast
-    if (voterID !in poll.getVoters()) {
-
-      // check that option is in poll
-      if (option !in poll.options) {
-        throw new InvalidParametersError('Invalid poll option');
-      }
-
-      // add player's vote 
-      poll.vote(voterID, option);
-      
-      // update polls
-      // TODO
-    }
+    curTown.voteInPoll(voterID, pollID, option);
 
   }
 

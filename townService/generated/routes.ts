@@ -437,9 +437,9 @@ export function RegisterRoutes(app: express.Router) {
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/towns/:townID/polls/:pollID/vote',
             ...(fetchMiddlewares<RequestHandler>(TownsController)),
-            ...(fetchMiddlewares<RequestHandler>(TownsController.prototype.vote)),
+            ...(fetchMiddlewares<RequestHandler>(TownsController.prototype.voteInPoll)),
 
-            function TownsController_vote(request: any, response: any, next: any) {
+            function TownsController_voteInPoll(request: any, response: any, next: any) {
             const args = {
                     townID: {"in":"path","name":"townID","required":true,"dataType":"string"},
                     pollID: {"in":"path","name":"pollID","required":true,"dataType":"string"},
@@ -456,7 +456,7 @@ export function RegisterRoutes(app: express.Router) {
                 const controller = new TownsController();
 
 
-              const promise = controller.vote.apply(controller, validatedArgs as any);
+              const promise = controller.voteInPoll.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, undefined, next);
             } catch (err) {
                 return next(err);

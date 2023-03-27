@@ -394,7 +394,53 @@ export default class Town {
     }
     return ret;
   }
+
+  /**
+   * Create a poll with given parameters
+   * @param creatorId player id of creator
+   * @param question 
+   * @param options list of string options
+   * @param settings 
+   * @returns string id of the created poll
+   */
+  public createPoll(
+    creatorId: string,
+    question: string,
+    options: string[],
+    settings: PollSettings,
+  ): string {
+    const randomID = randomUUID();
+    this._polls.push(
+      new Poll({
+        pollId: randomID,
+        creatorId,
+        question,
+        options,
+        votes: options.map(() => []),
+        dateCreated: new Date(),
+        settings,
+      }),
+    );
+    return randomID;
+  }
   
+  /**
+   * Casts vote for the given option by the given voter in the given poll
+   * @param voterID player id of voter
+   * @param pollID 
+   * @param option to be voted for
+   */
+  public voteInPoll(
+    voterID: string,
+    pollID: string,
+    option: number,
+  ): void {
+    let pollToVoteIn : Poll = this.getPoll(pollID);
+    pollToVoteIn.vote(voterID, option);
+    // TODO - is this change propagated?
+  }
+
+
   /**
    * Informs all players' clients that they are about to be disconnected, and then
    * disconnects all players.
