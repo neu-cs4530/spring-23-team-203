@@ -140,7 +140,14 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
 
       setLoading(false);
     };
-    getResults();
+
+    const interval = setInterval(() => {
+      getResults();
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [coveyTownController, pollID, getResultsDisplay]);
 
   return (
