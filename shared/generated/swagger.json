@@ -171,6 +171,134 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"CreatePollResponse": {
+				"properties": {
+					"pollId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"pollId"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"PollSettings": {
+				"properties": {
+					"anonymize": {
+						"type": "boolean"
+					},
+					"multiSelect": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"anonymize",
+					"multiSelect"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreatePollRequest": {
+				"properties": {
+					"question": {
+						"type": "string"
+					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"settings": {
+						"$ref": "#/components/schemas/PollSettings"
+					}
+				},
+				"required": [
+					"question",
+					"options",
+					"settings"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GetAllPollsResponseItem": {
+				"properties": {
+					"pollId": {
+						"type": "string"
+					},
+					"creatorId": {
+						"type": "string"
+					},
+					"question": {
+						"type": "string"
+					},
+					"voted": {
+						"type": "boolean"
+					},
+					"createdOn": {
+						"type": "string"
+					},
+					"totalVotes": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"pollId",
+					"creatorId",
+					"question",
+					"voted",
+					"createdOn",
+					"totalVotes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"VoteRequest": {
+				"properties": {
+					"option": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"option"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"GetPollResultsResponse": {
+				"properties": {
+					"pollId": {
+						"type": "string"
+					},
+					"question": {
+						"type": "string"
+					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"responses": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"pollId",
+					"question",
+					"options",
+					"responses"
+				],
+				"type": "object",
+				"additionalProperties": false
 			}
 		},
 		"securitySchemes": {}
@@ -636,6 +764,284 @@
 						"description": "interactable ID of the poster session",
 						"in": "path",
 						"name": "posterSessionId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "session token of the player making the request, must\nmatch the session token returned when the player joined the town",
+						"in": "header",
+						"name": "X-Session-Token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/towns/{townID}/polls/create": {
+			"post": {
+				"operationId": "CreatePoll",
+				"responses": {
+					"200": {
+						"description": "a promise wrapping the id of the poll you just created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/CreatePollResponse"
+								}
+							}
+						}
+					}
+				},
+				"description": "Creates a poll in the town.",
+				"tags": [
+					"towns"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "ID of the town to add the poll to",
+						"in": "path",
+						"name": "townID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "session token of the player making the request, must\nmatch the session token returned when the player joined the town",
+						"in": "header",
+						"name": "X-Session-Token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "the information for the create poll request",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreatePollRequest",
+								"description": "the information for the create poll request"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/towns/{townID}/polls": {
+			"get": {
+				"operationId": "GetAllPolls",
+				"responses": {
+					"200": {
+						"description": "a promise wrapping information about all polls in the town",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/GetAllPollsResponseItem"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"description": "Gets all polls in the town.",
+				"tags": [
+					"towns"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "ID of the town to get the polls for",
+						"in": "path",
+						"name": "townID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "session token of the player making the request, must\nmatch the session token returned when the player joined the town",
+						"in": "header",
+						"name": "X-Session-Token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/towns/{townID}/polls/{pollID}/vote": {
+			"post": {
+				"operationId": "Vote",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "Invalid values specified",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InvalidParametersError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Vote for a poll in the town.",
+				"tags": [
+					"towns"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "ID of the town you are in",
+						"in": "path",
+						"name": "townID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "ID of the poll you are voting in",
+						"in": "path",
+						"name": "pollID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "session token of the player making the request, must\nmatch the session token returned when the player joined the town",
+						"in": "header",
+						"name": "X-Session-Token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"description": "information about your vote",
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/VoteRequest",
+								"description": "information about your vote"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/towns/{townID}/polls/{pollID}": {
+			"get": {
+				"operationId": "GetPollResults",
+				"responses": {
+					"200": {
+						"description": "a promise wrapping the results of the poll",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/GetPollResultsResponse"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid values specified",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InvalidParametersError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Gets the results of a poll in the town.",
+				"tags": [
+					"towns"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "ID of the town",
+						"in": "path",
+						"name": "townID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "ID of the poll to get results for",
+						"in": "path",
+						"name": "pollID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "session token of the player making the request, must\nmatch the session token returned when the player joined the town",
+						"in": "header",
+						"name": "X-Session-Token",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeletePoll",
+				"responses": {
+					"204": {
+						"description": "No content"
+					},
+					"400": {
+						"description": "Invalid values specified",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/InvalidParametersError"
+								}
+							}
+						}
+					}
+				},
+				"description": "Deletes a poll in the town.",
+				"tags": [
+					"towns"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "ID of the town",
+						"in": "path",
+						"name": "townID",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "ID of the poll to delete",
+						"in": "path",
+						"name": "pollID",
 						"required": true,
 						"schema": {
 							"type": "string"

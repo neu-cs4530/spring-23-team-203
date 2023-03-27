@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
 import PollsList from './PollsList/PollsList';
 import { Poll } from '../../../../../types/CoveyTownSocket';
+import { Button } from '@chakra-ui/react';
+import { CreatePollModal } from './CreatePoll/CreatePollModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -73,6 +75,7 @@ export default function PollsWindow() {
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
   const polls: Poll[] = [poll, poll2];
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
@@ -81,6 +84,15 @@ export default function PollsWindow() {
         <div className={classes.title}>Active Polls</div>
         <PollsList polls={polls} />
       </div>
+      <Button
+        onClick={() => {
+          setIsCreateModalOpen(true);
+        }}>
+        Create Poll
+      </Button>
+      {isCreateModalOpen && (
+        <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+      )}
     </aside>
   );
 }

@@ -23,6 +23,11 @@ import {
   TownSettingsUpdate,
   ViewingArea,
   PosterSessionArea,
+  CreatePollRequest,
+  CreatePollResponse,
+  GetAllPollsResponseItem,
+  VoteRequest,
+  GetPollResultsResponse,
 } from '../types/CoveyTownSocket';
 import PosterSessionAreaReal from './PosterSessionArea';
 import { isPosterSessionArea } from '../TestUtils';
@@ -271,6 +276,175 @@ export class TownsController extends Controller {
     };
     (<PosterSessionAreaReal>posterSessionArea).updateModel(updatedPosterSessionArea);
     return newStars;
+  }
+
+  /**
+   * Creates a poll in the town.
+   *
+   * @param townID ID of the town to add the poll to
+   * @param sessionToken session token of the player making the request, must
+   *        match the session token returned when the player joined the town
+   * @param requestBody the information for the create poll request
+   * @returns a promise wrapping the id of the poll you just created
+   */
+  @Post('{townID}/polls/create')
+  public async createPoll(
+    @Path() townID: string,
+    @Header('X-Session-Token') sessionToken: string,
+    @Body() requestBody: CreatePollRequest,
+  ): Promise<CreatePollResponse> {
+    const curTown = this._townsStore.getTownByID(townID);
+    if (!curTown) {
+      throw new InvalidParametersError('Invalid town ID');
+    }
+
+    const player = curTown.getPlayerBySessionToken(sessionToken);
+    if (!player) {
+      throw new InvalidParametersError('Invalid session ID');
+    }
+
+    const creatorID = player.id;
+    const { question, options, settings } = requestBody;
+    if (question.length === 0 || options.some(opt => opt.length === 0)) {
+      throw new InvalidParametersError('Question and options must not be empty');
+    }
+    if (options.length < 2 || options.length > 8) {
+      throw new InvalidParametersError('Number of options must be between 2 and 8');
+    }
+    const pollId = curTown.createPoll(creatorID, question, options, settings);
+    return { pollId };
+  }
+
+  /**
+   * Gets all polls in the town.
+   *
+   * @param townID ID of the town to get the polls for
+   * @param sessionToken session token of the player making the request, must
+   *        match the session token returned when the player joined the town
+   * @returns a promise wrapping information about all polls in the town
+   */
+  @Get('{townID}/polls')
+  public async getAllPolls(
+    @Path() townID: string,
+    @Header('X-Session-Token') sessionToken: string,
+  ): Promise<GetAllPollsResponseItem[]> {
+    const curTown = this._townsStore.getTownByID(townID);
+    if (!curTown) {
+      throw new InvalidParametersError('Invalid town ID');
+    }
+
+    const player = curTown.getPlayerBySessionToken(sessionToken);
+    if (!player) {
+      throw new InvalidParametersError('Invalid session ID');
+    }
+
+    const userID = player.id;
+
+    // TODO
+    return [];
+  }
+
+  /**
+   * Vote for a poll in the town.
+   *
+   * @param townID ID of the town you are in
+   * @param pollID ID of the poll you are voting in
+   * @param sessionToken session token of the player making the request, must
+   *        match the session token returned when the player joined the town
+   * @param requestBody information about your vote
+   *
+   * @throws InvalidParametersError if the session token is not valid, the user has
+   *          already voted, the option is not found, or the poll is not found
+   */
+  @Post('{townID}/polls/{pollID}/vote')
+  @Response<InvalidParametersError>(400, 'Invalid values specified')
+  public async vote(
+    @Path() townID: string,
+    @Path() pollID: string,
+    @Header('X-Session-Token') sessionToken: string,
+    @Body() requestBody: VoteRequest,
+  ): Promise<void> {
+    const curTown = this._townsStore.getTownByID(townID);
+    if (!curTown) {
+      throw new InvalidParametersError('Invalid town ID');
+    }
+
+    const player = curTown.getPlayerBySessionToken(sessionToken);
+    if (!player) {
+      throw new InvalidParametersError('Invalid session ID');
+    }
+
+    const voterID = player.id;
+    const { option } = requestBody;
+
+    // TODO
+  }
+
+  /**
+   * Gets the results of a poll in the town.
+   *
+   * @param townID ID of the town
+   * @param pollID ID of the poll to get results for
+   * @param sessionToken session token of the player making the request, must
+   *        match the session token returned when the player joined the town
+   * @returns a promise wrapping the results of the poll
+   *
+   * @throws InvalidParametersError if the session token is not valid, the user has
+   *          not voted yet, or the poll with pollId is not found
+   */
+  @Get('{townID}/polls/{pollID}')
+  @Response<InvalidParametersError>(400, 'Invalid values specified')
+  public async getPollResults(
+    @Path() townID: string,
+    @Path() pollID: string,
+    @Header('X-Session-Token') sessionToken: string,
+  ): Promise<GetPollResultsResponse> {
+    const curTown = this._townsStore.getTownByID(townID);
+    if (!curTown) {
+      throw new InvalidParametersError('Invalid town ID');
+    }
+
+    const player = curTown.getPlayerBySessionToken(sessionToken);
+    if (!player) {
+      throw new InvalidParametersError('Invalid session ID');
+    }
+
+    const userID = player.id;
+    // TODO
+
+    return { pollId: 'hey', question: 'hey', options: [], responses: [] };
+  }
+
+  /**
+   * Deletes a poll in the town.
+   *
+   * @param townID ID of the town
+   * @param pollID ID of the poll to delete
+   * @param sessionToken session token of the player making the request, must
+   *        match the session token returned when the player joined the town
+   *
+   * @throws InvalidParametersError if the session token is not valid, the poll with
+   *          pollID is not found, or the user is not the poll creator
+   */
+  @Delete('{townID}/polls/{pollID}')
+  @Response<InvalidParametersError>(400, 'Invalid values specified')
+  public async deletePoll(
+    @Path() townID: string,
+    @Path() pollID: string,
+    @Header('X-Session-Token') sessionToken: string,
+  ): Promise<void> {
+    const curTown = this._townsStore.getTownByID(townID);
+    if (!curTown) {
+      throw new InvalidParametersError('Invalid town ID');
+    }
+
+    const player = curTown.getPlayerBySessionToken(sessionToken);
+    if (!player) {
+      throw new InvalidParametersError('Invalid session ID');
+    }
+
+    const userID = player.id;
+    // TODO
   }
 
   /**

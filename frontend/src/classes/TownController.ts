@@ -17,6 +17,10 @@ import {
   TownSettingsUpdate,
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
+  CreatePollResponse,
+  GetAllPollsResponseItem,
+  GetPollResultsResponse,
+  PollSettings,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
@@ -699,6 +703,56 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
       posterSessionArea.id,
       this.sessionToken,
     );
+  }
+
+  /**
+   * Creates a poll in the town.
+   *
+   * @param createPollRequest the info needed to create a poll
+   * @returns a promise wrapping the new poll id
+   */
+  public async createPoll(
+    question: string,
+    options: string[],
+    settings: PollSettings,
+  ): Promise<CreatePollResponse> {
+    return this._townsService.createPoll(this.townID, this.sessionToken, {
+      question,
+      options,
+      settings,
+    });
+  }
+
+  /**
+   * Gets all polls in the town.
+   *
+   * @returns a promise wrapping information about all polls in the town
+   */
+  public async getAllPolls(): Promise<GetAllPollsResponseItem[]> {
+    return this._townsService.getAllPolls(this.townID, this.sessionToken);
+  }
+
+  /**
+   * Vote for a poll in the town.
+   */
+  public async vote(pollID: string, option: number): Promise<void> {
+    return this._townsService.vote(this.townID, pollID, this.sessionToken, { option });
+  }
+
+  /**
+   * Gets the results of a poll in the town.
+   *
+   * @returns a promise wrapping the results of the poll
+   */
+  public async getPollResults(pollID: string): Promise<GetPollResultsResponse> {
+    return this._townsService.getPollResults(this.townID, pollID, this.sessionToken);
+  }
+
+  /**
+   * Deletes a poll in the town.
+   */
+  public async deletePoll(pollID: string): Promise<void> {
+    return this._townsService.deletePoll(this.townID, pollID, this.sessionToken);
   }
 
   /**

@@ -2,12 +2,17 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { ConversationArea } from '../models/ConversationArea';
+import type { CreatePollRequest } from '../models/CreatePollRequest';
+import type { CreatePollResponse } from '../models/CreatePollResponse';
+import type { GetAllPollsResponseItem } from '../models/GetAllPollsResponseItem';
+import type { GetPollResultsResponse } from '../models/GetPollResultsResponse';
 import type { PosterSessionArea } from '../models/PosterSessionArea';
 import type { Town } from '../models/Town';
 import type { TownCreateParams } from '../models/TownCreateParams';
 import type { TownCreateResponse } from '../models/TownCreateResponse';
 import type { TownSettingsUpdate } from '../models/TownSettingsUpdate';
 import type { ViewingArea } from '../models/ViewingArea';
+import type { VoteRequest } from '../models/VoteRequest';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -244,6 +249,152 @@ export class TownsService {
             path: {
                 'townID': townId,
                 'posterSessionId': posterSessionId,
+            },
+            headers: {
+                'X-Session-Token': xSessionToken,
+            },
+            errors: {
+                400: `Invalid values specified`,
+            },
+        });
+    }
+
+    /**
+     * Creates a poll in the town.
+     * @param townId ID of the town to add the poll to
+     * @param xSessionToken session token of the player making the request, must
+     * match the session token returned when the player joined the town
+     * @param requestBody the information for the create poll request
+     * @returns CreatePollResponse a promise wrapping the id of the poll you just created
+     * @throws ApiError
+     */
+    public createPoll(
+        townId: string,
+        xSessionToken: string,
+        requestBody: CreatePollRequest,
+    ): CancelablePromise<CreatePollResponse> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/towns/{townID}/polls/create',
+            path: {
+                'townID': townId,
+            },
+            headers: {
+                'X-Session-Token': xSessionToken,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+        });
+    }
+
+    /**
+     * Gets all polls in the town.
+     * @param townId ID of the town to get the polls for
+     * @param xSessionToken session token of the player making the request, must
+     * match the session token returned when the player joined the town
+     * @returns GetAllPollsResponseItem a promise wrapping information about all polls in the town
+     * @throws ApiError
+     */
+    public getAllPolls(
+        townId: string,
+        xSessionToken: string,
+    ): CancelablePromise<Array<GetAllPollsResponseItem>> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/towns/{townID}/polls',
+            path: {
+                'townID': townId,
+            },
+            headers: {
+                'X-Session-Token': xSessionToken,
+            },
+        });
+    }
+
+    /**
+     * Vote for a poll in the town.
+     * @param townId ID of the town you are in
+     * @param pollId ID of the poll you are voting in
+     * @param xSessionToken session token of the player making the request, must
+     * match the session token returned when the player joined the town
+     * @param requestBody information about your vote
+     * @returns void
+     * @throws ApiError
+     */
+    public vote(
+        townId: string,
+        pollId: string,
+        xSessionToken: string,
+        requestBody: VoteRequest,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'POST',
+            url: '/towns/{townID}/polls/{pollID}/vote',
+            path: {
+                'townID': townId,
+                'pollID': pollId,
+            },
+            headers: {
+                'X-Session-Token': xSessionToken,
+            },
+            body: requestBody,
+            mediaType: 'application/json',
+            errors: {
+                400: `Invalid values specified`,
+            },
+        });
+    }
+
+    /**
+     * Gets the results of a poll in the town.
+     * @param townId ID of the town
+     * @param pollId ID of the poll to get results for
+     * @param xSessionToken session token of the player making the request, must
+     * match the session token returned when the player joined the town
+     * @returns GetPollResultsResponse a promise wrapping the results of the poll
+     * @throws ApiError
+     */
+    public getPollResults(
+        townId: string,
+        pollId: string,
+        xSessionToken: string,
+    ): CancelablePromise<GetPollResultsResponse> {
+        return this.httpRequest.request({
+            method: 'GET',
+            url: '/towns/{townID}/polls/{pollID}',
+            path: {
+                'townID': townId,
+                'pollID': pollId,
+            },
+            headers: {
+                'X-Session-Token': xSessionToken,
+            },
+            errors: {
+                400: `Invalid values specified`,
+            },
+        });
+    }
+
+    /**
+     * Deletes a poll in the town.
+     * @param townId ID of the town
+     * @param pollId ID of the poll to delete
+     * @param xSessionToken session token of the player making the request, must
+     * match the session token returned when the player joined the town
+     * @returns void
+     * @throws ApiError
+     */
+    public deletePoll(
+        townId: string,
+        pollId: string,
+        xSessionToken: string,
+    ): CancelablePromise<void> {
+        return this.httpRequest.request({
+            method: 'DELETE',
+            url: '/towns/{townID}/polls/{pollID}',
+            path: {
+                'townID': townId,
+                'pollID': pollId,
             },
             headers: {
                 'X-Session-Token': xSessionToken,
