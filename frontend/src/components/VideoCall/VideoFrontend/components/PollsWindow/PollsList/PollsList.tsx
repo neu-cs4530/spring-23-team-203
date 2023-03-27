@@ -1,22 +1,24 @@
 import React, { useState } from 'react';
-import useVideoContext from '../../../hooks/useVideoContext/useVideoContext';
-import { usePlayers } from '../../../../../../classes/TownController';
 import { Poll } from '../../../../../../types/CoveyTownSocket';
 import PollCard from '../PollCard/PollCard';
+import ResultsModal from '../Results/ResultsModal';
 
 interface PollsListProps {
   polls: Poll[];
 }
 
 export default function PollsList({ polls }: PollsListProps) {
-  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPollID, setSelectedPollID] = useState<string>('');
+  const [isResultsModalOpen, setIsResultsModalOpen] = useState<boolean>(false);
 
-  const { room } = useVideoContext();
+  const clickViewResults = (pollID: string) => {
+    setSelectedPollID(pollID);
+    setIsResultsModalOpen(true);
+  };
 
-  const players = usePlayers();
-
-  const updateModalStatus = (modalOpened: boolean) => {
-    setModalOpen(modalOpened);
+  const closeResultsModal = () => {
+    setIsResultsModalOpen(false);
+    setSelectedPollID('');
   };
 
   return (
@@ -27,10 +29,17 @@ export default function PollsList({ polls }: PollsListProps) {
 
         return (
           <React.Fragment key={poll.pollId}>
-            <PollCard body={poll} isCreator={true} updateModalStatus={updateModalStatus} />
+            <PollCard body={poll} isCreator={true} clickViewResults={clickViewResults} />
           </React.Fragment>
         );
       })}
+      {isResultsModalOpen && (
+        <ResultsModal
+          isOpen={isResultsModalOpen}
+          onClose={closeResultsModal}
+          pollID={selectedPollID}
+        />
+      )}
     </div>
   );
 }

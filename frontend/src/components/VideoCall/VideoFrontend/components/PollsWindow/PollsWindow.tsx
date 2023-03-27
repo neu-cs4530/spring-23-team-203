@@ -55,6 +55,7 @@ const poll = {
   question: 'Do you like beans?',
   options: ['Yes', 'No'],
   votes: [['00000', '01111'], ['00001']],
+  settings: { anonymize: false, multiSelect: false },
 };
 
 const poll2 = {
@@ -67,6 +68,7 @@ const poll2 = {
     ['00000', '01111', '12345', '11111', '33333', '21324'],
     ['00001', '54321', '22222'],
   ],
+  settings: { anonymize: false, multiSelect: false },
 };
 
 // In this component, we are toggling the visibility of the PollsWindow with CSS instead of
@@ -77,8 +79,6 @@ export default function PollsWindow() {
   const { isPollsWindowOpen } = useServiceContext();
   const polls: Poll[] = [poll, poll2];
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isResultsModalOpen, setIsResultsModalOpen] = useState(false);
-  const pollID = 'test';
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
@@ -93,21 +93,8 @@ export default function PollsWindow() {
         }}>
         Create Poll
       </Button>
-      <Button
-        onClick={() => {
-          setIsResultsModalOpen(true);
-        }}>
-        View Results
-      </Button>
       {isCreateModalOpen && (
         <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
-      )}
-      {isResultsModalOpen && (
-        <ResultsModal
-          isOpen={isResultsModalOpen}
-          onClose={() => setIsResultsModalOpen(false)}
-          pollID={pollID}
-        />
       )}
     </aside>
   );
