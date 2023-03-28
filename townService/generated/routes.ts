@@ -148,7 +148,7 @@ const models: TsoaRoute.Models = {
         "properties": {
             "pollId": {"dataType":"string","required":true},
             "creatorName": {"dataType":"string","required":true},
-            "yourVote": {"dataType":"array","array":{"dataType":"double"},"required":true},
+            "userVotes": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "question": {"dataType":"string","required":true},
             "options": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "responses": {"dataType":"union","subSchemas":[{"dataType":"array","array":{"dataType":"array","array":{"dataType":"refObject","ref":"PlayerPartial"}}},{"dataType":"array","array":{"dataType":"double"}}],"required":true},

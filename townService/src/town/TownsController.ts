@@ -1,4 +1,5 @@
 import assert from 'assert';
+
 import {
   Body,
   Controller,
@@ -303,7 +304,7 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const creatorID = player.id;
+    const creator = {id: player.id, name: player.userName};
     const { question, options, settings } = requestBody;
     if (question.length === 0 || options.some(opt => opt.length === 0)) {
       throw new InvalidParametersError('Question and options must not be empty');
@@ -311,7 +312,7 @@ export class TownsController extends Controller {
     if (options.length < 2 || options.length > 8) {
       throw new InvalidParametersError('Number of options must be between 2 and 8');
     }
-    const pollId = curTown.createPoll(creatorID, question, options, settings);
+    const pollId = curTown.createPoll(creator, question, options, settings);
     return { pollId };
   }
 
@@ -415,7 +416,7 @@ export class TownsController extends Controller {
     return {
       pollId: 'hey',
       creatorName: 'candis',
-      yourVote: [0],
+      userVotes: [0],
       question: 'Do you like bean?',
       options: ['yes', 'no', 'maybe', 'no comment'],
       responses: [

@@ -90,7 +90,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
         const results = await coveyTownController.getPollResults(pollID);
         const {
           creatorName: pollCreatorName,
-          yourVote: pollYourVote,
+          userVotes: pollYourVote,
           question: pollQuestion,
           options: pollOptions,
           responses: pollResponses,
