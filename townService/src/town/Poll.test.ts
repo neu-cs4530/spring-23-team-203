@@ -69,11 +69,12 @@ describe('Poll', () => {
       expect(testPoll.votes[2]).toHaveLength(1);
       expect(testPoll.votes[3]).toHaveLength(1);
 
-      const testVoterID = "new voter id"
-      const expected = [...testPoll.votes[0]]
-      expected.push(testVoterID)
+      const testVoter = {id: "voter id", name: "Jess"}
 
-      testPoll.vote(testVoterID, 0)
+      const expected = [...testPoll.votes[0]]
+      expected.push(testVoter.name)
+
+      testPoll.vote(testVoter, [0])
       
       expect(testPoll.votes).toHaveLength(4);
       expect(testPoll.votes[1]).toHaveLength(0);

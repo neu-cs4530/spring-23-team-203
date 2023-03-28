@@ -70,10 +70,10 @@ export default class Poll {
 
   /**
    * Casts votes for the given player
-   * @param player - Player who is casting the vote
+   * @param voter - Player who is casting the vote
    * @param userVotes - List of indices of the options the player is voting for
    */
-  public addVote(player: PlayerPartial, userVotes: number[]) {
+  public vote(voter: PlayerPartial, userVotes: number[]) {
     if (userVotes.some(voteIndex => voteIndex < 0 || voteIndex >= this._options.length)) {
       throw new Error('vote index out of bounds');
     }
@@ -81,14 +81,14 @@ export default class Poll {
       throw new Error('multiple votes not allowed in this poll');
     }
     this._votes.forEach(votes => {
-      const index = votes.findIndex(vote => vote.id === player.id);
+      const index = votes.findIndex(vote => vote.id === voter.id);
       if (index !== -1) {
         throw new Error('player has already voted');
       }
     });
 
     userVotes.forEach(voteIndex => {
-      this._votes[voteIndex].push(player);
+      this._votes[voteIndex].push(voter);
     });
   }
 

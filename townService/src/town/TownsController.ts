@@ -374,14 +374,10 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const voterID = player.id;
-    const { option } = requestBody;
+    const voter = {id: player.id, name: player.name};
+    const { userVotes } = requestBody;    
 
-    // TODO
-    
-
-    curTown.voteInPoll(voterID, pollID, parseInt(option));
-
+    curTown.voteInPoll(pollID, voter, userVotes);
   }
 
   /**

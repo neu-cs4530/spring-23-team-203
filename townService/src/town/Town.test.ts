@@ -21,6 +21,7 @@ import {
 import ConversationArea from './ConversationArea';
 import Town from './Town';
 import Poll from './Poll';
+import { PollSettings } from '../../../shared/types/CoveyTownSocket';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -913,19 +914,37 @@ describe('Town', () => {
   });
     
   describe('Voting', () => {
-    it('Voting in a poll changes the poll', async () => {
-      const settings = {
+    const testQuestion: string = "What?"
+    const testCreatorId: string = "Jess"
+    const testOptions: string[] = ["because", "yes", "no"]
+    let testSettings: PollSettings;
+    let newPollId: string;
+    let newPoll: Poll;
+
+    beforeEach(async () => {
+      testSettings = {
         anonymize: true,
         multiSelect: false,
       };
-      const newPollId = town.createPoll("Jess", "What?", ["because", "yes", "no"], settings)
-      let poll = town.getPoll(newPollId)
-      const testVoterId = "voter id"
-      const expectedVotes = [...poll.votes]
-      expectedVotes[0].push(testVoterId)
-      town.voteInPoll(newPollId, testVoterId, 1)
-      expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
-
+      newPollId = town.createPoll(testCreatorId, testQuestion, testOptions, testSettings)
+      newPoll = town.getPoll(newPollId)   
+  
+      mockReset(townEmitter);
     });
+    
+    it('Voting in a poll changes the poll', async () => {
+      const testVoter = {id: "voter id", name: "Jess"}
+      const expectedVotes = [...newPoll.votes]
+      expectedVotes[0].push(testVoter)
+      town.voteInPoll(newPollId, testVoter, 1)
+      expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
+    });
+    // it('Voting in a poll with an out of bounds option throws error', async () => {
+    //   const testVoterId = "voter id"
+      
+    //   await expect(town.voteInPoll(newPollId, testVoterId, 6)).rejects.toThrowError()
+
+    // });
+
   });
 });

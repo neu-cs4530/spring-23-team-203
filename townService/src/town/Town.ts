@@ -409,18 +409,17 @@ export default class Town {
   }
   /**
    * Casts vote for the given option by the given voter in the given poll
-   * @param voterID player id of voter
    * @param pollID 
-   * @param option to be voted for
+   * @param voter partial player of voter
+   * @param userVotes option indices to be voted for
    */
   public voteInPoll(    
     pollID: string,
-    voterID: string,
-    option: number,
+    voter: PlayerPartial,
+    userVotes: number[],
   ): void {
     let pollToVoteIn : Poll = this.getPoll(pollID);
-    pollToVoteIn.vote(voterID, option);
-    // TODO - is this change propagated?
+    pollToVoteIn.vote(voter, userVotes);
   }
 
 
