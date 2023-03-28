@@ -1,6 +1,5 @@
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
-import { readFileSync } from 'fs';
 import { randomUUID } from 'crypto';
 import { Interactable, TownEmitter, PosterSessionArea } from '../types/CoveyTownSocket';
 import TownsStore from '../lib/TownsStore';
@@ -38,13 +37,6 @@ describe('TownsController integration tests', () => {
       townID: ret.townID,
       townUpdatePassword: ret.townUpdatePassword,
     };
-  }
-  function getBroadcastEmitterForTownID(townID: string) {
-    const ret = createdTownEmitters.get(townID);
-    if (!ret) {
-      throw new Error(`Could not find broadcast emitter for ${townID}`);
-    }
-    return ret;
   }
 
   beforeAll(() => {
@@ -91,6 +83,16 @@ describe('TownsController integration tests', () => {
         const res = await controller.createPoll(testingTown.townID, sessionToken, poll);
         expect(res).toBeDefined();
         expect(res.pollId).not.toHaveLength(0);
+
+        const pollResults = await controller.getPollResults(testingTown.townID, res.pollId, sessionToken);
+
+        expect(pollResults).toBeDefined();
+        expect(pollResults.question).toEqual(poll.question);
+        expect(pollResults.options).toEqual(poll.options);
+        expect(pollResults.creator.name).toEqual(player.userName);
+        expect(pollResults.settings).toEqual(poll.settings);
+        expect(pollResults.responses).toEqual(poll.options.map(_ => []));
+        expect(pollResults.userVotes).toEqual([]);
       });
 
       it('Player can successfully create a poll with duplicate options', async () => {

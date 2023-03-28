@@ -147,7 +147,7 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "pollId": {"dataType":"string","required":true},
-            "creatorName": {"dataType":"string","required":true},
+            "creator": {"ref":"PlayerPartial","required":true},
             "userVotes": {"dataType":"array","array":{"dataType":"double"},"required":true},
             "question": {"dataType":"string","required":true},
             "options": {"dataType":"array","array":{"dataType":"string"},"required":true},

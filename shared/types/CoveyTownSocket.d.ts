@@ -134,7 +134,7 @@ export interface PlayerPartial {
 
 export interface GetPollResultsResponse {
   pollId: string;
-  creatorName: string;
+  creator: PlayerPartial;
   userVotes: number[]; // index of your votes
   question: string;
   options: string[];

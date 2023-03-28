@@ -89,7 +89,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
       try {
         const results = await coveyTownController.getPollResults(pollID);
         const {
-          creatorName: pollCreatorName,
+          creator: pollCreatorName,
           userVotes: pollYourVote,
           question: pollQuestion,
           options: pollOptions,
@@ -122,7 +122,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
 
         // set the question, creator name, and what you voted for
         setQuestion(pollQuestion);
-        setCreator(pollCreatorName);
+        setCreator(pollCreatorName.name);
         setYourVote(pollYourVote);
         setAnonymous(anonymize);
 

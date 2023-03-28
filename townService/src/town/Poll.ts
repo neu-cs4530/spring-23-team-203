@@ -20,7 +20,7 @@ export default class Poll {
     return this._pollId;
   }
 
-  public get creatorId() {
+  public get creator() {
     return this._creator;
   }
 
@@ -104,6 +104,20 @@ export default class Poll {
       });
     });
     return Array.from(voters.values());
+  }
+
+  /**
+   * Get the options that the player with the given id has voted for
+   *
+   */
+  public getUserVotes(playerId: string): number[] {
+    const userVotes: number[] = [];
+    this._votes.forEach((opt, index) => {
+      if (opt.some(vote => vote.id === playerId)) {
+        userVotes.push(index);
+      }
+    });
+    return userVotes;
   }
 
   /**

@@ -7,7 +7,7 @@ import type { PollSettings } from './PollSettings';
 
 export type GetPollResultsResponse = {
     pollId: string;
-    creatorName: string;
+    creator: PlayerPartial;
     userVotes: Array<number>;
     question: string;
     options: Array<string>;

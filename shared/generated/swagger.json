@@ -290,8 +290,8 @@
 					"pollId": {
 						"type": "string"
 					},
-					"creatorName": {
-						"type": "string"
+					"creator": {
+						"$ref": "#/components/schemas/PlayerPartial"
 					},
 					"userVotes": {
 						"items": {
@@ -335,7 +335,7 @@
 				},
 				"required": [
 					"pollId",
-					"creatorName",
+					"creator",
 					"userVotes",
 					"question",
 					"options",
