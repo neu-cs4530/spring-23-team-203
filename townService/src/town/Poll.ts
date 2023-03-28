@@ -87,6 +87,19 @@ export default class Poll {
   }
 
   /**
+   * Given a userId, returns if the user has voted in this poll.
+   * @param userId the id of the player.
+   * @returns a boolean indicates whether the user has voted in this poll.
+   */
+  public userVoted(userId: string): boolean {
+    const user = this._votes.find(opt => opt.find(vote => vote === userId));
+    if (user) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Convert this Poll instance to a simple PollModel suitable for
    * transporting over a socket to a client.
    */

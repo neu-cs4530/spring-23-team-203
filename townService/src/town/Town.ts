@@ -17,6 +17,7 @@ import {
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
   PollSettings,
+  PollInfo,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
@@ -382,6 +383,20 @@ export default class Town {
   }
 
   /**
+   * Returns the information of the list of active polls in this town.
+   * @param userId the id of the user who requests the info, used to determine if they have voted in a given poll.
+   * @returns the information of the list of polls in this town.
+   */
+  public getAllPolls(userId: string): PollInfo[] {
+    const pollInfos: PollInfo[] = [];
+    this._polls.forEach(poll => {
+      pollInfos.push(this._toPollInfo(userId, poll));
+    });
+
+    return pollInfos;
+  }
+
+  /**
    * Find a poll by its ID
    *
    * @param id
@@ -470,6 +485,38 @@ export default class Town {
       .concat(conversationAreas)
       .concat(posterSessionAreas);
     this._validateInteractables();
+  }
+
+  private _toPollInfo(userId: string, poll: Poll): PollInfo {
+    let creatorName;
+    try {
+      creatorName = this._findUserNameByPlayerId(poll.creatorId);
+    } catch (e) {
+      creatorName = 'Creator Not Found';
+    }
+
+    const pollInfo = {
+      pollId: poll.pollId,
+      creatorId: poll.creatorId,
+      creatorName,
+      question: poll.question,
+      options: poll.options,
+      voted: poll.userVoted(userId),
+    };
+    return pollInfo;
+  }
+
+  /**
+   * Returns the corresponding username for a given userId in the town.
+   * @param playerId id of the player.
+   */
+  private _findUserNameByPlayerId(playerId: string): string {
+    // eslint-disable-next-line consistent-return
+    const user = this._players.find(player => playerId === player.id);
+    if (user) {
+      return user.userName;
+    }
+    throw new Error(`The player with id ${playerId} does not exist!`);
   }
 
   private _validateInteractables() {

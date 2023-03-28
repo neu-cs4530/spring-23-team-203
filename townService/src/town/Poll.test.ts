@@ -21,9 +21,7 @@ describe('Poll', () => {
 
   beforeEach(() => {
     mockClear(townEmitter);
-    testPoll = new Poll(
-      { pollId, creatorId, question, options, settings, dateCreated, votes },
-    );
+    testPoll = new Poll({ pollId, creatorId, question, options, settings, dateCreated, votes });
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
   });
 
