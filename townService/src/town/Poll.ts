@@ -20,7 +20,7 @@ export default class Poll {
     return this._pollId;
   }
 
-  public get creatorId() {
+  public get creator() {
     return this._creator;
   }
 

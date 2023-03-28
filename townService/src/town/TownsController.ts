@@ -469,7 +469,7 @@ export class TownsController extends Controller {
     }
 
     const userID = player.id;
-    // TODO
+    curTown.deletePoll(userID, pollID);
   }
 
   /**
