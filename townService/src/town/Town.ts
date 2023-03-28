@@ -407,6 +407,21 @@ export default class Town {
     this._polls.push(poll);
     return poll.pollId;
   }
+  /**
+   * Casts vote for the given option by the given voter in the given poll
+   * @param pollID 
+   * @param voter partial player of voter
+   * @param userVotes option indices to be voted for
+   */
+  public voteInPoll(    
+    pollID: string,
+    voter: PlayerPartial,
+    userVotes: number[],
+  ): void {
+    let pollToVoteIn : Poll = this.getPoll(pollID);
+    pollToVoteIn.vote(voter, userVotes);
+  }
+
 
   /**
    * Informs all players' clients that they are about to be disconnected, and then

@@ -927,7 +927,7 @@
 		},
 		"/towns/{townID}/polls/{pollID}/vote": {
 			"post": {
-				"operationId": "Vote",
+				"operationId": "VoteInPoll",
 				"responses": {
 					"204": {
 						"description": "No content"
