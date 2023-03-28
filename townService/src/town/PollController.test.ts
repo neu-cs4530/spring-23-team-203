@@ -214,5 +214,37 @@ describe('TownsController integration tests', () => {
         ).rejects.toThrowError();
       });
     });
+    // describe('Vote', () => {
+    //   it('Player can successfully vote in a poll ', async () => {
+    //     const poll = {
+    //       question: 'What is your favorite color?',
+    //       options: ['Red', 'Blue', 'Green'],
+    //       settings: { anonymize: false, multiSelect: false },
+    //     };
+
+        
+
+    //     const res = await controller.createPoll(testingTown.townID, sessionToken, poll);
+    //     expect(res).toBeDefined();
+    //     expect(res.pollId).not.toHaveLength(0);
+
+        
+    //     // const expectedVotes = newPoll.votes.map(item => 
+    //     //   item.map(obj => {
+    //     //     return {...obj}
+    //     //   }))
+        
+    //     // expectedVotes[1].push(testVoter)
+    //     // town.voteInPoll(newPollId, testVoter, [1])
+        
+    //     await controller.voteInPoll(voterID, 1)
+
+    //     expect(res.votes).toHaveLength(3);
+    //     expect(res.votes[1]).toHaveLength(1);
+    //     expect(res.votes[0]).toHaveLength(0);
+    //     expect(res.votes[2]).toHaveLength(0);
+    //   });
+    // });
+
   });
 });

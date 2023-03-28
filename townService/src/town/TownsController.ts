@@ -359,7 +359,7 @@ export class TownsController extends Controller {
    */
   @Post('{townID}/polls/{pollID}/vote')
   @Response<InvalidParametersError>(400, 'Invalid values specified')
-  public async vote(
+  public async voteInPoll(
     @Path() townID: string,
     @Path() pollID: string,
     @Header('X-Session-Token') sessionToken: string,
@@ -369,16 +369,15 @@ export class TownsController extends Controller {
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
-
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const voterID = player.id;
-    const { option } = requestBody;
+    const voter = {id: player.id, name: player.userName};
+    const { userVotes } = requestBody;    
 
-    // TODO
+    curTown.voteInPoll(pollID, voter, userVotes);
   }
 
   /**

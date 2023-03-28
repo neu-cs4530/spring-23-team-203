@@ -124,7 +124,7 @@ export interface GetAllPollsResponseItem {
 }
 
 export interface VoteRequest {
-  option: number;
+  userVotes: number[];
 }
 
 export interface PlayerPartial {
