@@ -63,7 +63,8 @@ const useStyles = makeStyles({
 interface PollCardProps {
   body: Poll;
   isCreator: boolean;
-  clickViewResults: (pollID: string) => void;
+  clickVoteOrViewResults: (pollID: string) => void;
+  buttonText: string;
 }
 
 // calculate the total number of votes of a poll given a list of votes
@@ -71,11 +72,11 @@ function totalVotes(votes: string[][]) {
   return votes.reduce((count, voteOption) => count + voteOption.length, 0);
 }
 
-export default function PollCard({ body, isCreator, clickViewResults }: PollCardProps) {
+export default function PollCard({ body, isCreator, clickVoteOrViewResults, buttonText}: PollCardProps) {
   const classes = useStyles();
 
   const viewResults = () => {
-    clickViewResults(body.pollId);
+    clickVoteOrViewResults(body.pollId);
   };
 
   return (
@@ -92,7 +93,7 @@ export default function PollCard({ body, isCreator, clickViewResults }: PollCard
           borderRadius={20}
           className={classes.button}
           onClick={viewResults}>
-          View Results
+          {buttonText}
         </Button>
       </div>
     </div>

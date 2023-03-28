@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Poll } from '../../../../../../types/CoveyTownSocket';
 import PollCard from '../PollCard/PollCard';
 import ResultsModal from '../Results/ResultsModal';
+import { VotePollModal } from '../VotePoll/VotePollModal';
 
 interface PollsListProps {
   polls: Poll[];
@@ -10,14 +11,30 @@ interface PollsListProps {
 export default function PollsList({ polls }: PollsListProps) {
   const [selectedPollID, setSelectedPollID] = useState<string>('');
   const [isResultsModalOpen, setIsResultsModalOpen] = useState<boolean>(false);
+  const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
 
-  const clickViewResults = (pollID: string) => {
+  const userHasVoted = (pollID: string) => {
+    pollID;
+    return false 
+    // todo change
+  }
+
+  const clickVoteOrViewResults = (pollID: string) => {
     setSelectedPollID(pollID);
-    setIsResultsModalOpen(true);
+    if (userHasVoted(pollID)) {
+      setIsResultsModalOpen(true);
+    } else {
+      setIsVoteModalOpen(true);
+    }
   };
 
   const closeResultsModal = () => {
     setIsResultsModalOpen(false);
+    setSelectedPollID('');
+  };
+
+  const closeVoteModal = () => {
+    setIsVoteModalOpen(false);
     setSelectedPollID('');
   };
 
@@ -26,13 +43,21 @@ export default function PollsList({ polls }: PollsListProps) {
       {polls.map(poll => {
         // TODO: conditional rendering based on vote/creator status
         // const isCreator = p.id === poll.creatorId;
+        let buttonText : string = userHasVoted(poll.pollId) ? "View Results" : "Vote"
 
         return (
           <React.Fragment key={poll.pollId}>
-            <PollCard body={poll} isCreator={true} clickViewResults={clickViewResults} />
+            <PollCard body={poll} isCreator={true} clickVoteOrViewResults={clickVoteOrViewResults} buttonText={buttonText} />
           </React.Fragment>
         );
       })}
+      {isVoteModalOpen && (
+        <VotePollModal 
+        isOpen={isVoteModalOpen} 
+        onClose={closeVoteModal} 
+        pollID={selectedPollID} 
+        />
+      )}
       {isResultsModalOpen && (
         <ResultsModal
           isOpen={isResultsModalOpen}
@@ -40,6 +65,8 @@ export default function PollsList({ polls }: PollsListProps) {
           pollID={selectedPollID}
         />
       )}
+      
+      
     </div>
   );
 }

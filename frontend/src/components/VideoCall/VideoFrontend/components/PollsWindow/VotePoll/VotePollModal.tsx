@@ -24,20 +24,24 @@ import {
   interface VotePollModalProps {
     isOpen: boolean;
     onClose: () => void;
+    pollID: string;
   }
 
   
-  export function VotePollModal({ isOpen, onClose }: VotePollModalProps) {
+  export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
     const coveyTownController = useTownController();
     // need question, options, allowMultiSelect... from props after calling this from poll cards sidebar
-    const pollID = "Dummy Poll ID";
-    const question = "Dummy question"
-    const selectedOption = "Selected option"
-    const options = ["First", "Second", "Third"]
-    const maxVoteNumber = 3;
+    const maxVoteNumber = 3; // TODO get maxVoteNumber from pollSettings
+    
+    const [question, setQuestion] = useState<string>('');
+    const [creator, setCreator] = useState<string>('');
+    const [options, setOptions] = useState<string[]>([]);
 
     const [voteNumber, setVoteNumber] = useState(0);
 
+    
+    const [error, setError] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
     const toast = useToast();
   
     useEffect(() => {
@@ -47,16 +51,67 @@ import {
         coveyTownController.unPause();
       }
     }, [coveyTownController, isOpen]);
+
+
+    // get results from the API and store them in React state
+    useEffect(() => {
+      const getPollContent = async () => {
+        try {
+          const poll = await coveyTownController.getPollResults(pollID);
+          const {
+            creatorName: pollCreatorName,
+            yourVote: pollYourVote,
+            question: pollQuestion,
+            options: pollOptions,
+            responses: pollResponses,
+            settings: pollSettings,
+          } = poll;
+
+          if (!pollSettings) {
+            setError(true);
+            return;
+          }
+
+
+          if (
+            !pollCreatorName ||
+            !pollQuestion ||
+            !pollOptions ||
+            !pollOptions.length ||
+            !pollResponses.length
+          ) {
+            setError(true);
+            return;
+          }
+
+          // set the question, creator name, and options to vote for
+          setQuestion(pollQuestion);
+          setCreator(pollCreatorName);
+          setOptions(pollOptions);
+
+        } catch (e) {
+          setError(true);
+        }
+
+        setLoading(false);
+      };
+      getPollContent();
+
+    }, [coveyTownController, pollID]);
+
   
     const closeModal = useCallback(() => {
       coveyTownController.unPause();
       onClose();
     }, [coveyTownController, onClose]);
 
+
     
     const voteOptionButtons = (options: string[]) => {
       let option_buttons : JSX.Element[] = [];
+      let optionIdx = 0;
       options.forEach(option => {
+        optionIdx += 1
           option_buttons.push(
               <Button 
                   id="{option}_btn" 
@@ -67,7 +122,7 @@ import {
                   border='4px'
                   // borderColor='blue'
                   colorScheme='blue'
-                  onClick={() => votePoll(option)}> 
+                  onClick={() => votePoll(optionIdx)}> 
                     {option}
                 </Button>)
       })
@@ -76,9 +131,10 @@ import {
         </Stack>)
     }
   
-    const votePoll = useCallback(async (option: string) => {
-      if (selectedOption && voteNumber !== maxVoteNumber) {
+    const votePoll = useCallback(async (optionIdx: number) => {
+      if (voteNumber !== maxVoteNumber) {
         try {
+          const option: string = options[optionIdx]
           console.log('Voting in poll with ID ', pollID, ' and option ', option);
           // console.log('Creating poll with question: ', question);
           // console.log('Creating poll with poll settings: %j', { allowMultiSelect, anonymizeResults });
@@ -109,7 +165,7 @@ import {
       } else {
         toast({
           title: 'Unable to vote in poll',
-          description: `You have voted ${voteNumber} times, which is the max number of times: ${maxVoteNumber}`,
+          description: `You have voted ${voteNumber} times, and the max number of times is: ${maxVoteNumber}`,
           status: 'error',
         });
       }

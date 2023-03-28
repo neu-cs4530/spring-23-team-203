@@ -80,7 +80,6 @@ export default function PollsWindow() {
   const { isPollsWindowOpen } = useServiceContext();
   const polls: Poll[] = [poll, poll2];
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
@@ -95,16 +94,9 @@ export default function PollsWindow() {
         }}>
         Create Poll
       </Button>
-      <Button
-        onClick={() => {
-          setIsVoteModalOpen(true);
-        }}>
-        Vote in Poll
-      </Button>
       {isCreateModalOpen && (
         <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
       )}
-      {<VotePollModal isOpen={isVoteModalOpen} onClose={() => setIsVoteModalOpen(false)} />}
     </aside>
   );
 }
