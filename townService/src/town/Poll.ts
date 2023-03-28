@@ -113,16 +113,6 @@ export default class Poll {
     return this._options.indexOf(option);
   }
 
-
-  /**
-   * Updates the state of this Poll, setting the votes properties
-   *
-   * @param updatedModel updated Poll model
-   */
-  public updateModel(updatedModel: Poll) {
-    this._votes = updatedModel.votes;
-  }
-
   /**
    * Convert this Poll instance to a simple PollModel suitable for
    * transporting over a socket to a client.
