@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { mock, mockClear } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import Player from '../lib/Player';
@@ -30,8 +31,14 @@ describe('Poll', () => {
 
   describe('Poll class', () => {
     it('getVoters returns list of unique voters', () => {
+
       const testVoters = ['jess', 'danish', 'tingwei', 'david'];
-      expect(testPoll.getVoters()).toEqual(testVoters);
+      testPoll.addVote({ id: 'jess', name: 'jess' }, [0]);
+      testPoll.addVote({ id: 'danish', name: 'danish' }, [0]);
+      testPoll.addVote({ id: 'tingwei', name: 'tingwei' }, [2]);
+      testPoll.addVote({ id: 'david', name: 'david' }, [3]);
+      
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(testVoters);
     });
   });
 

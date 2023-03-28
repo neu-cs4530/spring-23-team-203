@@ -293,7 +293,7 @@
 					"creatorName": {
 						"type": "string"
 					},
-					"yourVote": {
+					"userVotes": {
 						"items": {
 							"type": "number",
 							"format": "double"
@@ -336,7 +336,7 @@
 				"required": [
 					"pollId",
 					"creatorName",
-					"yourVote",
+					"userVotes",
 					"question",
 					"options",
 					"responses",
