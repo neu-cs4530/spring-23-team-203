@@ -911,4 +911,21 @@ describe('Town', () => {
       });
     });
   });
+    
+  describe('Voting', () => {
+    it('Voting in a poll changes the poll', async () => {
+      const settings = {
+        anonymize: true,
+        multiSelect: false,
+      };
+      const newPollId = town.createPoll("Jess", "What?", ["because", "yes", "no"], settings)
+      let poll = town.getPoll(newPollId)
+      const testVoterId = "voter id"
+      const expectedVotes = [...poll.votes]
+      expectedVotes[0].push(testVoterId)
+      town.voteInPoll(newPollId, testVoterId, 1)
+      expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
+
+    });
+  });
 });

@@ -422,9 +422,9 @@ export default class Town {
    * @param pollID 
    * @param option to be voted for
    */
-  public voteInPoll(
-    voterID: string,
+  public voteInPoll(    
     pollID: string,
+    voterID: string,
     option: number,
   ): void {
     let pollToVoteIn : Poll = this.getPoll(pollID);
