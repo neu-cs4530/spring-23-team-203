@@ -93,25 +93,6 @@ export default class Poll {
   }
 
   /**
-   * Casts vote for the given option index, by the given voter
-   * @param voterID player ID of voter
-   * @param option option index to vote for
-   */
-  public vote(voterID: string, option: number) {
-    // check option is in the poll
-    if (option >= this._options.length || option < 0) {
-      throw Error(`The given option index ${option} is not in the poll with 
-      ID ${this._pollId} with ${this._options.length} options.`)
-    }
-
-    // check number of votes cast by voter isn't max
-
-    // cast vote by adding voter to list of votes
-    // TODO - change functionality for different poll settings
-    this._votes[option].push(voterID);
-  }
-
-  /**
    * Get the list of all unique voters
    * @returns list of unique voter player IDs
    */
