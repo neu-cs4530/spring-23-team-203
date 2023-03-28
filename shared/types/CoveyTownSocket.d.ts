@@ -132,16 +132,9 @@ export interface PlayerPartial {
   name: string;
 }
 
-export interface GetPollResultsResponse {
-  pollId: string;
-  creator: PlayerPartial;
-  userVotes: number[]; // index of your votes
-  question: string;
-  options: string[];
-  responses: PlayerPartial[][] | number[];
-  settings: PollSettings;
+export type GetPollResultsResponse = Poll & {
+  userVotes: number[] // index of your votes}
 }
-
 export interface PollSettings {
   anonymize: boolean;
   multiSelect: boolean;

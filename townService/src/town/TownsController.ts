@@ -304,7 +304,7 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const creator = {id: player.id, name: player.userName};
+    const creator = { id: player.id, name: player.userName };
     const { question, options, settings } = requestBody;
     if (question.length === 0 || options.some(opt => opt.length === 0)) {
       throw new InvalidParametersError('Question and options must not be empty');
@@ -404,20 +404,22 @@ export class TownsController extends Controller {
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
-    
+
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
-    
-    const poll = curTown.polls.find(poll => poll.pollId === pollID);
-    if (poll === undefined) {
+
+    let poll;
+    try {
+      poll = curTown.getPoll(pollID);
+    } catch (e) {
       throw new InvalidParametersError('Invalid poll ID');
     }
 
-    return Object.assign(poll.toModel(), { 
+    return Object.assign(poll.toModel(), {
       userVotes: poll.getUserVotes(player.id),
-     });
+    });
   }
 
   /**
