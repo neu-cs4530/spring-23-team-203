@@ -17,6 +17,7 @@ import {
   PlayerLocation,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
+  PlayerPartial
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import Town from './Town';
@@ -915,7 +916,7 @@ describe('Town', () => {
     
   describe('Voting', () => {
     const testQuestion: string = "What?"
-    const testCreatorId: string = "Jess"
+    const testCreator = {id: "Jess", name: "Jessssss"}
     const testOptions: string[] = ["because", "yes", "no"]
     let testSettings: PollSettings;
     let newPollId: string;
@@ -926,7 +927,7 @@ describe('Town', () => {
         anonymize: true,
         multiSelect: false,
       };
-      newPollId = town.createPoll(testCreatorId, testQuestion, testOptions, testSettings)
+      newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings)
       newPoll = town.getPoll(newPollId)   
   
       mockReset(townEmitter);
@@ -934,9 +935,14 @@ describe('Town', () => {
     
     it('Voting in a poll changes the poll', async () => {
       const testVoter = {id: "voter id", name: "Jess"}
-      const expectedVotes = [...newPoll.votes]
-      expectedVotes[0].push(testVoter)
-      town.voteInPoll(newPollId, testVoter, 1)
+      const expectedVotes = newPoll.votes.map(item => 
+        item.map(obj => {
+          return {...obj}
+        }))
+      
+      // new Array(testOptions.length).fill([]);
+      expectedVotes[1].push(testVoter)
+      town.voteInPoll(newPollId, testVoter, [1])
       expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
     });
     // it('Voting in a poll with an out of bounds option throws error', async () => {

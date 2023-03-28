@@ -3,6 +3,6 @@
 /* eslint-disable */
 
 export type VoteRequest = {
-    option: number;
+    userVotes: number[];
 };
 
