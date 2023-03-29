@@ -10,7 +10,6 @@ export type Poll = {
     settings: PollSettings;
     options: Array<string>;
     question: string;
-    dateCreated: string;
     creator: PlayerPartial;
     pollId: string;
 };

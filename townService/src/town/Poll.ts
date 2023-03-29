@@ -14,8 +14,6 @@ export default class Poll {
 
   private _votes: PlayerPartial[][];
 
-  private _dateCreated: Date;
-
   public get pollId() {
     return this._pollId;
   }
@@ -36,10 +34,6 @@ export default class Poll {
     return this._votes;
   }
 
-  public get dateCreated() {
-    return this._dateCreated;
-  }
-
   /**
    * Create a new Poll
    *
@@ -49,7 +43,6 @@ export default class Poll {
    * @param options list of string answer options with length between 2-4
    * @param settings settings for the poll (e.g. anonymous, multiple choice)
    * @param votes list of [list of votedId] of length # of options
-   * @param dateCreated date of poll creation
    */
   public constructor(
     creator: PlayerPartial,
@@ -62,8 +55,6 @@ export default class Poll {
     this._question = question;
     this._options = options;
     this._settings = settings;
-    // set dateCreated to current time
-    this._dateCreated = new Date();
     // initialize no votes for each option
     this._votes = options.map(() => []);
   }
@@ -120,7 +111,7 @@ export default class Poll {
     return userVotes;
   }
 
-  /** 
+  /**
    * Get the index of the given option in the poll's options list
    * @param option string option to find
    */
@@ -140,7 +131,6 @@ export default class Poll {
       options: this._options,
       responses: this._settings.anonymize ? this._votes.map(v => v.length) : this._votes,
       settings: this._settings,
-      dateCreated: this._dateCreated,
     };
   }
 }
