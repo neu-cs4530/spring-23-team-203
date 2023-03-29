@@ -33,7 +33,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
   const coveyTownController = useTownController();
 
   const [question, setQuestion] = useState<string>('');
-  const [creator, setCreator] = useState<string>('');
+  const [creatorName, setCreatorName] = useState<string>('');
 
   const [resultsDisplay, setResultsDisplay] = useState<ResultsDisplay[]>([]);
   const [yourVote, setYourVote] = useState<number[]>([]);
@@ -89,7 +89,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
       try {
         const results = await coveyTownController.getPollResults(pollID);
         const {
-          creatorName: pollCreatorName,
+          creator: pollCreator,
           userVotes: pollYourVote,
           question: pollQuestion,
           options: pollOptions,
@@ -106,7 +106,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
 
         if (
           anonymize === undefined ||
-          !pollCreatorName ||
+          !pollCreator ||
           !pollYourVote ||
           !pollQuestion ||
           !pollOptions ||
@@ -122,7 +122,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
 
         // set the question, creator name, and what you voted for
         setQuestion(pollQuestion);
-        setCreator(pollCreatorName);
+        setCreatorName(pollCreator.name);
         setYourVote(pollYourVote);
         setAnonymous(anonymize);
 
@@ -161,7 +161,7 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
             loading={loading}
             error={error}
             question={question}
-            creator={creator}
+            creator={creatorName}
             yourVote={yourVote}
             anonymous={anonymous}
             total={total}
