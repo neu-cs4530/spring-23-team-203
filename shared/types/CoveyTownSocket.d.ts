@@ -53,12 +53,12 @@ export type ChatMessage = {
 
 export type Poll = {
 	pollId: string,
-	creatorId: string,
+	creator: PlayerPartial,
   dateCreated: Date,
 	question: string,
 	options: string[],
   settings: PollSettings,
-	votes: string[][]
+	responses: PlayerPartial[][] | number[],
 };
 
 export interface ConversationArea {
@@ -124,7 +124,7 @@ export interface CreatePollResponse {
 }
 
 export interface VoteRequest {
-  option: number;
+  userVotes: number[];
 }
 
 export interface PlayerPartial {
@@ -132,16 +132,9 @@ export interface PlayerPartial {
   name: string;
 }
 
-export interface GetPollResultsResponse {
-  pollId: string;
-  creatorName: string;
-  yourVote: number[]; // index of your votes
-  question: string;
-  options: string[];
-  responses: PlayerPartial[][] | number[];
-  settings: PollSettings;
+export type GetPollResultsResponse = Poll & {
+  userVotes: number[] // index of your votes}
 }
-
 export interface PollSettings {
   anonymize: boolean;
   multiSelect: boolean;

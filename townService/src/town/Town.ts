@@ -18,6 +18,7 @@ import {
   PosterSessionArea as PosterSessionAreaModel,
   PollSettings,
   PollInfo,
+  PlayerPartial,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import InteractableArea from './InteractableArea';
@@ -412,24 +413,25 @@ export default class Town {
   }
 
   public createPoll(
-    creatorId: string,
+    creator: PlayerPartial,
     question: string,
     options: string[],
     settings: PollSettings,
   ): string {
-    const randomID = randomUUID();
-    this._polls.push(
-      new Poll({
-        pollId: randomID,
-        creatorId,
-        question,
-        options,
-        votes: options.map(() => []),
-        dateCreated: new Date(),
-        settings,
-      }),
-    );
-    return randomID;
+    const poll = new Poll(creator, question, options, settings);
+    this._polls.push(poll);
+    return poll.pollId;
+  }
+
+  /**
+   * Casts vote for the given option by the given voter in the given poll
+   * @param pollID
+   * @param voter partial player of voter
+   * @param userVotes option indices to be voted for
+   */
+  public voteInPoll(pollID: string, voter: PlayerPartial, userVotes: number[]): void {
+    const pollToVoteIn: Poll = this.getPoll(pollID);
+    pollToVoteIn.vote(voter, userVotes);
   }
 
   /**

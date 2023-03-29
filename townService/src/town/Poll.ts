@@ -1,10 +1,10 @@
-import Player from '../lib/Player';
-import { TownEmitter, Poll as PollModel, PollSettings } from '../types/CoveyTownSocket';
+import { randomUUID } from 'crypto';
+import { Poll as PollModel, PollSettings, PlayerPartial } from '../types/CoveyTownSocket';
 
 export default class Poll {
   private _pollId: string;
 
-  private _creatorId: string;
+  private _creator: PlayerPartial;
 
   private _question: string;
 
@@ -12,7 +12,7 @@ export default class Poll {
 
   private _settings: PollSettings;
 
-  private _votes: string[][];
+  private _votes: PlayerPartial[][];
 
   private _dateCreated: Date;
 
@@ -20,8 +20,8 @@ export default class Poll {
     return this._pollId;
   }
 
-  public get creatorId() {
-    return this._creatorId;
+  public get creator() {
+    return this._creator;
   }
 
   public get question() {
@@ -51,33 +51,53 @@ export default class Poll {
    * @param votes list of [list of votedId] of length # of options
    * @param dateCreated date of poll creation
    */
-  public constructor({
-    pollId,
-    creatorId,
-    question,
-    options,
-    votes,
-    dateCreated,
-    settings,
-  }: PollModel) {
-    // this._coveyTownController = coveyTownController;
-    this._pollId = pollId;
-    this._creatorId = creatorId;
+  public constructor(
+    creator: PlayerPartial,
+    question: string,
+    options: string[],
+    settings: PollSettings,
+  ) {
+    this._pollId = randomUUID();
+    this._creator = creator;
     this._question = question;
     this._options = options;
     this._settings = settings;
     // set dateCreated to current time
-    this._dateCreated = dateCreated;
+    this._dateCreated = new Date();
     // initialize no votes for each option
-    this._votes = votes;
+    this._votes = options.map(() => []);
+  }
+
+  /**
+   * Casts votes for the given player
+   * @param voter - Player who is casting the vote
+   * @param userVotes - List of indices of the options the player is voting for
+   */
+  public vote(voter: PlayerPartial, userVotes: number[]) {
+    if (userVotes.some(voteIndex => voteIndex < 0 || voteIndex >= this._options.length)) {
+      throw new Error('vote index out of bounds');
+    }
+    if (!this._settings.multiSelect && userVotes.length > 1) {
+      throw new Error('multiple votes not allowed in this poll');
+    }
+    this._votes.forEach(votes => {
+      const index = votes.findIndex(vote => vote.id === voter.id);
+      if (index !== -1) {
+        throw new Error('player has already voted');
+      }
+    });
+
+    userVotes.forEach(voteIndex => {
+      this._votes[voteIndex].push(voter);
+    });
   }
 
   /**
    * Get the list of all unique voters
-   *
+   * @returns list of unique voter player IDs
    */
-  public getVoters(): string[] {
-    const voters = new Set<string>();
+  public getVoters(): PlayerPartial[] {
+    const voters = new Set<PlayerPartial>();
     this._votes.forEach(opt => {
       opt.forEach(o => {
         voters.add(o);
@@ -100,16 +120,38 @@ export default class Poll {
   }
 
   /**
+   * Get the options that the player with the given id has voted for
+   * @param playerId string id of player
+   */
+  public getUserVotes(playerId: string): number[] {
+    const userVotes: number[] = [];
+    this._votes.forEach((opt, index) => {
+      if (opt.some(vote => vote.id === playerId)) {
+        userVotes.push(index);
+      }
+    });
+    return userVotes;
+  }
+
+  /** 
+   * Get the index of the given option in the poll's options list
+   * @param option string option to find
+   */
+  public getOptionIndex(option: string) {
+    return this._options.indexOf(option);
+  }
+
+  /**
    * Convert this Poll instance to a simple PollModel suitable for
    * transporting over a socket to a client.
    */
   public toModel(): PollModel {
     return {
       pollId: this._pollId,
-      creatorId: this._creatorId,
+      creator: this._creator,
       question: this._question,
       options: this._options,
-      votes: this._votes,
+      responses: this._settings.anonymize ? this._votes.map(v => v.length) : this._votes,
       settings: this._settings,
       dateCreated: this._dateCreated,
     };
