@@ -2,16 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import type { PlayerPartial } from './PlayerPartial';
-import type { PollSettings } from './PollSettings';
+import type { Poll } from './Poll';
 
-export type GetPollResultsResponse = {
-    pollId: string;
-    creatorName: string;
-    yourVote: Array<number>;
-    question: string;
-    options: Array<string>;
-    responses: (Array<Array<PlayerPartial>> | Array<number>);
-    settings: PollSettings;
-};
+export type GetPollResultsResponse = (Poll & {
+    userVotes: Array<number>;
+});
 

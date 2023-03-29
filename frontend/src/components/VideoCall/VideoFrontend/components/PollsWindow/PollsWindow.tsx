@@ -51,24 +51,24 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const poll = {
   pollId: '1',
-  creatorId: '00000',
-  dateCreated: new Date(500000000000),
+  creator: {id: '00000', name: "tingwei"},
+  dateCreated: new Date(),
   question: 'Do you like beans?',
   options: ['Yes', 'No'],
-  votes: [['00000', '01111'], ['00001']],
+  responses: [[{id: '00000', name: "danish"}, {id: '01111', name: "jess"}], [{id:'00001', name: "davod"}]],
   settings: { anonymize: false, multiSelect: false },
 };
 
 const poll2 = {
   pollId: '2',
-  creatorId: '00001',
+  creator: {id: '00001', name: "davod"},
   dateCreated: new Date(500000000000),
   question: 'Do you like bees?',
   options: ['Yes', 'No'],
-  votes: [
+  responses: [
     ['00000', '01111', '12345', '11111', '33333', '21324'],
     ['00001', '54321', '22222'],
-  ],
+  ].map(optionVotes => optionVotes.map(voter => ({ id: voter , name: voter }))),
   settings: { anonymize: false, multiSelect: false },
 };
 

@@ -258,13 +258,16 @@
 			},
 			"VoteRequest": {
 				"properties": {
-					"option": {
-						"type": "number",
-						"format": "double"
+					"userVotes": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"option"
+					"userVotes"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -285,30 +288,8 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"GetPollResultsResponse": {
+			"Poll": {
 				"properties": {
-					"pollId": {
-						"type": "string"
-					},
-					"creatorName": {
-						"type": "string"
-					},
-					"yourVote": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array"
-					},
-					"question": {
-						"type": "string"
-					},
-					"options": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					},
 					"responses": {
 						"anyOf": [
 							{
@@ -331,19 +312,59 @@
 					},
 					"settings": {
 						"$ref": "#/components/schemas/PollSettings"
+					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"question": {
+						"type": "string"
+					},
+					"dateCreated": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"creator": {
+						"$ref": "#/components/schemas/PlayerPartial"
+					},
+					"pollId": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"pollId",
-					"creatorName",
-					"yourVote",
-					"question",
-					"options",
 					"responses",
-					"settings"
+					"settings",
+					"options",
+					"question",
+					"dateCreated",
+					"creator",
+					"pollId"
 				],
-				"type": "object",
-				"additionalProperties": false
+				"type": "object"
+			},
+			"GetPollResultsResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Poll"
+					},
+					{
+						"properties": {
+							"userVotes": {
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"userVotes"
+						],
+						"type": "object"
+					}
+				]
 			}
 		},
 		"securitySchemes": {}
@@ -927,7 +948,7 @@
 		},
 		"/towns/{townID}/polls/{pollID}/vote": {
 			"post": {
-				"operationId": "Vote",
+				"operationId": "VoteInPoll",
 				"responses": {
 					"204": {
 						"description": "No content"

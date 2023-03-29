@@ -738,7 +738,7 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
   public async voteInPoll(pollID: string, option: number): Promise<void> {
     return this._townsService.voteInPoll(this.townID, pollID, this.sessionToken, { option });
   }
-
+  
   /**
    * Gets the results of a poll in the town.
    *

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Poll } from '../../../../../../types/CoveyTownSocket';
+import { PlayerPartial, Poll } from '../../../../../../types/CoveyTownSocket';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -68,8 +68,17 @@ interface PollCardProps {
 }
 
 // calculate the total number of votes of a poll given a list of votes
-function totalVotes(votes: string[][]) {
-  return votes.reduce((count, voteOption) => count + voteOption.length, 0);
+function totalVotes(votes: number[] | PlayerPartial[][]) {
+  if (Array.isArray(votes[0])) {
+    votes = votes as PlayerPartial[][];
+    return votes.reduce((count: number, voteOption: PlayerPartial[]) => 
+       count + voteOption.length, 0
+    );
+  }
+  else {
+    votes = votes as number[];
+    return votes.reduce((count: number, voteOption: number) => count + voteOption, 0);
+  }
 }
 
 export default function PollCard({ body, isCreator, clickVoteOrViewResults, buttonText}: PollCardProps) {
@@ -84,8 +93,8 @@ export default function PollCard({ body, isCreator, clickVoteOrViewResults, butt
       <div className={classes.pollCard}>
         <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
-          <div className={classes.creatorInfo}>Asked by {body.creatorId}</div>
-          <div> {totalVotes(body.votes)} votes</div>
+          <div className={classes.creatorInfo}>Asked by {body.creator.name}</div>
+          <div> {totalVotes(body.responses)} votes</div>
         </div>
         <Button
           colorScheme='blue'
