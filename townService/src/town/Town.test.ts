@@ -920,62 +920,53 @@ describe('Town', () => {
       });
 
       it('Returns the poll if it exists', async () => {
-        const testQuestion: string = "What?"
-        const testCreator = {id: "Jess", name: "Jessssss"}
-        const testOptions: string[] = ["because", "yes", "no"]
-        let testSettings: PollSettings;
-        let newPollId: string;
-        let newPoll: Poll;
-    
-        testSettings = {
+        const testQuestion = 'What?';
+        const testCreator = { id: 'Jess', name: 'Jessssss' };
+        const testOptions: string[] = ['because', 'yes', 'no'];
+        const testSettings: PollSettings = {
           anonymize: true,
           multiSelect: false,
         };
-        newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings)
-        newPoll = town.getPoll(newPollId)   
+        const newPollId: string = town.createPoll(
+          testCreator,
+          testQuestion,
+          testOptions,
+          testSettings,
+        );
+        const newPoll: Poll = town.getPoll(newPollId);
         expect(town.getPoll(newPollId)).toStrictEqual(newPoll);
       });
     });
 
     describe('Voting', () => {
-      const testQuestion: string = "What?"
-      const testCreator = {id: "Jess", name: "Jessssss"}
-      const testOptions: string[] = ["because", "yes", "no"]
-      let testSettings: PollSettings;
-      let newPollId: string;
-      let newPoll: Poll;
-  
+      const testQuestion = 'What?';
+      const testCreator = { id: 'Jess', name: 'Jessssss' };
+      const testOptions: string[] = ['because', 'yes', 'no'];
+      const testSettings: PollSettings = {
+        anonymize: true,
+        multiSelect: false,
+      };
+      const newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings);
+      const newPoll: Poll = town.getPoll(newPollId);
+
       beforeEach(async () => {
-        testSettings = {
-          anonymize: true,
-          multiSelect: false,
-        };
-        newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings)
-        newPoll = town.getPoll(newPollId)   
-    
         mockReset(townEmitter);
       });
-      
+
       it('Voting in a poll changes the poll', async () => {
-        const testVoter = {id: "voter id", name: "Jess"}
-        const expectedVotes = newPoll.votes.map(item => 
-          item.map(obj => {
-            return {...obj}
-          }))
-        
-        expectedVotes[1].push(testVoter)
-        town.voteInPoll(newPollId, testVoter, [1])
-        expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
+        const testVoter = { id: 'voter id', name: 'Jess' };
+        const expectedVotes = newPoll.votes.map(item => item.map(obj => ({ ...obj })));
+
+        expectedVotes[1].push(testVoter);
+        town.voteInPoll(newPollId, testVoter, [1]);
+        expect(town.getPoll(newPollId).votes).toEqual(expectedVotes);
       });
-  
+
       it('Voting in a poll with an out of bounds option throws error', async () => {
-        const testVoterId = {id: "voter id", name: "voter id" }
-        
-        expect(() => town.voteInPoll(newPollId, testVoterId, [6])).toThrowError()
-  
+        const testVoterId = { id: 'voter id', name: 'voter id' };
+
+        expect(() => town.voteInPoll(newPollId, testVoterId, [6])).toThrowError();
       });
-  
     });
-  })
-    
+  });
 });
