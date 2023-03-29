@@ -15,14 +15,13 @@ import {
   ChatMessage,
   Interactable,
   PlayerLocation,
+  PollSettings,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
-  PlayerPartial
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import Town from './Town';
 import Poll from './Poll';
-import { PollSettings } from '../../../shared/types/CoveyTownSocket';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -913,11 +912,11 @@ describe('Town', () => {
       });
     });
   });
-    
+
   describe('Voting', () => {
-    const testQuestion: string = "What?"
-    const testCreator = {id: "Jess", name: "Jessssss"}
-    const testOptions: string[] = ["because", "yes", "no"]
+    const testQuestion = 'What?';
+    const testCreator = { id: 'Jess', name: 'Jessssss' };
+    const testOptions: string[] = ['because', 'yes', 'no'];
     let testSettings: PollSettings;
     let newPollId: string;
     let newPoll: Poll;
@@ -927,30 +926,26 @@ describe('Town', () => {
         anonymize: true,
         multiSelect: false,
       };
-      newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings)
-      newPoll = town.getPoll(newPollId)   
-  
+      newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings);
+      newPoll = town.getPoll(newPollId);
+
       mockReset(townEmitter);
     });
-    
+
     it('Voting in a poll changes the poll', async () => {
-      const testVoter = {id: "voter id", name: "Jess"}
-      const expectedVotes = newPoll.votes.map(item => 
-        item.map(obj => {
-          return {...obj}
-        }))
-      
+      const testVoter = { id: 'voter id', name: 'Jess' };
+      const expectedVotes = newPoll.votes.map(item => item.map(obj => ({ ...obj })));
+
       // new Array(testOptions.length).fill([]);
-      expectedVotes[1].push(testVoter)
-      town.voteInPoll(newPollId, testVoter, [1])
-      expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
+      expectedVotes[1].push(testVoter);
+      town.voteInPoll(newPollId, testVoter, [1]);
+      expect(town.getPoll(newPollId).votes).toEqual(expectedVotes);
     });
     // it('Voting in a poll with an out of bounds option throws error', async () => {
     //   const testVoterId = "voter id"
-      
+
     //   await expect(town.voteInPoll(newPollId, testVoterId, 6)).rejects.toThrowError()
 
     // });
-
   });
 });
