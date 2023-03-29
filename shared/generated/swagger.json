@@ -223,7 +223,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"GetAllPollsResponseItem": {
+			"PollInfo": {
 				"properties": {
 					"pollId": {
 						"type": "string"
@@ -231,27 +231,29 @@
 					"creatorId": {
 						"type": "string"
 					},
+					"creatorName": {
+						"type": "string"
+					},
 					"question": {
 						"type": "string"
 					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
 					"voted": {
 						"type": "boolean"
-					},
-					"createdOn": {
-						"type": "string"
-					},
-					"totalVotes": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
 					"pollId",
 					"creatorId",
+					"creatorName",
 					"question",
-					"voted",
-					"createdOn",
-					"totalVotes"
+					"options",
+					"voted"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -911,7 +913,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/GetAllPollsResponseItem"
+										"$ref": "#/components/schemas/PollInfo"
 									},
 									"type": "array"
 								}
