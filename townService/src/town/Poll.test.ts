@@ -179,12 +179,18 @@ describe('Polls', () => {
     });
 
     it('getUserVotes returns indexes of what options the user has voted for', () => {
+      const multiSelectPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: true, multiSelect: true },
+      )
       const testVoter = { id: '123456789', name: 'jesssss' };
       const userVotes = [0, 1];
-      expect(testPoll.getUserVotes(testVoter.id)).toHaveLength(0);
+      expect(multiSelectPoll.getUserVotes(testVoter.id)).toHaveLength(0);
 
-      testPoll.vote(testVoter, userVotes);
-      expect(testPoll.getUserVotes(testVoter.id)).toStrictEqual(userVotes);
+      multiSelectPoll.vote(testVoter, userVotes);
+      expect(multiSelectPoll.getUserVotes(testVoter.id)).toStrictEqual(userVotes);
     });
 
     
