@@ -1,7 +1,6 @@
 import { ITiledMap, ITiledMapObjectLayer } from '@jonbell/tiled-map-type-guard';
 import { nanoid } from 'nanoid';
 import { BroadcastOperator } from 'socket.io';
-import { randomUUID } from 'crypto';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
@@ -499,19 +498,6 @@ export default class Town {
       voted: poll.userVoted(userId),
     };
     return pollInfo;
-  }
-
-  /**
-   * Returns the corresponding username for a given userId in the town.
-   * @param playerId id of the player.
-   */
-  private _findUserNameByPlayerId(playerId: string): string {
-    // eslint-disable-next-line consistent-return
-    const user = this._players.find(player => playerId === player.id);
-    if (user) {
-      return user.userName;
-    }
-    throw new Error(`The player with id ${playerId} does not exist!`);
   }
 
   private _validateInteractables() {
