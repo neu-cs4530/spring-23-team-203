@@ -111,7 +111,7 @@ export default class Poll {
     return userVotes;
   }
 
-  /** 
+  /**
    * Get the index of the given option in the poll's options list
    * @param option string option to find
    */
