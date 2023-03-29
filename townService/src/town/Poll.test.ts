@@ -21,12 +21,9 @@ describe('Polls', () => {
   beforeEach(() => {
     mockClear(townEmitter);
 
-    const pollId = nanoid();
     const question = 'What is the best CS class?';
     const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
     const creator = { id: nanoid(), name: 'Jessss' };
-    const dateCreated = new Date();
-    // const votes = [['jess', 'danish'], [], ['tingwei'], ['david']];
     const settings: PollSettings = { anonymize: false, multiSelect: false };
     testPoll = new Poll(creator, question, options, settings);
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
@@ -143,9 +140,53 @@ describe('Polls', () => {
       expect(testPoll.votes[1]).toHaveLength(0);
       expect(testPoll.votes[2]).toHaveLength(0);
       expect(testPoll.votes[3]).toHaveLength(0);
-      console.log('HOLA %j', expectedVotes);
-      console.log('HELLO %j', testPoll.votes[0]);
       expect(testPoll.votes[0]).toStrictEqual(expectedVotes[0]);
     });
+
+    it('Cannot vote more than once in a non-anonymous poll', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      testPoll.vote(testVoter, [1]);
+      expect(() => testPoll.vote(testVoter, [0])).toThrowError();
+    });
+
+    it('Cannot vote more than once in a anonymous poll', () => {
+      const anonymousPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: true, multiSelect: false },
+      )
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      anonymousPoll.vote(testVoter, [1]);
+      expect(() => anonymousPoll.vote(testVoter, [0])).toThrowError();
+    });
+
+    it('Cannot vote more than once in a multiselect poll', () => {
+      const multiSelectPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: true, multiSelect: true },
+      )
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      multiSelectPoll.vote(testVoter, [0, 1]);
+      expect(() => multiSelectPoll.vote(testVoter, [2])).toThrowError();
+    });
+
+    it('getUserVotes returns empty list if user has not voted', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      expect(testPoll.getUserVotes(testVoter.id)).toHaveLength(0);
+    });
+
+    it('getUserVotes returns indexes of what options the user has voted for', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      const userVotes = [0, 1];
+      expect(testPoll.getUserVotes(testVoter.id)).toHaveLength(0);
+
+      testPoll.vote(testVoter, userVotes);
+      expect(testPoll.getUserVotes(testVoter.id)).toStrictEqual(userVotes);
+    });
+
+    
   });
 });

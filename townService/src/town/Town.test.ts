@@ -964,7 +964,6 @@ describe('Town', () => {
             return {...obj}
           }))
         
-        // new Array(testOptions.length).fill([]);
         expectedVotes[1].push(testVoter)
         town.voteInPoll(newPollId, testVoter, [1])
         expect(town.getPoll(newPollId).votes).toEqual(expectedVotes)
