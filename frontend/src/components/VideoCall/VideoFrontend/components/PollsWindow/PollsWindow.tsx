@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme: Theme) =>
 const poll = {
   pollId: '1',
   creator: {id: '00000', name: "tingwei"},
-  dateCreated: new Date(),
   question: 'Do you like beans?',
   options: ['Yes', 'No'],
   responses: [[{id: '00000', name: "danish"}, {id: '01111', name: "jess"}], [{id:'00001', name: "davod"}]],
@@ -61,7 +60,6 @@ const poll = {
 const poll2 = {
   pollId: '2',
   creator: {id: '00001', name: "davod"},
-  dateCreated: new Date(500000000000),
   question: 'Do you like bees?',
   options: ['Yes', 'No'],
   responses: [

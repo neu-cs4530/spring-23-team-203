@@ -127,9 +127,7 @@ describe('Polls', () => {
       testPoll.votes[0].push(david);
 
       const expectedVotes = testPoll.votes.map((item: PlayerPartial[]) =>
-        item.map((obj: PlayerPartial) => {
-          return { ...obj };
-        }),
+        item.map((obj: PlayerPartial) => ({ ...obj })),
       );
 
       expectedVotes[0].push(jess);
@@ -155,7 +153,7 @@ describe('Polls', () => {
         'What is the best CS class?',
         ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
         { anonymize: true, multiSelect: false },
-      )
+      );
       const testVoter = { id: '123456789', name: 'jesssss' };
       anonymousPoll.vote(testVoter, [1]);
       expect(() => anonymousPoll.vote(testVoter, [0])).toThrowError();
@@ -167,7 +165,7 @@ describe('Polls', () => {
         'What is the best CS class?',
         ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
         { anonymize: true, multiSelect: true },
-      )
+      );
       const testVoter = { id: '123456789', name: 'jesssss' };
       multiSelectPoll.vote(testVoter, [0, 1]);
       expect(() => multiSelectPoll.vote(testVoter, [2])).toThrowError();
@@ -184,7 +182,7 @@ describe('Polls', () => {
         'What is the best CS class?',
         ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
         { anonymize: true, multiSelect: true },
-      )
+      );
       const testVoter = { id: '123456789', name: 'jesssss' };
       const userVotes = [0, 1];
       expect(multiSelectPoll.getUserVotes(testVoter.id)).toHaveLength(0);
@@ -192,7 +190,5 @@ describe('Polls', () => {
       multiSelectPoll.vote(testVoter, userVotes);
       expect(multiSelectPoll.getUserVotes(testVoter.id)).toStrictEqual(userVotes);
     });
-
-    
   });
 });
