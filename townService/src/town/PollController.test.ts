@@ -220,21 +220,18 @@ describe('TownsController integration tests', () => {
     //       settings: { anonymize: false, multiSelect: false },
     //     };
 
-        
-
     //     const res = await controller.createPoll(testingTown.townID, sessionToken, poll);
     //     expect(res).toBeDefined();
     //     expect(res.pollId).not.toHaveLength(0);
 
-        
-    //     // const expectedVotes = newPoll.votes.map(item => 
+    //     // const expectedVotes = newPoll.votes.map(item =>
     //     //   item.map(obj => {
     //     //     return {...obj}
     //     //   }))
-        
+
     //     // expectedVotes[1].push(testVoter)
     //     // town.voteInPoll(newPollId, testVoter, [1])
-        
+
     //     await controller.voteInPoll(voterID, 1)
 
     //     expect(res.votes).toHaveLength(3);
@@ -243,6 +240,5 @@ describe('TownsController integration tests', () => {
     //     expect(res.votes[2]).toHaveLength(0);
     //   });
     // });
-
   });
 });
