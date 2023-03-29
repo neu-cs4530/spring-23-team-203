@@ -490,17 +490,10 @@ export default class Town {
   }
 
   private _toPollInfo(userId: string, poll: Poll): PollInfo {
-    let creatorName;
-    try {
-      creatorName = this._findUserNameByPlayerId(poll.creatorId);
-    } catch (e) {
-      creatorName = 'Creator Not Found';
-    }
-
     const pollInfo = {
       pollId: poll.pollId,
-      creatorId: poll.creatorId,
-      creatorName,
+      creatorId: poll.creator.id,
+      creatorName: poll.creator.name,
       question: poll.question,
       options: poll.options,
       voted: poll.userVoted(userId),

@@ -112,11 +112,8 @@ export default class Poll {
    * @returns a boolean indicates whether the user has voted in this poll.
    */
   public userVoted(userId: string): boolean {
-    const user = this._votes.find(opt => opt.find(vote => vote === userId));
-    if (user) {
-      return true;
-    }
-    return false;
+    const user = this._votes.find(opt => opt.find(voter => voter.id === userId));
+    return user !== undefined;
   }
 
   /**
@@ -133,7 +130,7 @@ export default class Poll {
     return userVotes;
   }
 
-  /** 
+  /**
    * Get the index of the given option in the poll's options list
    * @param option string option to find
    */
