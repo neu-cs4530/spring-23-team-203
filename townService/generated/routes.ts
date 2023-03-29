@@ -143,18 +143,14 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "Poll": {
+        "dataType": "refAlias",
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"responses":{"dataType":"union","subSchemas":[{"dataType":"array","array":{"dataType":"array","array":{"dataType":"refObject","ref":"PlayerPartial"}}},{"dataType":"array","array":{"dataType":"double"}}],"required":true},"settings":{"ref":"PollSettings","required":true},"options":{"dataType":"array","array":{"dataType":"string"},"required":true},"question":{"dataType":"string","required":true},"dateCreated":{"dataType":"datetime","required":true},"creator":{"ref":"PlayerPartial","required":true},"pollId":{"dataType":"string","required":true}},"validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "GetPollResultsResponse": {
-        "dataType": "refObject",
-        "properties": {
-            "pollId": {"dataType":"string","required":true},
-            "creatorName": {"dataType":"string","required":true},
-            "userVotes": {"dataType":"array","array":{"dataType":"double"},"required":true},
-            "question": {"dataType":"string","required":true},
-            "options": {"dataType":"array","array":{"dataType":"string"},"required":true},
-            "responses": {"dataType":"union","subSchemas":[{"dataType":"array","array":{"dataType":"array","array":{"dataType":"refObject","ref":"PlayerPartial"}}},{"dataType":"array","array":{"dataType":"double"}}],"required":true},
-            "settings": {"ref":"PollSettings","required":true},
-        },
-        "additionalProperties": false,
+        "dataType": "refAlias",
+        "type": {"dataType":"intersection","subSchemas":[{"ref":"Poll"},{"dataType":"nestedObjectLiteral","nestedProperties":{"userVotes":{"dataType":"array","array":{"dataType":"double"},"required":true}}}],"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };

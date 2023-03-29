@@ -20,7 +20,7 @@ export default class Poll {
     return this._pollId;
   }
 
-  public get creatorId() {
+  public get creator() {
     return this._creator;
   }
 
@@ -107,6 +107,20 @@ export default class Poll {
   }
 
   /**
+   * Get the options that the player with the given id has voted for
+   * @param playerId string id of player
+   */
+  public getUserVotes(playerId: string): number[] {
+    const userVotes: number[] = [];
+    this._votes.forEach((opt, index) => {
+      if (opt.some(vote => vote.id === playerId)) {
+        userVotes.push(index);
+      }
+    });
+    return userVotes;
+  }
+
+  /** 
    * Get the index of the given option in the poll's options list
    * @param option string option to find
    */

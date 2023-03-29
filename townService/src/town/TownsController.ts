@@ -409,34 +409,16 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const userID = player.id;
-    // TODO
+    let poll;
+    try {
+      poll = curTown.getPoll(pollID);
+    } catch (e) {
+      throw new InvalidParametersError('Invalid poll ID');
+    }
 
-    return {
-      pollId: 'hey',
-      creatorName: 'candis',
-      userVotes: [0],
-      question: 'Do you like bean?',
-      options: ['yes', 'no', 'maybe', 'no comment'],
-      responses: [
-        [
-          { id: '1', name: 'danish' },
-          { id: '2', name: 'jess' },
-          { id: '3', name: 'tingwei' },
-        ],
-        [
-          { id: '1', name: 'danish' },
-          { id: '4', name: 'david' },
-          { id: '5', name: 'logen' },
-        ],
-        [],
-        [{ id: '100', name: 'aoun' }],
-      ],
-      settings: {
-        anonymize: false,
-        multiSelect: true,
-      },
-    };
+    return Object.assign(poll.toModel(), {
+      userVotes: poll.getUserVotes(player.id),
+    });
   }
 
   /**
