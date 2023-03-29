@@ -27,7 +27,7 @@ import {
     pollID: string;
   }
 
-  
+   
   export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
     const coveyTownController = useTownController();
     // need question, options, allowMultiSelect... from props after calling this from poll cards sidebar
@@ -59,8 +59,7 @@ import {
         try {
           const poll = await coveyTownController.getPollResults(pollID);
           const {
-            creatorName: pollCreatorName,
-            yourVote: pollYourVote,
+            creator: pollCreator,
             question: pollQuestion,
             options: pollOptions,
             responses: pollResponses,
@@ -74,7 +73,7 @@ import {
 
 
           if (
-            !pollCreatorName ||
+            !pollCreator ||
             !pollQuestion ||
             !pollOptions ||
             !pollOptions.length ||
@@ -86,7 +85,7 @@ import {
 
           // set the question, creator name, and options to vote for
           setQuestion(pollQuestion);
-          setCreator(pollCreatorName);
+          setCreator(pollCreator.name);
           setOptions(pollOptions);
 
         } catch (e) {
@@ -97,7 +96,7 @@ import {
       };
       getPollContent();
 
-    }, [coveyTownController, pollID]);
+    }, [coveyTownController, pollID, isOpen]);
 
   
     const closeModal = useCallback(() => {
