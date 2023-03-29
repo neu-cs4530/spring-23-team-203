@@ -304,7 +304,7 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const creator = {id: player.id, name: player.userName};
+    const creator = { id: player.id, name: player.userName };
     const { question, options, settings } = requestBody;
     if (question.length === 0 || options.some(opt => opt.length === 0)) {
       throw new InvalidParametersError('Question and options must not be empty');
@@ -374,8 +374,8 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const voter = {id: player.id, name: player.userName};
-    const { userVotes } = requestBody;    
+    const voter = { id: player.id, name: player.userName };
+    const { userVotes } = requestBody;
 
     curTown.voteInPoll(pollID, voter, userVotes);
   }
