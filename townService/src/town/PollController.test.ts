@@ -279,11 +279,7 @@ describe('TownsController integration tests', () => {
             }
             return option.map(vote => vote.name);
           }),
-        ).toEqual([
-          [player.userName],
-          [],
-          [player.userName],
-        ]);
+        ).toEqual([[player.userName], [], [player.userName]]);
         expect(pollResults.userVotes).toEqual([0, 2]);
       });
 

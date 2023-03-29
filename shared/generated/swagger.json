@@ -324,10 +324,6 @@
 					"question": {
 						"type": "string"
 					},
-					"dateCreated": {
-						"type": "string",
-						"format": "date-time"
-					},
 					"creator": {
 						"$ref": "#/components/schemas/PlayerPartial"
 					},
@@ -340,7 +336,6 @@
 					"settings",
 					"options",
 					"question",
-					"dateCreated",
 					"creator",
 					"pollId"
 				],

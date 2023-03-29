@@ -54,7 +54,6 @@ export type ChatMessage = {
 export type Poll = {
 	pollId: string,
 	creator: PlayerPartial,
-  dateCreated: Date,
 	question: string,
 	options: string[],
   settings: PollSettings,
