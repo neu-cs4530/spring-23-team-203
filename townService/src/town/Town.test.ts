@@ -15,14 +15,13 @@ import {
   ChatMessage,
   Interactable,
   PlayerLocation,
+  PollSettings,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
-  PlayerPartial
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import Town from './Town';
 import Poll from './Poll';
-import { PollSettings } from '../../../shared/types/CoveyTownSocket';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);

@@ -129,7 +129,7 @@ const models: TsoaRoute.Models = {
     "VoteRequest": {
         "dataType": "refObject",
         "properties": {
-            "option": {"dataType":"double","required":true},
+            "userVotes": {"dataType":"array","array":{"dataType":"double"},"required":true},
         },
         "additionalProperties": false,
     },

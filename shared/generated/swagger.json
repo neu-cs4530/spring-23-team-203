@@ -258,13 +258,16 @@
 			},
 			"VoteRequest": {
 				"properties": {
-					"option": {
-						"type": "number",
-						"format": "double"
+					"userVotes": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"option"
+					"userVotes"
 				],
 				"type": "object",
 				"additionalProperties": false
