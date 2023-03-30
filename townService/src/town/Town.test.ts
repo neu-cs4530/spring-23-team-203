@@ -1014,6 +1014,43 @@ describe('Town', () => {
       });
     });
 
+    describe('Delete a poll', () => {
+      const testQuestion = 'What?';
+      const testCreator = { id: 'Jess', name: 'Jessssss' };
+      const testOptions: string[] = ['because', 'yes', 'no'];
+      let testSettings: PollSettings;
+      let newPollId: string;
+      let newPoll: Poll;
+
+      beforeEach(async () => {
+        testSettings = {
+          anonymize: true,
+          multiSelect: false,
+        };
+        newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings);
+        newPoll = town.getPoll(newPollId);
+
+        mockReset(townEmitter);
+      });
+
+      it('Throws error if the poll does not exist', async () => {
+        expect(() => town.deletePoll(testCreator.id, 'non-existing poll')).toThrowError();
+      });
+
+      it('Throws error if the user is not the creator of the poll', async () => {
+        expect(() => town.deletePoll('not-the-creator', newPollId)).toThrowError();
+      });
+
+      it('Creator can delete the poll if it exists', async () => {
+        // poll exists before the deletion
+        expect(town.getPoll(newPollId)).toStrictEqual(newPoll);
+        // delete the poll
+        town.deletePoll(testCreator.id, newPollId);
+        // poll no long exists in town
+        expect(() => town.getPoll(newPollId)).toThrowError();
+      });
+    });
+
     describe('Voting', () => {
       const testQuestion = 'What?';
       const testCreator = { id: 'Jess', name: 'Jessssss' };

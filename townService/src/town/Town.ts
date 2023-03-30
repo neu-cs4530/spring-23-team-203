@@ -428,11 +428,11 @@ export default class Town {
           `The user ${userId} is not the creator of the poll. Only the creator of the poll can delete it!`,
         );
       }
+    } else {
+      throw new ReferenceError(
+        `The poll with id ${pollId} cannot be deleted because it does not exist.`,
+      );
     }
-
-    throw new ReferenceError(
-      `The poll with id ${pollId} cannot be deleted because it does not exist.`,
-    );
   }
 
   public createPoll(
