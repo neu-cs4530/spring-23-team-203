@@ -86,6 +86,15 @@ export interface PosterSessionArea {
   title?: string;
 }
 
+export interface PollInfo {
+  pollId: string,
+  creatorId: string,
+	creatorName: string,
+  question: string,
+	options: string[],
+  voted: boolean,
+}
+
 export interface ServerToClientEvents {
   playerMoved: (movedPlayer: Player) => void;
   playerDisconnect: (disconnectedPlayer: Player) => void;
@@ -111,15 +120,6 @@ export interface CreatePollRequest {
 
 export interface CreatePollResponse {
   pollId: string;
-}
-
-export interface GetAllPollsResponseItem {
-  pollId: string;
-  creatorId: string;
-  question: string;
-  voted: boolean;
-  createdOn: string;
-  totalVotes: number;
 }
 
 export interface VoteRequest {

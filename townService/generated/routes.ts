@@ -113,15 +113,15 @@ const models: TsoaRoute.Models = {
         "additionalProperties": false,
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-    "GetAllPollsResponseItem": {
+    "PollInfo": {
         "dataType": "refObject",
         "properties": {
             "pollId": {"dataType":"string","required":true},
             "creatorId": {"dataType":"string","required":true},
+            "creatorName": {"dataType":"string","required":true},
             "question": {"dataType":"string","required":true},
+            "options": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "voted": {"dataType":"boolean","required":true},
-            "createdOn": {"dataType":"string","required":true},
-            "totalVotes": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },

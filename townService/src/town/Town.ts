@@ -1,7 +1,6 @@
 import { ITiledMap, ITiledMapObjectLayer } from '@jonbell/tiled-map-type-guard';
 import { nanoid } from 'nanoid';
 import { BroadcastOperator } from 'socket.io';
-import { randomUUID } from 'crypto';
 import IVideoClient from '../lib/IVideoClient';
 import Player from '../lib/Player';
 import TwilioVideo from '../lib/TwilioVideo';
@@ -17,6 +16,7 @@ import {
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
   PollSettings,
+  PollInfo,
   PlayerPartial,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
@@ -383,6 +383,20 @@ export default class Town {
   }
 
   /**
+   * Returns the information of the list of active polls in this town.
+   * @param userId the id of the user who requests the info, used to determine if they have voted in a given poll.
+   * @returns the information of the list of polls in this town.
+   */
+  public getAllPolls(userId: string): PollInfo[] {
+    const pollInfos: PollInfo[] = [];
+    this._polls.forEach(poll => {
+      pollInfos.push(this._toPollInfo(userId, poll));
+    });
+
+    return pollInfos;
+  }
+
+  /**
    * Find a poll by its ID
    *
    * @param id
@@ -472,6 +486,18 @@ export default class Town {
       .concat(conversationAreas)
       .concat(posterSessionAreas);
     this._validateInteractables();
+  }
+
+  private _toPollInfo(userId: string, poll: Poll): PollInfo {
+    const pollInfo = {
+      pollId: poll.pollId,
+      creatorId: poll.creator.id,
+      creatorName: poll.creator.name,
+      question: poll.question,
+      options: poll.options,
+      voted: poll.userVoted(userId),
+    };
+    return pollInfo;
   }
 
   private _validateInteractables() {
