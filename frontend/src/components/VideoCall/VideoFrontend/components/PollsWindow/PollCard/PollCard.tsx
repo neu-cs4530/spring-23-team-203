@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
-import { PlayerPartial, Poll } from '../../../../../../types/CoveyTownSocket';
+import { PlayerPartial, PollInfo } from '../../../../../../types/CoveyTownSocket';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -61,9 +61,9 @@ const useStyles = makeStyles({
 });
 
 interface PollCardProps {
-  body: Poll;
+  body: PollInfo;
   isCreator: boolean;
-  clickViewResults: (pollID: string) => void;
+  clickVoteOrViewResults: (pollID: string, userHasVoted: boolean) => void;
 }
 
 // calculate the total number of votes of a poll given a list of votes
@@ -80,28 +80,30 @@ function totalVotes(votes: number[] | PlayerPartial[][]) {
   }
 }
 
-export default function PollCard({ body, isCreator, clickViewResults }: PollCardProps) {
+export default function PollCard({ body, isCreator, clickVoteOrViewResults }: PollCardProps) {
   const classes = useStyles();
 
-  const viewResults = () => {
-    clickViewResults(body.pollId);
+  const voteOrViewResults = () => {
+    clickVoteOrViewResults(body.pollId, body.voted);
   };
+  
+  let buttonText : string = body.voted ? "View Results" : "Vote"
 
   return (
     <div>
       <div className={classes.pollCard}>
         <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
-          <div className={classes.creatorInfo}>Asked by {body.creator.name}</div>
-          <div> {totalVotes(body.responses)} votes</div>
+          <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
+          {/* <div> {totalVotes(body.responses)} votes</div> TODO */}
         </div>
         <Button
           colorScheme='blue'
           mr={3}
           borderRadius={20}
           className={classes.button}
-          onClick={viewResults}>
-          View Results
+          onClick={voteOrViewResults}>
+          {buttonText}
         </Button>
       </div>
     </div>
