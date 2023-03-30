@@ -424,14 +424,12 @@ export default class Town {
       if (pollToDelete.creator.id === userId) {
         this._polls = this._polls.filter(poll => poll.pollId !== pollId);
       } else {
-        throw new InvalidParametersError(
+        throw new Error(
           `The user ${userId} is not the creator of the poll. Only the creator of the poll can delete it!`,
         );
       }
     } else {
-      throw new ReferenceError(
-        `The poll with id ${pollId} cannot be deleted because it does not exist.`,
-      );
+      throw new Error(`The poll with id ${pollId} cannot be deleted because it does not exist.`);
     }
   }
 
