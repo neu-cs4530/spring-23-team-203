@@ -128,16 +128,7 @@ export default class Poll {
   }
 
   /**
-   * Get the index of the given option in the poll's options list
-   * @param option string option to find
-   */
-  public getOptionIndex(option: string) {
-    return this._options.indexOf(option);
-  }
-
-  /**
-   * Convert this Poll instance to a simple PollModel suitable for
-   * transporting over a socket to a client.
+   * Convert this Poll instance to a simple PollModel 
    */
   public toModel(): PollModel {
     return {
