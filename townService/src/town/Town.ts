@@ -408,7 +408,7 @@ export default class Town {
 
     if (pollToDelete) {
       if (pollToDelete.creator.id === userId) {
-        this._polls.filter(poll => poll.pollId !== pollId);
+        this._polls = this._polls.filter(poll => poll.pollId !== pollId);
       } else {
         throw new InvalidParametersError(
           `The user ${userId} is not the creator of the poll. Only the creator of the poll can delete it!`,
