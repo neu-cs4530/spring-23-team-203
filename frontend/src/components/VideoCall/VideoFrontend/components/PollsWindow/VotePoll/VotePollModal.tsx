@@ -18,7 +18,8 @@ import {
     Stack,
     useToast,
   } from '@chakra-ui/react';
-  import { useCallback, useEffect, useState } from 'react';
+  import { makeStyles } from '@material-ui/core/styles';
+  import { useCallback, useEffect, useState, Fragment } from 'react';
   import useTownController from '../../../../../../hooks/useTownController';
   
   interface VotePollModalProps {
@@ -26,16 +27,35 @@ import {
     onClose: () => void;
     pollID: string;
   }
-
+  
+  const useStyles = makeStyles({
+    specialMessage: {
+      fontSize: '1.25rem',
+      fontWeight: 600,
+      textAlign: 'center',
+      margin: '3rem',
+    },
+    question: {
+      fontSize: '1.25rem',
+      fontWeight: 600,
+    },
+    pollCreator: {
+      marginBottom: '1.5rem',
+      fontSize: '0.875rem',
+    },
+  });
    
   export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
+    
+    const classes = useStyles();
     const coveyTownController = useTownController();
     // need question, options, allowMultiSelect... from props after calling this from poll cards sidebar
     const maxVoteNumber = 3; // TODO get maxVoteNumber from pollSettings
     
     const [question, setQuestion] = useState<string>('');
     const [creator, setCreator] = useState<string>('');
-    const [options, setOptions] = useState<string[]>([]);
+    const [options, setOptions] = useState<{id: number, value: string}[]>([ { id: 0, value: '' },
+      { id: 1, value: '' }]);
 
     const [voteNumber, setVoteNumber] = useState(0);
 
@@ -52,42 +72,21 @@ import {
       }
     }, [coveyTownController, isOpen]);
 
-
     // get results from the API and store them in React state
     useEffect(() => {
       const getPollContent = async () => {
         try {
           const poll = await coveyTownController.getPollResults(pollID);
-          const {
-            creator: pollCreator,
-            question: pollQuestion,
-            options: pollOptions,
-            responses: pollResponses,
-            settings: pollSettings,
-          } = poll;
-
-          if (!pollSettings) {
-            setError(true);
-            return;
-          }
-
-
-          if (
-            !pollCreator ||
-            !pollQuestion ||
-            !pollOptions ||
-            !pollOptions.length ||
-            !pollResponses.length
-          ) {
-            setError(true);
-            return;
-          }
 
           // set the question, creator name, and options to vote for
-          setQuestion(pollQuestion);
-          setCreator(pollCreator.name);
-          setOptions(pollOptions);
-
+          setQuestion(poll.question);
+          setCreator(poll.creator.name);
+          let id = -1;
+          setOptions(poll.options.map(function(val) {
+            id+=1;
+            return {id: id, value: val};
+          }));
+          
         } catch (e) {
           setError(true);
         }
@@ -97,53 +96,49 @@ import {
       getPollContent();
 
     }, [coveyTownController, pollID, isOpen]);
-
   
     const closeModal = useCallback(() => {
       coveyTownController.unPause();
       onClose();
     }, [coveyTownController, onClose]);
-
-
     
-    const voteOptionButtons = (options: string[]) => {
+    const voteOptionButtons = () => {
       let option_buttons : JSX.Element[] = [];
-      let optionIdx = 0;
       options.forEach(option => {
-        optionIdx += 1
           option_buttons.push(
+            <Fragment key={option.id}>
               <Button 
                   id="{option}_btn" 
-                  value={option} 
+                  value={option.value} 
                   variant="outline"
                   height='48px'
                   width='90%'
                   border='4px'
-                  // borderColor='blue'
+                  style={{ borderRadius: '0.5rem' }}
                   colorScheme='blue'
-                  onClick={() => votePoll(optionIdx)}> 
-                    {option}
-                </Button>)
+                  onClick={() => votePoll(option)}> 
+                    {option.value}
+                </Button>
+              </Fragment>)
       })
       return (<Stack direction='column' spacing={4} align='center'>
           {option_buttons}
         </Stack>)
     }
   
-    const votePoll = useCallback(async (optionIdx: number) => {
+    const votePoll = async (userVotes: {id: number, value: string}) => {
       if (voteNumber !== maxVoteNumber) {
         try {
-          const option: string = options[optionIdx]
-          console.log('Voting in poll with ID ', pollID, ' and option ', option);
-          // console.log('Creating poll with question: ', question);
-          // console.log('Creating poll with poll settings: %j', { allowMultiSelect, anonymizeResults });
-          // TODO - call vote in poll
+          const userVotesStr: string = userVotes.value
+          console.log('options: ', options);
+          console.log('Voting in poll with ID: ', pollID,' question: ', question, ' and option ', userVotesStr);
+          const voteResponse = await coveyTownController.voteInPoll(pollID, [userVotes.id]);
           setVoteNumber(voteNumber+1);
           coveyTownController.unPause();
           closeModal();
           toast({
             title: 'Successful vote',
-            description: `Congratulations! You voted for "${option}" in poll "${question}"`,
+            description: `Congratulations! You voted for "${userVotesStr}" in poll "${question}"`,
             status: 'success',
           });
         } catch (err) {
@@ -168,11 +163,7 @@ import {
           status: 'error',
         });
       }
-    }, [
-      coveyTownController,
-      closeModal,
-      toast,
-    ]);
+    }
   
     return (
       <Modal
@@ -185,11 +176,7 @@ import {
         <ModalContent>
           <ModalHeader>Vote</ModalHeader>
           <ModalCloseButton />
-          <form
-            onSubmit={ev => {
-              ev.preventDefault();
-              // createPoll();
-            }}>
+          <form>
             <ModalBody pb={6}>
               <FormControl>
                 <div
@@ -200,16 +187,14 @@ import {
                     alignItems: 'baseline',
                   }}>
                   <FormLabel htmlFor='title'>{question}</FormLabel>
-                  
+                  <div className={classes.pollCreator}>Asked by {creator}</div>
                 </div>
               </FormControl>
               <br />
-              {voteOptionButtons(options)}
+              {voteOptionButtons()}
+              {console.log(`Option button option: ${options[0].value}`)}
             </ModalBody>
             <ModalFooter>
-              {/* <Button colorScheme='blue' mr={3} >
-                Submit
-              </Button> */}
               <Button onClick={closeModal}>Cancel</Button>
             </ModalFooter>
           </form>
