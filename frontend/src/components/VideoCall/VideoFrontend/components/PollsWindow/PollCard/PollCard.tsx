@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { PlayerPartial, Poll } from '../../../../../../types/CoveyTownSocket';
+import CloseIcon from '../../../icons/CloseIcon';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -58,6 +59,14 @@ const useStyles = makeStyles({
     gridRow: '2 / span 1',
     gridColumn: '2 / span 1',
   },
+  deleteButton: {
+    margin: '0.5rem',
+    justifySelf: 'end',
+    flexDirection: 'column',
+    float: 'right',
+    gridRow: '1 / span 1',
+    gridColumn: '2 / span 1',
+  },
 });
 
 interface PollCardProps {
@@ -70,11 +79,11 @@ interface PollCardProps {
 function totalVotes(votes: number[] | PlayerPartial[][]) {
   if (Array.isArray(votes[0])) {
     votes = votes as PlayerPartial[][];
-    return votes.reduce((count: number, voteOption: PlayerPartial[]) => 
-       count + voteOption.length, 0
+    return votes.reduce(
+      (count: number, voteOption: PlayerPartial[]) => count + voteOption.length,
+      0,
     );
-  }
-  else {
+  } else {
     votes = votes as number[];
     return votes.reduce((count: number, voteOption: number) => count + voteOption, 0);
   }
@@ -95,6 +104,9 @@ export default function PollCard({ body, isCreator, clickViewResults }: PollCard
           <div className={classes.creatorInfo}>Asked by {body.creator.name}</div>
           <div> {totalVotes(body.responses)} votes</div>
         </div>
+        <button className={classes.deleteButton}>
+          <CloseIcon />
+        </button>
         <Button
           colorScheme='blue'
           mr={3}
