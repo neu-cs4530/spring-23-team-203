@@ -165,6 +165,18 @@ describe('Polls', () => {
       expect(() => testPoll.vote(testVoter, [0])).toThrowError();
     });
 
+    it('Cannot vote for an invalid option', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      // 5 is out of bounds, only 0-3 are in bounds
+      expect(() => testPoll.vote(testVoter, [5])).toThrowError();
+    });
+
+    it('Cannot vote multiple options in a non-multi-select poll', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      // 5 is out of bounds, only 0-3 are in bounds
+      expect(() => testPoll.vote(testVoter, [0,1,2,3])).toThrowError();
+    });
+
     it('Cannot vote more than once in a anonymous poll', () => {
       const anonymousPoll = new Poll(
         { id: '123456789', name: 'jesssss' },
@@ -182,12 +194,37 @@ describe('Polls', () => {
         { id: '123456789', name: 'jesssss' },
         'What is the best CS class?',
         ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: false, multiSelect: true },
+      );
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      multiSelectPoll.vote(testVoter, [0, 1]);
+      expect(() => multiSelectPoll.vote(testVoter, [2])).toThrowError();
+    });
+
+    it('Cannot vote more than once in a multiselect, anonymous poll', () => {
+      const multiSelectPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
         { anonymize: true, multiSelect: true },
       );
       const testVoter = { id: '123456789', name: 'jesssss' };
       multiSelectPoll.vote(testVoter, [0, 1]);
       expect(() => multiSelectPoll.vote(testVoter, [2])).toThrowError();
     });
+
+    it('Cannot vote for an invalid option in multi-select poll', () => {
+      const multiSelectPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: true, multiSelect: true },
+      );
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      // 5 is out of bounds, only 0-3 are in bounds
+      expect(() => multiSelectPoll.vote(testVoter, [5,1])).toThrowError();
+    });
+
 
     it('getUserVotes returns empty list if user has not voted', () => {
       const testVoter = { id: '123456789', name: 'jesssss' };
