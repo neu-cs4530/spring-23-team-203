@@ -26,9 +26,9 @@ import {
   PosterSessionArea,
   CreatePollRequest,
   CreatePollResponse,
-  GetAllPollsResponseItem,
   VoteRequest,
   GetPollResultsResponse,
+  PollInfo,
 } from '../types/CoveyTownSocket';
 import PosterSessionAreaReal from './PosterSessionArea';
 import { isPosterSessionArea } from '../TestUtils';
@@ -304,7 +304,7 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const creator = {id: player.id, name: player.userName};
+    const creator = { id: player.id, name: player.userName };
     const { question, options, settings } = requestBody;
     if (question.length === 0 || options.some(opt => opt.length === 0)) {
       throw new InvalidParametersError('Question and options must not be empty');
@@ -328,7 +328,7 @@ export class TownsController extends Controller {
   public async getAllPolls(
     @Path() townID: string,
     @Header('X-Session-Token') sessionToken: string,
-  ): Promise<GetAllPollsResponseItem[]> {
+  ): Promise<PollInfo[]> {
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
@@ -341,8 +341,7 @@ export class TownsController extends Controller {
 
     const userID = player.id;
 
-    // TODO
-    return [];
+    return curTown.getAllPolls(userID);
   }
 
   /**
@@ -359,7 +358,7 @@ export class TownsController extends Controller {
    */
   @Post('{townID}/polls/{pollID}/vote')
   @Response<InvalidParametersError>(400, 'Invalid values specified')
-  public async vote(
+  public async voteInPoll(
     @Path() townID: string,
     @Path() pollID: string,
     @Header('X-Session-Token') sessionToken: string,
@@ -369,16 +368,15 @@ export class TownsController extends Controller {
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
-
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const voterID = player.id;
-    const { option } = requestBody;
+    const voter = { id: player.id, name: player.userName };
+    const { userVotes } = requestBody;
 
-    // TODO
+    curTown.voteInPoll(pollID, voter, userVotes);
   }
 
   /**
@@ -410,34 +408,16 @@ export class TownsController extends Controller {
       throw new InvalidParametersError('Invalid session ID');
     }
 
-    const userID = player.id;
-    // TODO
+    let poll;
+    try {
+      poll = curTown.getPoll(pollID);
+    } catch (e) {
+      throw new InvalidParametersError('Invalid poll ID');
+    }
 
-    return {
-      pollId: 'hey',
-      creatorName: 'candis',
-      userVotes: [0],
-      question: 'Do you like bean?',
-      options: ['yes', 'no', 'maybe', 'no comment'],
-      responses: [
-        [
-          { id: '1', name: 'danish' },
-          { id: '2', name: 'jess' },
-          { id: '3', name: 'tingwei' },
-        ],
-        [
-          { id: '1', name: 'danish' },
-          { id: '4', name: 'david' },
-          { id: '5', name: 'logen' },
-        ],
-        [],
-        [{ id: '100', name: 'aoun' }],
-      ],
-      settings: {
-        anonymize: false,
-        multiSelect: true,
-      },
-    };
+    return Object.assign(poll.toModel(), {
+      userVotes: poll.getUserVotes(player.id),
+    });
   }
 
   /**

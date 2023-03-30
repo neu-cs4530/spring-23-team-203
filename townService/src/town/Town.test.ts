@@ -15,11 +15,14 @@ import {
   ChatMessage,
   Interactable,
   PlayerLocation,
+  PollSettings,
   TownEmitter,
   ViewingArea as ViewingAreaModel,
+  PollInfo,
 } from '../types/CoveyTownSocket';
 import ConversationArea from './ConversationArea';
 import Town from './Town';
+import Poll from './Poll';
 
 const mockTwilioVideo = mockDeep<TwilioVideo>();
 jest.spyOn(TwilioVideo, 'getInstance').mockReturnValue(mockTwilioVideo);
@@ -907,6 +910,142 @@ describe('Town', () => {
       town.isPubliclyListed = expected;
       expect(townEmitter.emit).toBeCalledWith('townSettingsUpdated', {
         isPubliclyListed: expected,
+      });
+    });
+  });
+
+  describe('Polls', () => {
+    describe('Getting a poll', () => {
+      it('Throws error if the poll does not exist', async () => {
+        expect(() => town.getPoll('does not exist')).toThrowError();
+      });
+
+      it('Returns the poll if it exists', async () => {
+        const testQuestion = 'What?';
+        const testCreator = { id: 'Jess', name: 'Jessssss' };
+        const testOptions: string[] = ['because', 'yes', 'no'];
+
+        const testSettings = {
+          anonymize: true,
+          multiSelect: false,
+        };
+        const newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings);
+        const newPoll = town.getPoll(newPollId);
+        expect(town.getPoll(newPollId)).toStrictEqual(newPoll);
+      });
+    });
+
+    describe('Get All Polls', () => {
+      const testQuestion1 = 'What?';
+      const testCreator1 = { id: 'Jess', name: 'Jessssss' };
+      const testOptions1: string[] = ['because', 'yes', 'no'];
+      const testSettings1 = {
+        anonymize: true,
+        multiSelect: false,
+      };
+
+      const testQuestion2 = 'Why?';
+      const testCreator2 = { id: 'dvd', name: 'David' };
+      const testOptions2: string[] = ['because', 'reasons'];
+      const testSettings2 = {
+        anonymize: false,
+        multiSelect: true,
+      };
+      let poll1: string;
+      let poll2: string;
+
+      let expectedPollInfo1: PollInfo;
+      let expectedPollInfo2: PollInfo;
+
+      beforeEach(async () => {
+        poll1 = town.createPoll(testCreator1, testQuestion1, testOptions1, testSettings1);
+        poll2 = town.createPoll(testCreator2, testQuestion2, testOptions2, testSettings2);
+
+        expectedPollInfo1 = {
+          pollId: poll1,
+          creatorId: testCreator1.id,
+          creatorName: testCreator1.name,
+          question: testQuestion1,
+          options: testOptions1,
+          voted: false,
+        };
+
+        expectedPollInfo2 = {
+          pollId: poll2,
+          creatorId: testCreator2.id,
+          creatorName: testCreator2.name,
+          question: testQuestion2,
+          options: testOptions2,
+          voted: false,
+        };
+      });
+      it('Successfully get all active polls', async () => {
+        expect(town.getAllPolls('randomPlayer')).toStrictEqual([
+          expectedPollInfo1,
+          expectedPollInfo2,
+        ]);
+      });
+
+      it('Correctly display the voted field', async () => {
+        const testVoter1 = { id: 'voter1', name: 'Jess' };
+        const testVoter2 = { id: 'voter2', name: 'David' };
+        const testVoter3 = { id: 'voter3', name: 'Danish' };
+
+        expect(town.getAllPolls(testVoter3.id)).toStrictEqual([
+          expectedPollInfo1,
+          expectedPollInfo2,
+        ]);
+
+        town.voteInPoll(poll2, testVoter2, [1]);
+        expectedPollInfo2.voted = true;
+        expect(town.getAllPolls(testVoter2.id)).toStrictEqual([
+          expectedPollInfo1,
+          expectedPollInfo2,
+        ]);
+
+        town.voteInPoll(poll1, testVoter1, [1]);
+        town.voteInPoll(poll2, testVoter1, [0]);
+        expectedPollInfo1.voted = true;
+
+        expect(town.getAllPolls(testVoter1.id)).toStrictEqual([
+          expectedPollInfo1,
+          expectedPollInfo2,
+        ]);
+      });
+    });
+
+    describe('Voting', () => {
+      const testQuestion = 'What?';
+      const testCreator = { id: 'Jess', name: 'Jessssss' };
+      const testOptions: string[] = ['because', 'yes', 'no'];
+      let testSettings: PollSettings;
+      let newPollId: string;
+      let newPoll: Poll;
+
+      beforeEach(async () => {
+        testSettings = {
+          anonymize: true,
+          multiSelect: false,
+        };
+        newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings);
+        newPoll = town.getPoll(newPollId);
+
+        mockReset(townEmitter);
+      });
+
+      it('Voting in a poll changes the poll', async () => {
+        const testVoter = { id: 'voter id', name: 'Jess' };
+        const expectedVotes = newPoll.votes.map(item => item.map(obj => ({ ...obj })));
+
+        expectedVotes[1].push(testVoter);
+        town.voteInPoll(newPollId, testVoter, [1]);
+        expect(town.getPoll(newPollId).votes).toEqual(expectedVotes);
+      });
+
+      it('Voting in a poll with an out of bounds option throws error', async () => {
+        const testVoterId = { id: 'voter id', name: 'voter id' };
+
+        expect(() => town.voteInPoll(newPollId, testVoterId, [6])).toThrowError();
       });
     });
   });

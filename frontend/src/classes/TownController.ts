@@ -18,9 +18,9 @@ import {
   ViewingArea as ViewingAreaModel,
   PosterSessionArea as PosterSessionAreaModel,
   CreatePollResponse,
-  GetAllPollsResponseItem,
   GetPollResultsResponse,
   PollSettings,
+  PollInfo,
 } from '../types/CoveyTownSocket';
 import { isConversationArea, isViewingArea, isPosterSessionArea } from '../types/TypeUtils';
 import ConversationAreaController from './ConversationAreaController';
@@ -728,15 +728,15 @@ export default class TownController extends (EventEmitter as new () => TypedEmit
    *
    * @returns a promise wrapping information about all polls in the town
    */
-  public async getAllPolls(): Promise<GetAllPollsResponseItem[]> {
+  public async getAllPolls(): Promise<PollInfo[]> {
     return this._townsService.getAllPolls(this.townID, this.sessionToken);
   }
 
   /**
    * Vote for a poll in the town.
    */
-  public async vote(pollID: string, option: number): Promise<void> {
-    return this._townsService.vote(this.townID, pollID, this.sessionToken, { option });
+  public async vote(pollID: string, userVotes: number[]): Promise<void> {
+    return this._townsService.voteInPoll(this.townID, pollID, this.sessionToken, { userVotes });
   }
 
   /**

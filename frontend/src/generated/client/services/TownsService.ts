@@ -4,8 +4,8 @@
 import type { ConversationArea } from '../models/ConversationArea';
 import type { CreatePollRequest } from '../models/CreatePollRequest';
 import type { CreatePollResponse } from '../models/CreatePollResponse';
-import type { GetAllPollsResponseItem } from '../models/GetAllPollsResponseItem';
 import type { GetPollResultsResponse } from '../models/GetPollResultsResponse';
+import type { PollInfo } from '../models/PollInfo';
 import type { PosterSessionArea } from '../models/PosterSessionArea';
 import type { Town } from '../models/Town';
 import type { TownCreateParams } from '../models/TownCreateParams';
@@ -292,13 +292,13 @@ export class TownsService {
      * @param townId ID of the town to get the polls for
      * @param xSessionToken session token of the player making the request, must
      * match the session token returned when the player joined the town
-     * @returns GetAllPollsResponseItem a promise wrapping information about all polls in the town
+     * @returns PollInfo a promise wrapping information about all polls in the town
      * @throws ApiError
      */
     public getAllPolls(
         townId: string,
         xSessionToken: string,
-    ): CancelablePromise<Array<GetAllPollsResponseItem>> {
+    ): CancelablePromise<Array<PollInfo>> {
         return this.httpRequest.request({
             method: 'GET',
             url: '/towns/{townID}/polls',
@@ -321,7 +321,7 @@ export class TownsService {
      * @returns void
      * @throws ApiError
      */
-    public vote(
+    public voteInPoll(
         townId: string,
         pollId: string,
         xSessionToken: string,

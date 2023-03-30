@@ -54,7 +54,6 @@ export type ChatMessage = {
 export type Poll = {
 	pollId: string,
 	creator: PlayerPartial,
-  dateCreated: Date,
 	question: string,
 	options: string[],
   settings: PollSettings,
@@ -87,6 +86,15 @@ export interface PosterSessionArea {
   title?: string;
 }
 
+export interface PollInfo {
+  pollId: string,
+  creatorId: string,
+	creatorName: string,
+  question: string,
+	options: string[],
+  voted: boolean,
+}
+
 export interface ServerToClientEvents {
   playerMoved: (movedPlayer: Player) => void;
   playerDisconnect: (disconnectedPlayer: Player) => void;
@@ -114,17 +122,8 @@ export interface CreatePollResponse {
   pollId: string;
 }
 
-export interface GetAllPollsResponseItem {
-  pollId: string;
-  creatorId: string;
-  question: string;
-  voted: boolean;
-  createdOn: string;
-  totalVotes: number;
-}
-
 export interface VoteRequest {
-  option: number;
+  userVotes: number[];
 }
 
 export interface PlayerPartial {
@@ -132,16 +131,9 @@ export interface PlayerPartial {
   name: string;
 }
 
-export interface GetPollResultsResponse {
-  pollId: string;
-  creatorName: string;
-  userVotes: number[]; // index of your votes
-  question: string;
-  options: string[];
-  responses: PlayerPartial[][] | number[];
-  settings: PollSettings;
+export type GetPollResultsResponse = Poll & {
+  userVotes: number[] // index of your votes}
 }
-
 export interface PollSettings {
   anonymize: boolean;
   multiSelect: boolean;

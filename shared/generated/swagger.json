@@ -223,7 +223,7 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"GetAllPollsResponseItem": {
+			"PollInfo": {
 				"properties": {
 					"pollId": {
 						"type": "string"
@@ -231,40 +231,45 @@
 					"creatorId": {
 						"type": "string"
 					},
+					"creatorName": {
+						"type": "string"
+					},
 					"question": {
 						"type": "string"
 					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
 					"voted": {
 						"type": "boolean"
-					},
-					"createdOn": {
-						"type": "string"
-					},
-					"totalVotes": {
-						"type": "number",
-						"format": "double"
 					}
 				},
 				"required": [
 					"pollId",
 					"creatorId",
+					"creatorName",
 					"question",
-					"voted",
-					"createdOn",
-					"totalVotes"
+					"options",
+					"voted"
 				],
 				"type": "object",
 				"additionalProperties": false
 			},
 			"VoteRequest": {
 				"properties": {
-					"option": {
-						"type": "number",
-						"format": "double"
+					"userVotes": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
 					}
 				},
 				"required": [
-					"option"
+					"userVotes"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -285,30 +290,8 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"GetPollResultsResponse": {
+			"Poll": {
 				"properties": {
-					"pollId": {
-						"type": "string"
-					},
-					"creatorName": {
-						"type": "string"
-					},
-					"userVotes": {
-						"items": {
-							"type": "number",
-							"format": "double"
-						},
-						"type": "array"
-					},
-					"question": {
-						"type": "string"
-					},
-					"options": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
-					},
 					"responses": {
 						"anyOf": [
 							{
@@ -331,19 +314,54 @@
 					},
 					"settings": {
 						"$ref": "#/components/schemas/PollSettings"
+					},
+					"options": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"question": {
+						"type": "string"
+					},
+					"creator": {
+						"$ref": "#/components/schemas/PlayerPartial"
+					},
+					"pollId": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"pollId",
-					"creatorName",
-					"userVotes",
-					"question",
-					"options",
 					"responses",
-					"settings"
+					"settings",
+					"options",
+					"question",
+					"creator",
+					"pollId"
 				],
-				"type": "object",
-				"additionalProperties": false
+				"type": "object"
+			},
+			"GetPollResultsResponse": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Poll"
+					},
+					{
+						"properties": {
+							"userVotes": {
+								"items": {
+									"type": "number",
+									"format": "double"
+								},
+								"type": "array"
+							}
+						},
+						"required": [
+							"userVotes"
+						],
+						"type": "object"
+					}
+				]
 			}
 		},
 		"securitySchemes": {}
@@ -890,7 +908,7 @@
 							"application/json": {
 								"schema": {
 									"items": {
-										"$ref": "#/components/schemas/GetAllPollsResponseItem"
+										"$ref": "#/components/schemas/PollInfo"
 									},
 									"type": "array"
 								}
@@ -927,7 +945,7 @@
 		},
 		"/towns/{townID}/polls/{pollID}/vote": {
 			"post": {
-				"operationId": "Vote",
+				"operationId": "VoteInPoll",
 				"responses": {
 					"204": {
 						"description": "No content"

@@ -28,7 +28,9 @@ interface CreatePollModalProps {
 export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
   const coveyTownController = useTownController();
   const [question, setQuestion] = useState<string>('');
-  const [options, setOptions] = useState<string[]>(['', '']);
+  const [optionIdCounter, setOptionIdCounter] = useState<number>(2);
+  const [options, setOptions] = useState<{id: number, value: string}[]>([ { id: 0, value: '' },
+  { id: 1, value: '' }]);
   const [allowMultiSelect, setAllowMultiSelect] = useState<boolean>(false);
   const [anonymizeResults, setAnonymizeResults] = useState<boolean>(false);
 
@@ -48,11 +50,11 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
   }, [coveyTownController, onClose]);
 
   const createPoll = useCallback(async () => {
-    if (question && options.every(option => option.length > 0)) {
+    if (question && options.every(option => option.value.length > 0)) {
       try {
         await coveyTownController.createPoll(
           question,
-          options,
+          options.map(option => option.value),
           {multiSelect: allowMultiSelect, anonymize: anonymizeResults},
         );
         coveyTownController.unPause();
@@ -160,7 +162,7 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
 
               {options.map((option, index) => (
                 <div
-                  key={option}
+                  key={option.id}
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -196,10 +198,10 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
                     placeholder={`Option ${index + 1}`}
                     name={`option-${index}`}
                     required={true}
-                    value={option}
+                    value={option.value}
                     onChange={e => {
                       const newOptions = [...options];
-                      newOptions[index] = e.target.value;
+                      newOptions[index] = {id: option.id, value: e.target.value};
                       setOptions(newOptions);
                     }}
                   />
@@ -209,7 +211,8 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
                 disabled={options.length >= 8}
                 onClick={() => {
                   if (options.length < 8) {
-                    setOptions([...options, '']);
+                    setOptions([...options, {id: optionIdCounter, value: ''}]);
+                    setOptionIdCounter(optionIdCounter + 1);
                   }
                 }}>
                 Add Option

@@ -14,8 +14,6 @@ export default class Poll {
 
   private _votes: PlayerPartial[][];
 
-  private _dateCreated: Date;
-
   public get pollId() {
     return this._pollId;
   }
@@ -36,10 +34,6 @@ export default class Poll {
     return this._votes;
   }
 
-  public get dateCreated() {
-    return this._dateCreated;
-  }
-
   /**
    * Create a new Poll
    *
@@ -49,7 +43,6 @@ export default class Poll {
    * @param options list of string answer options with length between 2-4
    * @param settings settings for the poll (e.g. anonymous, multiple choice)
    * @param votes list of [list of votedId] of length # of options
-   * @param dateCreated date of poll creation
    */
   public constructor(
     creator: PlayerPartial,
@@ -62,18 +55,16 @@ export default class Poll {
     this._question = question;
     this._options = options;
     this._settings = settings;
-    // set dateCreated to current time
-    this._dateCreated = new Date();
     // initialize no votes for each option
     this._votes = options.map(() => []);
   }
 
   /**
    * Casts votes for the given player
-   * @param player - Player who is casting the vote
+   * @param voter - Player who is casting the vote
    * @param userVotes - List of indices of the options the player is voting for
    */
-  public addVote(player: PlayerPartial, userVotes: number[]) {
+  public vote(voter: PlayerPartial, userVotes: number[]) {
     if (userVotes.some(voteIndex => voteIndex < 0 || voteIndex >= this._options.length)) {
       throw new Error('vote index out of bounds');
     }
@@ -81,20 +72,20 @@ export default class Poll {
       throw new Error('multiple votes not allowed in this poll');
     }
     this._votes.forEach(votes => {
-      const index = votes.findIndex(vote => vote.id === player.id);
+      const index = votes.findIndex(vote => vote.id === voter.id);
       if (index !== -1) {
         throw new Error('player has already voted');
       }
     });
 
     userVotes.forEach(voteIndex => {
-      this._votes[voteIndex].push(player);
+      this._votes[voteIndex].push(voter);
     });
   }
 
   /**
    * Get the list of all unique voters
-   *
+   * @returns list of unique voter player IDs
    */
   public getVoters(): PlayerPartial[] {
     const voters = new Set<PlayerPartial>();
@@ -104,6 +95,38 @@ export default class Poll {
       });
     });
     return Array.from(voters.values());
+  }
+
+  /**
+   * Given a userId, returns if the user has voted in this poll.
+   * @param userId the id of the player.
+   * @returns a boolean indicates whether the user has voted in this poll.
+   */
+  public userVoted(userId: string): boolean {
+    const user = this._votes.find(opt => opt.find(voter => voter.id === userId));
+    return user !== undefined;
+  }
+
+  /**
+   * Get the options that the player with the given id has voted for
+   * @param playerId string id of player
+   */
+  public getUserVotes(playerId: string): number[] {
+    const userVotes: number[] = [];
+    this._votes.forEach((opt, index) => {
+      if (opt.some(vote => vote.id === playerId)) {
+        userVotes.push(index);
+      }
+    });
+    return userVotes;
+  }
+
+  /**
+   * Get the index of the given option in the poll's options list
+   * @param option string option to find
+   */
+  public getOptionIndex(option: string) {
+    return this._options.indexOf(option);
   }
 
   /**
@@ -118,7 +141,6 @@ export default class Poll {
       options: this._options,
       responses: this._settings.anonymize ? this._votes.map(v => v.length) : this._votes,
       settings: this._settings,
-      dateCreated: this._dateCreated,
     };
   }
 }
