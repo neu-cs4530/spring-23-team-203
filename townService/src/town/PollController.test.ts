@@ -5,7 +5,6 @@ import TownsStore from '../lib/TownsStore';
 import { getLastEmittedEvent, mockPlayer, MockedPlayer } from '../TestUtils';
 import { TownsController } from './TownsController';
 
-
 type TestTownData = {
   friendlyName: string;
   townID: string;
@@ -131,9 +130,7 @@ describe('TownsController integration tests', () => {
           settings: { anonymize: false, multiSelect: false },
         };
 
-        await expect(
-          controller.createPoll(nanoid(), sessionToken, poll),
-        ).rejects.toThrowError();
+        await expect(controller.createPoll(nanoid(), sessionToken, poll)).rejects.toThrowError();
       });
 
       it('Cannot make a poll with a bad sessionToken', async () => {
@@ -290,9 +287,7 @@ describe('TownsController integration tests', () => {
           settings: { anonymize: false, multiSelect: false },
         };
 
-        await expect(
-          controller.createPoll(nanoid(), sessionToken, poll),
-        ).rejects.toThrowError();
+        await expect(controller.createPoll(nanoid(), sessionToken, poll)).rejects.toThrowError();
       });
 
       it('Cannot get a poll with a bad sessionToken', async () => {
@@ -334,16 +329,16 @@ describe('TownsController integration tests', () => {
 
         const question = 'What is the best CS class?';
         const options = ['CS4530', 'CS3300', 'CS3000'];
-        multiSelectPoll =  {
-          question: question,
-          options: options,
+        multiSelectPoll = {
+          question,
+          options,
           settings: { anonymize: false, multiSelect: true },
-        }
+        };
         anonymousMultiSelectPoll = {
-          question: question,
-          options: options,
+          question,
+          options,
           settings: { anonymize: true, multiSelect: true },
-        }
+        };
       });
       it('Player can successfully vote in a poll', async () => {
         const poll = {
@@ -365,8 +360,11 @@ describe('TownsController integration tests', () => {
       });
 
       it('Player can successfully vote for one option in a multiselect poll', async () => {
-        
-        const { pollId } = await controller.createPoll(testingTown.townID, sessionToken, multiSelectPoll);
+        const { pollId } = await controller.createPoll(
+          testingTown.townID,
+          sessionToken,
+          multiSelectPoll,
+        );
         controller.voteInPoll(testingTown.townID, pollId, sessionToken, { userVotes: [0] });
 
         const res = await controller.getPollResults(testingTown.townID, pollId, sessionToken);
@@ -376,11 +374,14 @@ describe('TownsController integration tests', () => {
         expect(res.responses[0]).toHaveLength(1);
         expect(res.responses[2]).toHaveLength(0);
       });
-      
+
       it('Player can successfully vote for multiple options in a multiselect poll', async () => {
-        
-        const { pollId } = await controller.createPoll(testingTown.townID, sessionToken, multiSelectPoll);
-        controller.voteInPoll(testingTown.townID, pollId, sessionToken, { userVotes: [0,2] });
+        const { pollId } = await controller.createPoll(
+          testingTown.townID,
+          sessionToken,
+          multiSelectPoll,
+        );
+        controller.voteInPoll(testingTown.townID, pollId, sessionToken, { userVotes: [0, 2] });
 
         const res = await controller.getPollResults(testingTown.townID, pollId, sessionToken);
 
@@ -389,10 +390,14 @@ describe('TownsController integration tests', () => {
         expect(res.responses[0]).toHaveLength(1);
         expect(res.responses[2]).toHaveLength(1);
       });
-      
+
       it('Player can successfully vote for all options in a multiselect poll', async () => {
-        const { pollId } = await controller.createPoll(testingTown.townID, sessionToken, multiSelectPoll);
-        controller.voteInPoll(testingTown.townID, pollId, sessionToken, { userVotes: [0,1,2] });
+        const { pollId } = await controller.createPoll(
+          testingTown.townID,
+          sessionToken,
+          multiSelectPoll,
+        );
+        controller.voteInPoll(testingTown.townID, pollId, sessionToken, { userVotes: [0, 1, 2] });
 
         const res = await controller.getPollResults(testingTown.townID, pollId, sessionToken);
 

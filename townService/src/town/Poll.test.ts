@@ -174,7 +174,7 @@ describe('Polls', () => {
     it('Cannot vote multiple options in a non-multi-select poll', () => {
       const testVoter = { id: '123456789', name: 'jesssss' };
       // 5 is out of bounds, only 0-3 are in bounds
-      expect(() => testPoll.vote(testVoter, [0,1,2,3])).toThrowError();
+      expect(() => testPoll.vote(testVoter, [0, 1, 2, 3])).toThrowError();
     });
 
     it('Cannot vote more than once in a anonymous poll', () => {
@@ -222,9 +222,8 @@ describe('Polls', () => {
       );
       const testVoter = { id: '123456789', name: 'jesssss' };
       // 5 is out of bounds, only 0-3 are in bounds
-      expect(() => multiSelectPoll.vote(testVoter, [5,1])).toThrowError();
+      expect(() => multiSelectPoll.vote(testVoter, [5, 1])).toThrowError();
     });
-
 
     it('getUserVotes returns empty list if user has not voted', () => {
       const testVoter = { id: '123456789', name: 'jesssss' };

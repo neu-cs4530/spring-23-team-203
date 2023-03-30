@@ -520,7 +520,7 @@ export default class Town {
 
   /**
    * Converts given Poll to PollInfo with the given userID to determine if they have voted in it
-   * @param userId string ID of user 
+   * @param userId string ID of user
    * @param poll Poll to convert
    * @returns PollInfo of converted poll based on the given user
    */

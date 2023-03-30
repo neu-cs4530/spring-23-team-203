@@ -373,7 +373,7 @@ export class TownsController extends Controller {
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
-    }    
+    }
     // ensures the player can be retrieved from the session token
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {

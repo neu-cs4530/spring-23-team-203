@@ -128,7 +128,7 @@ export default class Poll {
   }
 
   /**
-   * Convert this Poll instance to a simple PollModel 
+   * Convert this Poll instance to a simple PollModel
    */
   public toModel(): PollModel {
     return {
