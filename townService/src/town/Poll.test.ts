@@ -29,6 +29,24 @@ describe('Polls', () => {
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
   });
 
+  describe('userVoted', () => {
+    it('userVoted returns true if a player has voted and false if they have not', () => {
+      const testVoters = ['jess', 'danish', 'tingwei', 'david'];
+      const playerId1 = 'jessie';
+      const playerId2 = 'dvd';
+      const playerId3 = 'danish';
+      expect(testPoll.userVoted(playerId1)).toBe(false);
+      expect(testPoll.userVoted(playerId2)).toBe(false);
+
+      testPoll.vote({ id: playerId1, name: 'jess' }, [0]);
+      testPoll.vote({ id: playerId2, name: 'david' }, [1]);
+
+      expect(testPoll.userVoted(playerId1)).toBe(true);
+      expect(testPoll.userVoted(playerId2)).toBe(true);
+      expect(testPoll.userVoted(playerId3)).toBe(false);
+    });
+  });
+
   describe('GetVoters', () => {
     it('getVoters returns list of unique voters', () => {
       const testVoters = ['jess', 'danish', 'tingwei', 'david'];

@@ -26,9 +26,9 @@ import {
   PosterSessionArea,
   CreatePollRequest,
   CreatePollResponse,
-  GetAllPollsResponseItem,
   VoteRequest,
   GetPollResultsResponse,
+  PollInfo,
 } from '../types/CoveyTownSocket';
 import PosterSessionAreaReal from './PosterSessionArea';
 import { isPosterSessionArea } from '../TestUtils';
@@ -328,7 +328,7 @@ export class TownsController extends Controller {
   public async getAllPolls(
     @Path() townID: string,
     @Header('X-Session-Token') sessionToken: string,
-  ): Promise<GetAllPollsResponseItem[]> {
+  ): Promise<PollInfo[]> {
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
@@ -341,8 +341,7 @@ export class TownsController extends Controller {
 
     const userID = player.id;
 
-    // TODO
-    return [];
+    return curTown.getAllPolls(userID);
   }
 
   /**

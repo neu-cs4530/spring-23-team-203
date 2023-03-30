@@ -2,7 +2,13 @@ import assert from 'assert';
 import { DeepMockProxy, mockDeep } from 'jest-mock-extended';
 import { nanoid } from 'nanoid';
 import { Town } from '../api/Model';
-import { ConversationArea, Interactable, TownEmitter, ViewingArea } from '../types/CoveyTownSocket';
+import {
+  ConversationArea,
+  Interactable,
+  TownEmitter,
+  ViewingArea,
+  Poll,
+} from '../types/CoveyTownSocket';
 import TownsStore from '../lib/TownsStore';
 import {
   createConversationForTesting,
@@ -355,6 +361,26 @@ describe('TownsController integration tests', () => {
           controller.createViewingArea(testingTown.townID, sessionToken, viewingArea),
         ).rejects.toThrow();
       });
+    });
+  });
+
+  // Integration tests to be added later
+  describe('Polls', () => {
+    let testingTown: TestTownData;
+    let player: MockedPlayer;
+    let sessionToken: string;
+    let polls: Poll[];
+
+    beforeEach(async () => {
+      testingTown = await createTownForTesting(undefined, true);
+      player = mockPlayer(testingTown.townID);
+      await controller.joinTown(player.socket);
+      const initialData = getLastEmittedEvent(player.socket, 'initialize');
+      sessionToken = initialData.sessionToken;
+      // polls = testingTown.polls;
+    });
+    it('Successfully get all polls', async () => {
+      // TODO
     });
   });
 });
