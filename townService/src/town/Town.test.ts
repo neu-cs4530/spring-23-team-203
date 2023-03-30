@@ -1046,7 +1046,7 @@ describe('Town', () => {
         expect(town.getPoll(newPollId)).toStrictEqual(newPoll);
         // delete the poll
         town.deletePoll(testCreator.id, newPollId);
-        // poll no long exists in town
+        // poll no longer exists in town
         expect(() => town.getPoll(newPollId)).toThrowError();
       });
     });
