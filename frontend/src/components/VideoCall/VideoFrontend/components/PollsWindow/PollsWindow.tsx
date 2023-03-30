@@ -4,11 +4,9 @@ import clsx from 'clsx';
 import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
 import PollsList from './PollsList/PollsList';
-import { Poll } from '../../../../../types/CoveyTownSocket';
+import { PollInfo } from '../../../../../types/CoveyTownSocket';
 import { Button } from '@chakra-ui/react';
 import { CreatePollModal } from './CreatePoll/CreatePollModal';
-import { VotePollModal } from './VotePoll/VotePollModal';
-import ResultsModal from './Results/ResultsModal';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,16 +49,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const poll = {
   pollId: '1',
-  creator: {id: '00000', name: "tingwei"},
+  creatorId: '00000', 
+  creatorName: "tingwei",
   question: 'Do you like beans?',
   options: ['Yes', 'No'],
   responses: [[{id: '00000', name: "danish"}, {id: '01111', name: "jess"}], [{id:'00001', name: "davod"}]],
   settings: { anonymize: false, multiSelect: false },
+  voted: true
 };
 
 const poll2 = {
   pollId: '2',
-  creator: {id: '00001', name: "davod"},
+  creatorId: '00001',
+  creatorName: "davod",
   question: 'Do you like bees?',
   options: ['Yes', 'No'],
   responses: [
@@ -68,6 +69,7 @@ const poll2 = {
     ['00001', '54321', '22222'],
   ].map(optionVotes => optionVotes.map(voter => ({ id: voter , name: voter }))),
   settings: { anonymize: false, multiSelect: false },
+  voted: false
 };
 
 // In this component, we are toggling the visibility of the PollsWindow with CSS instead of
@@ -76,7 +78,7 @@ const poll2 = {
 export default function PollsWindow() {
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
-  const polls: Poll[] = [poll, poll2];
+  const polls: PollInfo[] = [poll, poll2];
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   return (

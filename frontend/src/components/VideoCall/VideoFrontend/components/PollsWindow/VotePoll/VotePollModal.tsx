@@ -89,6 +89,11 @@ import {
           
         } catch (e) {
           setError(true);
+          toast({
+            title: 'Failure',
+            description: 'Unable to get poll information',
+            status: 'error',
+          });
         }
 
         setLoading(false);
