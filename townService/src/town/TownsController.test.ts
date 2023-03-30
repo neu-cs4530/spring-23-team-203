@@ -371,16 +371,22 @@ describe('TownsController integration tests', () => {
     let sessionToken: string;
     let polls: Poll[];
 
-    beforeEach(async () => {
-      testingTown = await createTownForTesting(undefined, true);
-      player = mockPlayer(testingTown.townID);
-      await controller.joinTown(player.socket);
-      const initialData = getLastEmittedEvent(player.socket, 'initialize');
-      sessionToken = initialData.sessionToken;
-      // polls = testingTown.polls;
+    describe('Get All Polls', () => {
+      beforeEach(async () => {
+        testingTown = await createTownForTesting(undefined, true);
+        player = mockPlayer(testingTown.townID);
+        await controller.joinTown(player.socket);
+        const initialData = getLastEmittedEvent(player.socket, 'initialize');
+        sessionToken = initialData.sessionToken;
+        // polls = testingTown.polls;
+      });
+      it('Successfully get all polls', async () => {
+        // TODO
+      });
     });
-    it('Successfully get all polls', async () => {
-      // TODO
+
+    describe('Delete Poll', () => {
+      // Integration tests to be added later
     });
   });
 });

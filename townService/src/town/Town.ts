@@ -24,6 +24,7 @@ import InteractableArea from './InteractableArea';
 import ViewingArea from './ViewingArea';
 import PosterSessionArea from './PosterSessionArea';
 import Poll from './Poll';
+import InvalidParametersError from '../lib/InvalidParametersError';
 
 /**
  * The Town class implements the logic for each town: managing the various events that
@@ -409,6 +410,27 @@ export default class Town {
       throw new Error(`No such poll with id ${id}`);
     }
     return ret;
+  }
+
+  /**
+   * Delete the poll with the given id if the user is the poll creator.
+   * @param userId the user who makes the request.
+   * @param pollId the id of the poll.
+   */
+  public deletePoll(userId: string, pollId: string) {
+    const pollToDelete = this._polls.find(poll => poll.pollId === pollId);
+
+    if (pollToDelete) {
+      if (pollToDelete.creator.id === userId) {
+        this._polls = this._polls.filter(poll => poll.pollId !== pollId);
+      } else {
+        throw new Error(
+          `The user ${userId} is not the creator of the poll. Only the creator of the poll can delete it!`,
+        );
+      }
+    } else {
+      throw new Error(`The poll with id ${pollId} cannot be deleted because it does not exist.`);
+    }
   }
 
   public createPoll(

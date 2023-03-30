@@ -449,7 +449,12 @@ export class TownsController extends Controller {
     }
 
     const userID = player.id;
-    // TODO
+
+    try {
+      curTown.deletePoll(userID, pollID);
+    } catch (e) {
+      throw new InvalidParametersError((e as Error).message);
+    }
   }
 
   /**
