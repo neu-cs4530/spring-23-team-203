@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { nanoid } from 'nanoid';
 import { Poll as PollModel, PollSettings, PlayerPartial } from '../types/CoveyTownSocket';
 
 export default class Poll {
@@ -50,7 +50,9 @@ export default class Poll {
     options: string[],
     settings: PollSettings,
   ) {
-    this._pollId = randomUUID();
+    // create unique id
+    this._pollId = nanoid();
+    // set other fields to the given fields
     this._creator = creator;
     this._question = question;
     this._options = options;
