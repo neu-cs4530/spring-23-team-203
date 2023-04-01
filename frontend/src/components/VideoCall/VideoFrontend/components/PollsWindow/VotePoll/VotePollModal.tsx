@@ -1,7 +1,5 @@
 import {
   Button,
-  FormControl,
-  FormLabel,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -42,21 +40,19 @@ const useStyles = makeStyles({
 export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
   const classes = useStyles();
   const coveyTownController = useTownController();
-  // need question, options, allowMultiSelect... from props after calling this from poll cards sidebar
-  const maxVoteNumber = 3; // TODO get maxVoteNumber from pollSettings
 
   const [question, setQuestion] = useState<string>('');
   const [creator, setCreator] = useState<string>('');
-  const [options, setOptions] = useState<{ id: number; value: string }[]>([
-    { id: 0, value: '' },
-    { id: 1, value: '' },
-  ]);
-
-  const [voteNumber, setVoteNumber] = useState(0);
+  const [options, setOptions] = useState<{ id: number; value: string }[]>([]);
+  const [multiSelect, setMultiSelect] = useState(false);
 
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const toast = useToast();
+
+  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
+
+  console.log(selectedOptions);
 
   useEffect(() => {
     if (isOpen) {
@@ -71,24 +67,38 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
     const getPollContent = async () => {
       try {
         const poll = await coveyTownController.getPollResults(pollID);
+        if (!poll) {
+          setError(true);
+          return;
+        }
 
-        // set the question, creator name, and options to vote for
-        setQuestion(poll.question);
-        setCreator(poll.creator.name);
-        let id = -1;
-        setOptions(
-          poll.options.map(function (val) {
-            id += 1;
-            return { id: id, value: val };
-          }),
-        );
+        const {
+          question: pollQuestion,
+          creator: pollCreator,
+          options: pollOptions,
+          settings: pollSettings,
+        } = poll;
+        if (!pollCreator || !pollQuestion || !pollOptions || !pollSettings) {
+          setError(true);
+          return;
+        }
+
+        const { name: pollCreatorName } = pollCreator;
+        const { multiSelect: pollMultiSelect } = pollSettings;
+        if (!pollCreatorName || !pollMultiSelect) {
+          setError(true);
+          return;
+        }
+
+        // set the question, creator name, options, and multiselect
+        setQuestion(pollQuestion);
+        setCreator(pollCreatorName);
+        setMultiSelect(pollMultiSelect);
+
+        const newOptions = pollOptions.map((option, index) => ({ id: index, value: option }));
+        setOptions(newOptions);
       } catch (e) {
         setError(true);
-        toast({
-          title: 'Failure',
-          description: 'Unable to get poll information',
-          status: 'error',
-        });
       }
 
       setLoading(false);
@@ -101,42 +111,32 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
     onClose();
   }, [coveyTownController, onClose]);
 
-  const votePoll = async (userVotes: { id: number; value: string }) => {
-    if (voteNumber !== maxVoteNumber) {
-      try {
-        const userVotesStr: string = userVotes.value;
-        const voteResponse = await coveyTownController.voteInPoll(pollID, [userVotes.id]);
-        setVoteNumber(voteNumber + 1);
-        coveyTownController.unPause();
-        closeModal();
-        toast({
-          title: 'Successful vote',
-          description: `Congratulations! You voted for "${userVotesStr}" in poll "${question}"`,
-          status: 'success',
-        });
-      } catch (err) {
-        if (err instanceof Error) {
-          toast({
-            title: 'Unable to vote in poll',
-            description: err.toString(),
-            status: 'error',
-          });
-        } else {
-          console.trace(err);
-          toast({
-            title: 'Unexpected Error',
-            status: 'error',
-          });
-        }
-      }
-    } else {
+  const votePoll = useCallback(async () => {
+    try {
+      await coveyTownController.voteInPoll(pollID, selectedOptions);
+
+      closeModal();
       toast({
-        title: 'Unable to vote in poll',
-        description: `You have voted ${voteNumber} times, and the max number of times is: ${maxVoteNumber}`,
-        status: 'error',
+        title: 'Successful vote',
+        description: `Congratulations! You voted in poll "${question}"`,
+        status: 'success',
       });
+    } catch (err) {
+      if (err instanceof Error) {
+        toast({
+          title: 'Unable to vote in poll',
+          description: err.toString(),
+          status: 'error',
+        });
+      } else {
+        console.trace(err);
+        toast({
+          title: 'Unexpected Error',
+          status: 'error',
+        });
+      }
     }
-  };
+  }, [closeModal, coveyTownController, pollID, question, selectedOption, toast]);
 
   const voteOptionButtons = () => {
     const optionButtons: JSX.Element[] = [];
@@ -152,7 +152,7 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
             border='4px'
             style={{ borderRadius: '1rem' }}
             colorScheme='blue'
-            onClick={() => votePoll(option)}>
+            onClick={() => setSelectedOptions(oldOptions => [...oldOptions, option.id])}>
             {option.value}
           </Button>
         </Fragment>,
@@ -165,13 +165,41 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
     );
   };
 
+  // loading message
+  if (loading) {
+    return (
+      <Modal isOpen={isOpen} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Vote</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <p className={classes.specialMessage}>Loading poll results...</p>;
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
+  if (error) {
+    return (
+      <Modal isOpen={isOpen} onClose={closeModal}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Vote</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <p className={classes.specialMessage}>
+              Sorry, there was an error fetching poll results.
+            </p>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  }
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={() => {
-        closeModal();
-        coveyTownController.unPause();
-      }}>
+    <Modal isOpen={isOpen} onClose={closeModal}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Vote</ModalHeader>
@@ -185,6 +213,11 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
             {voteOptionButtons()}
           </ModalBody>
           <ModalFooter>
+            {!loading && !error && (
+              <Button colorScheme='blue' mr={3} onClick={votePoll}>
+                Submit
+              </Button>
+            )}
             <Button onClick={closeModal}>Cancel</Button>
           </ModalFooter>
         </form>
