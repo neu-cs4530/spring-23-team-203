@@ -63,7 +63,7 @@ const useStyles = makeStyles({
 
 interface PollCardProps {
   body: PollInfo;
-  clickViewResults: (pollID: string) => void;
+  clickVoteOrViewResults: (pollID: string, userHasVoted: boolean) => void;
 }
 
 // calculate the total number of votes of a poll given a list of votes
@@ -80,12 +80,14 @@ function totalVotes(votes: number[] | PlayerPartial[][]) {
   }
 }
 
-export default function PollCard({ body, clickViewResults }: PollCardProps) {
+export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps) {
   const classes = useStyles();
 
-  const viewResults = () => {
-    clickViewResults(body.pollId);
+  const voteOrViewResults = () => {
+    clickVoteOrViewResults(body.pollId, body.voted);
   };
+
+  const buttonText: string = body.voted ? 'View Results' : 'Vote';
 
   // UPDATE TOTAL VOTE
   return (
@@ -94,27 +96,16 @@ export default function PollCard({ body, clickViewResults }: PollCardProps) {
         <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
           <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
-          <div> {body.options.length} votes</div>
+          {/* <div> {totalVotes(body.responses)} votes</div> TODO */}
         </div>
-        {body.voted ? (
-          <Button
-            colorScheme='blue'
-            mr={3}
-            borderRadius={20}
-            className={classes.button}
-            onClick={viewResults}>
-            View Results
-          </Button>
-        ) : (
-          <Button
-            colorScheme='blue'
-            mr={3}
-            borderRadius={20}
-            className={classes.button}
-            onClick={voteOrViewResults}>
-            Vote
-          </Button>
-        )}
+        <Button
+          colorScheme='blue'
+          mr={3}
+          borderRadius={20}
+          className={classes.button}
+          onClick={voteOrViewResults}>
+          {buttonText}
+        </Button>
       </div>
     </div>
   );
