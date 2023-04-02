@@ -245,6 +245,10 @@
 					},
 					"voted": {
 						"type": "boolean"
+					},
+					"totalVoters": {
+						"type": "number",
+						"format": "double"
 					}
 				},
 				"required": [
@@ -253,7 +257,8 @@
 					"creatorName",
 					"question",
 					"options",
-					"voted"
+					"voted",
+					"totalVoters"
 				],
 				"type": "object",
 				"additionalProperties": false
