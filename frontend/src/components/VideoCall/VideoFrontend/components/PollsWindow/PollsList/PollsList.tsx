@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Poll } from '../../../../../../types/CoveyTownSocket';
+import { PollInfo } from '../../../../../../types/CoveyTownSocket';
 import PollCard from '../PollCard/PollCard';
 import ResultsModal from '../Results/ResultsModal';
 
 interface PollsListProps {
-  polls: Poll[];
+  polls: PollInfo[];
 }
 
 export default function PollsList({ polls }: PollsListProps) {
@@ -29,7 +29,7 @@ export default function PollsList({ polls }: PollsListProps) {
 
         return (
           <React.Fragment key={poll.pollId}>
-            <PollCard body={poll} isCreator={true} clickViewResults={clickViewResults} />
+            <PollCard body={poll} clickViewResults={clickViewResults} />
           </React.Fragment>
         );
       })}

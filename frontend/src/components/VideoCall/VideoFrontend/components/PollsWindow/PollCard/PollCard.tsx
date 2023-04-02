@@ -1,7 +1,8 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
-import { PlayerPartial, Poll } from '../../../../../../types/CoveyTownSocket';
+import { PollInfo } from '../../../../../../generated/client/models/PollInfo';
+import { PlayerPartial } from '../../../../../../generated/client/models/PlayerPartial';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -61,8 +62,7 @@ const useStyles = makeStyles({
 });
 
 interface PollCardProps {
-  body: Poll;
-  isCreator: boolean;
+  body: PollInfo;
   clickViewResults: (pollID: string) => void;
 }
 
@@ -70,39 +70,51 @@ interface PollCardProps {
 function totalVotes(votes: number[] | PlayerPartial[][]) {
   if (Array.isArray(votes[0])) {
     votes = votes as PlayerPartial[][];
-    return votes.reduce((count: number, voteOption: PlayerPartial[]) => 
-       count + voteOption.length, 0
+    return votes.reduce(
+      (count: number, voteOption: PlayerPartial[]) => count + voteOption.length,
+      0,
     );
-  }
-  else {
+  } else {
     votes = votes as number[];
     return votes.reduce((count: number, voteOption: number) => count + voteOption, 0);
   }
 }
 
-export default function PollCard({ body, isCreator, clickViewResults }: PollCardProps) {
+export default function PollCard({ body, clickViewResults }: PollCardProps) {
   const classes = useStyles();
 
   const viewResults = () => {
     clickViewResults(body.pollId);
   };
 
+  // UPDATE TOTAL VOTE
   return (
     <div>
       <div className={classes.pollCard}>
         <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
-          <div className={classes.creatorInfo}>Asked by {body.creator.name}</div>
-          <div> {totalVotes(body.responses)} votes</div>
+          <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
+          <div> {body.options.length} votes</div>
         </div>
-        <Button
-          colorScheme='blue'
-          mr={3}
-          borderRadius={20}
-          className={classes.button}
-          onClick={viewResults}>
-          View Results
-        </Button>
+        {body.voted ? (
+          <Button
+            colorScheme='blue'
+            mr={3}
+            borderRadius={20}
+            className={classes.button}
+            onClick={viewResults}>
+            View Results
+          </Button>
+        ) : (
+          <Button
+            colorScheme='blue'
+            mr={3}
+            borderRadius={20}
+            className={classes.button}
+            onClick={voteOrViewResults}>
+            Vote
+          </Button>
+        )}
       </div>
     </div>
   );
