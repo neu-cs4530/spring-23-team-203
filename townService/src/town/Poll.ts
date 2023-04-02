@@ -91,7 +91,7 @@ export default class Poll {
 
   /**
    * Get the list of all unique voters
-   * @returns list of unique voter player IDs
+   * @returns list of unique players (id and name)
    */
   public getVoters(): PlayerPartial[] {
     const voters = new Set<PlayerPartial>();

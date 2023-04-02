@@ -532,6 +532,7 @@ export default class Town {
       question: poll.question,
       options: poll.options,
       voted: poll.userVoted(userId),
+      totalVoters: poll.getVoters().length,
     };
     return pollInfo;
   }
