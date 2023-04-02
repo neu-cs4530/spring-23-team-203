@@ -2,7 +2,6 @@ import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import { PollInfo } from '../../../../../../generated/client/models/PollInfo';
-import { PlayerPartial } from '../../../../../../generated/client/models/PlayerPartial';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -66,20 +65,6 @@ interface PollCardProps {
   clickVoteOrViewResults: (pollID: string, userHasVoted: boolean) => void;
 }
 
-// calculate the total number of votes of a poll given a list of votes
-function totalVotes(votes: number[] | PlayerPartial[][]) {
-  if (Array.isArray(votes[0])) {
-    votes = votes as PlayerPartial[][];
-    return votes.reduce(
-      (count: number, voteOption: PlayerPartial[]) => count + voteOption.length,
-      0,
-    );
-  } else {
-    votes = votes as number[];
-    return votes.reduce((count: number, voteOption: number) => count + voteOption, 0);
-  }
-}
-
 export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps) {
   const classes = useStyles();
 
@@ -88,15 +73,15 @@ export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps
   };
 
   const buttonText: string = body.voted ? 'View Results' : 'Vote';
+  const totalVotersText: string = body.totalVoters + (body.totalVoters < 2 ? ' Voter' : ' Voters');
 
-  // UPDATE TOTAL VOTE
   return (
     <div>
       <div className={classes.pollCard}>
         <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
           <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
-          {/* <div> {totalVotes(body.responses)} votes</div> TODO */}
+          <div> {totalVotersText}</div>
         </div>
         <Button
           colorScheme='blue'

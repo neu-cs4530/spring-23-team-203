@@ -122,6 +122,7 @@ const models: TsoaRoute.Models = {
             "question": {"dataType":"string","required":true},
             "options": {"dataType":"array","array":{"dataType":"string"},"required":true},
             "voted": {"dataType":"boolean","required":true},
+            "totalVoters": {"dataType":"double","required":true},
         },
         "additionalProperties": false,
     },
