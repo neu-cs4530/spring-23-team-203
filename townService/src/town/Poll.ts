@@ -128,18 +128,6 @@ export default class Poll {
   }
 
   /**
-   * Gets the number of players who have voted in this poll
-   * @returns the number of players who have voted in this poll
-   */
-  public getTotalVoters() {
-    const voters = new Set();
-    this._votes.forEach(voteOption => {
-      voteOption.forEach(voter => voters.add(voter));
-    });
-    return voters.size;
-  }
-
-  /**
    * Convert this Poll instance to a simple PollModel
    */
   public toModel(): PollModel {

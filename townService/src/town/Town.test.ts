@@ -968,7 +968,6 @@ describe('Town', () => {
           question: testQuestion1,
           options: testOptions1,
           voted: false,
-          totalVoters: 0,
         };
 
         expectedPollInfo2 = {
@@ -978,7 +977,6 @@ describe('Town', () => {
           question: testQuestion2,
           options: testOptions2,
           voted: false,
-          totalVoters: 0,
         };
       });
       it('Successfully get all active polls', async () => {
@@ -1000,7 +998,6 @@ describe('Town', () => {
 
         town.voteInPoll(poll2, testVoter2, [1]);
         expectedPollInfo2.voted = true;
-        expectedPollInfo2.totalVoters += 1;
         expect(town.getAllPolls(testVoter2.id)).toStrictEqual([
           expectedPollInfo1,
           expectedPollInfo2,
@@ -1009,8 +1006,6 @@ describe('Town', () => {
         town.voteInPoll(poll1, testVoter1, [1]);
         town.voteInPoll(poll2, testVoter1, [0]);
         expectedPollInfo1.voted = true;
-        expectedPollInfo1.totalVoters += 1;
-        expectedPollInfo2.totalVoters += 1;
 
         expect(town.getAllPolls(testVoter1.id)).toStrictEqual([
           expectedPollInfo1,
