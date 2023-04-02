@@ -17,24 +17,24 @@ describe('Polls', () => {
   let testPoll: Poll;
   const townEmitter = mock<TownEmitter>();
   let newPlayer: Player;
+  const question = 'What is the best CS class?';
+  const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
+  const creator = { id: nanoid(), name: 'Jessss' };
+  let settings: PollSettings;
+
+  const playerId1 = 'jessie';
+  const playerId2 = 'dvd';
+  const playerId3 = 'danish';
 
   beforeEach(() => {
+    settings = { anonymize: false, multiSelect: false };
     mockClear(townEmitter);
-
-    const question = 'What is the best CS class?';
-    const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
-    const creator = { id: nanoid(), name: 'Jessss' };
-    const settings: PollSettings = { anonymize: false, multiSelect: false };
     testPoll = new Poll(creator, question, options, settings);
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
   });
 
   describe('userVoted', () => {
     it('userVoted returns true if a player has voted and false if they have not', () => {
-      const testVoters = ['jess', 'danish', 'tingwei', 'david'];
-      const playerId1 = 'jessie';
-      const playerId2 = 'dvd';
-      const playerId3 = 'danish';
       expect(testPoll.userVoted(playerId1)).toBe(false);
       expect(testPoll.userVoted(playerId2)).toBe(false);
 
@@ -44,6 +44,32 @@ describe('Polls', () => {
       expect(testPoll.userVoted(playerId1)).toBe(true);
       expect(testPoll.userVoted(playerId2)).toBe(true);
       expect(testPoll.userVoted(playerId3)).toBe(false);
+    });
+  });
+
+  describe('getTotalVoters', () => {
+    it('getTotalVoters returns correct number of total voters (no multiselect)', () => {
+      // 0 voter when no one has voted
+      expect(testPoll.getTotalVoters()).toBe(0);
+
+      testPoll.vote({ id: playerId1, name: 'jess' }, [0]);
+      testPoll.vote({ id: playerId2, name: 'david' }, [1]);
+
+      // total number of voters is 2 after 2 players voted
+      expect(testPoll.getTotalVoters()).toBe(2);
+    });
+
+    it('getTotalVoters returns correct number of total voters (multiselect)', () => {
+      settings = { anonymize: false, multiSelect: true };
+      testPoll = new Poll(creator, question, options, settings);
+
+      // 0 voter when no one has voted
+      expect(testPoll.getTotalVoters()).toBe(0);
+
+      testPoll.vote({ id: playerId1, name: 'jess' }, [0, 1]);
+
+      // total number of voters is 1 when the same player votes for two options
+      expect(testPoll.getTotalVoters()).toBe(1);
     });
   });
 
@@ -61,10 +87,6 @@ describe('Polls', () => {
 
   describe('ToModel', () => {
     it('toModel returns votes as de-anonymized if settings are true', () => {
-      const question = 'What is the best CS class?';
-      const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
-      const creatorId = nanoid();
-      const creator = { name: 'jess', id: creatorId };
       const [jess, danish, tingwei, david] = [
         { id: 'jess', name: 'jess' },
         { id: 'danish', name: 'danish' },
@@ -72,7 +94,6 @@ describe('Polls', () => {
         { id: 'david', name: 'david' },
       ];
 
-      const settings: PollSettings = { anonymize: false, multiSelect: false };
       const newPoll = new Poll(creator, question, options, settings);
       addBulkVotes(newPoll, [
         [jess, [0]],
@@ -86,10 +107,6 @@ describe('Polls', () => {
     });
 
     it('toModel returns votes as anonymized if settings.anonymize is true', () => {
-      const question = 'What is the best CS class?';
-      const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
-      const creatorId = nanoid();
-      const creator = { name: 'jess', id: creatorId };
       const [jess, danish, tingwei, david] = [
         { id: 'jess', name: 'jess' },
         { id: 'danish', name: 'danish' },
@@ -97,7 +114,6 @@ describe('Polls', () => {
         { id: 'david', name: 'david' },
       ];
 
-      const settings: PollSettings = { anonymize: false, multiSelect: false };
       const newPoll = new Poll(creator, question, options, { anonymize: true, multiSelect: false });
       addBulkVotes(newPoll, [
         [jess, [0]],
