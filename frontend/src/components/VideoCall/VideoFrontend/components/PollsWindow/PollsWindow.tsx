@@ -58,14 +58,9 @@ export default function PollsWindow() {
   const { isPollsWindowOpen } = useServiceContext();
   const [polls, setPolls] = useState<PollInfo[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  //const [error, setError] =
 
   const fetchPollsInfo = useCallback(async () => {
-    try {
-      setPolls(await coveyTownController.getAllPolls());
-    } catch (e) {
-      //setError(true);
-    }
+    setPolls(await coveyTownController.getAllPolls());
   }, [coveyTownController]);
 
   useEffect(() => {
