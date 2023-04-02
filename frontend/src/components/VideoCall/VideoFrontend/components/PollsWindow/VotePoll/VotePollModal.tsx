@@ -7,12 +7,11 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Stack,
   useToast,
 } from '@chakra-ui/react';
-import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useEffect, useState, Fragment } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useTownController from '../../../../../../hooks/useTownController';
+import VotePollModalBody from './VotePollModalBody';
 
 interface VotePollModalProps {
   isOpen: boolean;
@@ -20,39 +19,25 @@ interface VotePollModalProps {
   pollID: string;
 }
 
-const useStyles = makeStyles({
-  specialMessage: {
-    fontSize: '1.25rem',
-    fontWeight: 600,
-    textAlign: 'center',
-    margin: '3rem',
-  },
-  question: {
-    fontSize: '1.25rem',
-    fontWeight: 600,
-  },
-  pollCreator: {
-    marginBottom: '1.5rem',
-    fontSize: '0.875rem',
-  },
-});
+interface Option {
+  id: number;
+  text: string;
+  selected: boolean;
+}
 
 export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
-  const classes = useStyles();
   const coveyTownController = useTownController();
 
   const [question, setQuestion] = useState<string>('');
   const [creator, setCreator] = useState<string>('');
-  const [options, setOptions] = useState<{ id: number; value: string }[]>([]);
+  const [options, setOptions] = useState<Option[]>([]);
   const [multiSelect, setMultiSelect] = useState(false);
 
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const toast = useToast();
 
-  const [selectedOptions, setSelectedOptions] = useState<number[]>([]);
-
-  console.log(selectedOptions);
+  console.log(loading);
 
   useEffect(() => {
     if (isOpen) {
@@ -69,6 +54,7 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
         const poll = await coveyTownController.getPollResults(pollID);
         if (!poll) {
           setError(true);
+          setLoading(false);
           return;
         }
 
@@ -80,13 +66,15 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
         } = poll;
         if (!pollCreator || !pollQuestion || !pollOptions || !pollSettings) {
           setError(true);
+          setLoading(false);
           return;
         }
 
         const { name: pollCreatorName } = pollCreator;
         const { multiSelect: pollMultiSelect } = pollSettings;
-        if (!pollCreatorName || !pollMultiSelect) {
+        if (!pollCreatorName || pollMultiSelect === undefined) {
           setError(true);
+          setLoading(false);
           return;
         }
 
@@ -95,13 +83,17 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
         setCreator(pollCreatorName);
         setMultiSelect(pollMultiSelect);
 
-        const newOptions = pollOptions.map((option, index) => ({ id: index, value: option }));
+        const newOptions = pollOptions.map((option, index) => ({
+          id: index,
+          text: option,
+          selected: false,
+        }));
         setOptions(newOptions);
+        setLoading(false);
       } catch (e) {
         setError(true);
+        setLoading(false);
       }
-
-      setLoading(false);
     };
     getPollContent();
   }, [coveyTownController, pollID, isOpen, toast]);
@@ -113,6 +105,12 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
 
   const votePoll = useCallback(async () => {
     try {
+      const selectedOptions: number[] = options.reduce(
+        (selectedSoFar: number[], currOption: Option) =>
+          currOption.selected ? [...selectedSoFar, currOption.id] : selectedSoFar,
+        [],
+      );
+
       await coveyTownController.voteInPoll(pollID, selectedOptions);
 
       closeModal();
@@ -136,67 +134,7 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
         });
       }
     }
-  }, [closeModal, coveyTownController, pollID, question, selectedOption, toast]);
-
-  const voteOptionButtons = () => {
-    const optionButtons: JSX.Element[] = [];
-    options.forEach(option => {
-      optionButtons.push(
-        <Fragment key={option.id}>
-          <Button
-            id='{option}_btn'
-            value={option.value}
-            variant='outline'
-            height='48px'
-            width='90%'
-            border='4px'
-            style={{ borderRadius: '1rem' }}
-            colorScheme='blue'
-            onClick={() => setSelectedOptions(oldOptions => [...oldOptions, option.id])}>
-            {option.value}
-          </Button>
-        </Fragment>,
-      );
-    });
-    return (
-      <Stack direction='column' spacing={4} align='center'>
-        {optionButtons}
-      </Stack>
-    );
-  };
-
-  // loading message
-  if (loading) {
-    return (
-      <Modal isOpen={isOpen} onClose={closeModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Vote</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <p className={classes.specialMessage}>Loading poll results...</p>;
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  }
-
-  if (error) {
-    return (
-      <Modal isOpen={isOpen} onClose={closeModal}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Vote</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody pb={6}>
-            <p className={classes.specialMessage}>
-              Sorry, there was an error fetching poll results.
-            </p>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  }
+  }, [closeModal, coveyTownController, pollID, question, toast, options]);
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
@@ -206,11 +144,15 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
         <ModalCloseButton />
         <form>
           <ModalBody pb={6}>
-            <div>
-              <div className={classes.question}>{question}</div>
-              <div className={classes.pollCreator}>Asked by {creator}</div>
-            </div>
-            {voteOptionButtons()}
+            <VotePollModalBody
+              loading={loading}
+              error={error}
+              question={question}
+              creator={creator}
+              options={options}
+              setOptions={setOptions}
+              multiSelect={multiSelect}
+            />
           </ModalBody>
           <ModalFooter>
             {!loading && !error && (
