@@ -6,9 +6,10 @@ import { VotePollModal } from '../VotePoll/VotePollModal';
 
 interface PollsListProps {
   polls: PollInfo[];
+  fetchPollsInfo: () => void;
 }
 
-export default function PollsList({ polls }: PollsListProps) {
+export default function PollsList({ polls, fetchPollsInfo }: PollsListProps) {
   const [selectedPollID, setSelectedPollID] = useState<string>('');
   const [isResultsModalOpen, setIsResultsModalOpen] = useState<boolean>(false);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
@@ -35,9 +36,6 @@ export default function PollsList({ polls }: PollsListProps) {
   return (
     <div>
       {polls.map(poll => {
-        // TODO: conditional rendering based on vote/creator status
-        // const isCreator = p.id === poll.creatorId;
-
         return (
           <React.Fragment key={poll.pollId}>
             <PollCard body={poll} clickVoteOrViewResults={clickVoteOrViewResults} />
@@ -45,7 +43,12 @@ export default function PollsList({ polls }: PollsListProps) {
         );
       })}
       {isVoteModalOpen && (
-        <VotePollModal isOpen={isVoteModalOpen} onClose={closeVoteModal} pollID={selectedPollID} />
+        <VotePollModal
+          isOpen={isVoteModalOpen}
+          onClose={closeVoteModal}
+          pollID={selectedPollID}
+          fetchPollsInfo={fetchPollsInfo}
+        />
       )}
       {isResultsModalOpen && (
         <ResultsModal

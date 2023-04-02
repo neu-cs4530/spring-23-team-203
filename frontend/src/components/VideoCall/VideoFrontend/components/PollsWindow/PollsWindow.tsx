@@ -85,7 +85,7 @@ export default function PollsWindow() {
       <PollsWindowHeader />
       <div className={classes.pollCardsContrainer}>
         <div className={classes.title}>Active Polls</div>
-        <PollsList polls={polls} />
+        <PollsList polls={polls} fetchPollsInfo={fetchPollsInfo} />
       </div>
       <Button
         onClick={() => {
