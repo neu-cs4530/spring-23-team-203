@@ -91,7 +91,7 @@ export default class Poll {
 
   /**
    * Get the list of all unique voters
-   * @returns list of unique voter player IDs
+   * @returns list of unique players (id and name)
    */
   public getVoters(): PlayerPartial[] {
     const voters = new Set<PlayerPartial>();
@@ -125,18 +125,6 @@ export default class Poll {
       }
     });
     return userVotes;
-  }
-
-  /**
-   * Gets the number of players who have voted in this poll
-   * @returns the number of players who have voted in this poll
-   */
-  public getTotalVoters() {
-    const voters = new Set();
-    this._votes.forEach(voteOption => {
-      voteOption.forEach(voter => voters.add(voter));
-    });
-    return voters.size;
   }
 
   /**

@@ -47,16 +47,16 @@ describe('Polls', () => {
     });
   });
 
-  describe('getTotalVoters', () => {
-    it('getTotalVoters returns correct number of total voters (no multiselect)', () => {
-      // 0 voter when no one has voted
-      expect(testPoll.getTotalVoters()).toBe(0);
-
+  describe('GetVoters', () => {
+    it('getVoters returns list of unique voters', () => {
+      const testVotersIds = [playerId1, playerId2, playerId3];
+      const testVotersNames = ['jess', 'danish', 'david'];
       testPoll.vote({ id: playerId1, name: 'jess' }, [0]);
-      testPoll.vote({ id: playerId2, name: 'david' }, [1]);
+      testPoll.vote({ id: playerId2, name: 'danish' }, [0]);
+      testPoll.vote({ id: playerId3, name: 'david' }, [2]);
 
-      // total number of voters is 2 after 2 players voted
-      expect(testPoll.getTotalVoters()).toBe(2);
+      expect(testPoll.getVoters().map(voter => voter.id)).toEqual(testVotersIds);
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(testVotersNames);
     });
 
     it('getTotalVoters returns correct number of total voters (multiselect)', () => {
@@ -64,24 +64,13 @@ describe('Polls', () => {
       testPoll = new Poll(creator, question, options, settings);
 
       // 0 voter when no one has voted
-      expect(testPoll.getTotalVoters()).toBe(0);
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual([]);
 
       testPoll.vote({ id: playerId1, name: 'jess' }, [0, 1]);
+      testPoll.vote({ id: playerId2, name: 'david' }, [1]);
 
-      // total number of voters is 1 when the same player votes for two options
-      expect(testPoll.getTotalVoters()).toBe(1);
-    });
-  });
-
-  describe('GetVoters', () => {
-    it('getVoters returns list of unique voters', () => {
-      const testVoters = ['jess', 'danish', 'tingwei', 'david'];
-      testPoll.vote({ id: 'jess', name: 'jess' }, [0]);
-      testPoll.vote({ id: 'danish', name: 'danish' }, [0]);
-      testPoll.vote({ id: 'tingwei', name: 'tingwei' }, [2]);
-      testPoll.vote({ id: 'david', name: 'david' }, [3]);
-
-      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(testVoters);
+      expect(testPoll.getVoters().map(voter => voter.id)).toEqual([playerId1, playerId2]);
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(['jess', 'david']);
     });
   });
 
