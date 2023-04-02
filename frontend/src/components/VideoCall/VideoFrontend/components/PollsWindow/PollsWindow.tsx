@@ -47,38 +47,13 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const poll = {
-  pollId: '1',
-  creatorId: '00000', 
-  creatorName: "tingwei",
-  question: 'Do you like beans?',
-  options: ['Yes', 'No'],
-  responses: [[{id: '00000', name: "danish"}, {id: '01111', name: "jess"}], [{id:'00001', name: "davod"}]],
-  settings: { anonymize: false, multiSelect: false },
-  voted: true
-};
-
-const poll2 = {
-  pollId: '2',
-  creatorId: '00001',
-  creatorName: "davod",
-  question: 'Do you like bees?',
-  options: ['Yes', 'No'],
-  responses: [
-    ['00000', '01111', '12345', '11111', '33333', '21324'],
-    ['00001', '54321', '22222'],
-  ].map(optionVotes => optionVotes.map(voter => ({ id: voter , name: voter }))),
-  settings: { anonymize: false, multiSelect: false },
-  voted: false
-};
-
 // In this component, we are toggling the visibility of the PollsWindow with CSS instead of
 // conditionally rendering the component in the DOM. This is done so that the PollsWindow is
 // not unmounted while a file upload is in progress.
 export default function PollsWindow() {
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
-  const polls: PollInfo[] = [poll, poll2];
+  const polls: PollInfo[] = [];
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   return (
