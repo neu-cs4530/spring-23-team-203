@@ -17,6 +17,7 @@ interface VotePollModalProps {
   isOpen: boolean;
   onClose: () => void;
   pollID: string;
+  fetchPollsInfo: () => void;
 }
 
 interface Option {
@@ -25,7 +26,7 @@ interface Option {
   selected: boolean;
 }
 
-export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
+export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VotePollModalProps) {
   const coveyTownController = useTownController();
 
   const [question, setQuestion] = useState<string>('');
@@ -114,6 +115,7 @@ export function VotePollModal({ isOpen, onClose, pollID }: VotePollModalProps) {
       await coveyTownController.voteInPoll(pollID, selectedOptions);
 
       closeModal();
+      fetchPollsInfo();
       toast({
         title: 'Successful vote',
         description: `Congratulations! You voted in poll "${question}"`,
