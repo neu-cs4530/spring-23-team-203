@@ -23,14 +23,17 @@ import useTownController from '../../../../../../hooks/useTownController';
 interface CreatePollModalProps {
   isOpen: boolean;
   onClose: () => void;
+  fetchPollsInfo: () => void;
 }
 
-export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
+export function CreatePollModal({ isOpen, onClose, fetchPollsInfo }: CreatePollModalProps) {
   const coveyTownController = useTownController();
   const [question, setQuestion] = useState<string>('');
   const [optionIdCounter, setOptionIdCounter] = useState<number>(2);
-  const [options, setOptions] = useState<{id: number, value: string}[]>([ { id: 0, value: '' },
-  { id: 1, value: '' }]);
+  const [options, setOptions] = useState<{ id: number; value: string }[]>([
+    { id: 0, value: '' },
+    { id: 1, value: '' },
+  ]);
   const [allowMultiSelect, setAllowMultiSelect] = useState<boolean>(false);
   const [anonymizeResults, setAnonymizeResults] = useState<boolean>(false);
 
@@ -55,10 +58,11 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
         await coveyTownController.createPoll(
           question,
           options.map(option => option.value),
-          {multiSelect: allowMultiSelect, anonymize: anonymizeResults},
+          { multiSelect: allowMultiSelect, anonymize: anonymizeResults },
         );
         coveyTownController.unPause();
         closeModal();
+        fetchPollsInfo();
       } catch (err) {
         if (err instanceof Error) {
           toast({
@@ -84,10 +88,11 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
   }, [
     question,
     options,
+    coveyTownController,
     allowMultiSelect,
     anonymizeResults,
-    coveyTownController,
     closeModal,
+    fetchPollsInfo,
     toast,
   ]);
 
@@ -201,7 +206,7 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
                     value={option.value}
                     onChange={e => {
                       const newOptions = [...options];
-                      newOptions[index] = {id: option.id, value: e.target.value};
+                      newOptions[index] = { id: option.id, value: e.target.value };
                       setOptions(newOptions);
                     }}
                   />
@@ -211,7 +216,7 @@ export function CreatePollModal({ isOpen, onClose }: CreatePollModalProps) {
                 disabled={options.length >= 8}
                 onClick={() => {
                   if (options.length < 8) {
-                    setOptions([...options, {id: optionIdCounter, value: ''}]);
+                    setOptions([...options, { id: optionIdCounter, value: '' }]);
                     setOptionIdCounter(optionIdCounter + 1);
                   }
                 }}>
