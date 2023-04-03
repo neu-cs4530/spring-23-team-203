@@ -86,11 +86,6 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
   const getResults = useCallback(async () => {
     try {
       const results = await coveyTownController.getPollResults(pollID);
-      if (!results) {
-        setError(true);
-        return;
-      }
-
       const {
         creator: pollCreator,
         userVotes: pollYourVote,
