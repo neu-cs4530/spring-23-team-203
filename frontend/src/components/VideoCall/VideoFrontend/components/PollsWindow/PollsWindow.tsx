@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
 import PollsList from './PollsList/PollsList';
-import { PollInfo } from '../../../../../types/CoveyTownSocket';
+import { PollInfo } from '../../../../../generated/client/models/PollInfo';
 import { Button } from '@chakra-ui/react';
 import { CreatePollModal } from './CreatePoll/CreatePollModal';
+import useTownController from '../../../../../hooks/useTownController';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -34,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     pollCardsContrainer: {
       padding: '1em 1em 1em 1em',
+      overflowY: 'auto',
     },
     title: {
       fontWeight: 'bold',
@@ -51,17 +53,34 @@ const useStyles = makeStyles((theme: Theme) =>
 // conditionally rendering the component in the DOM. This is done so that the PollsWindow is
 // not unmounted while a file upload is in progress.
 export default function PollsWindow() {
+  const coveyTownController = useTownController();
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
-  const polls: PollInfo[] = [];
+  const [polls, setPolls] = useState<PollInfo[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const fetchPollsInfo = useCallback(async () => {
+    setPolls(await coveyTownController.getAllPolls());
+  }, [coveyTownController]);
+
+  useEffect(() => {
+    fetchPollsInfo();
+
+    const interval = setInterval(() => {
+      fetchPollsInfo();
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [coveyTownController, fetchPollsInfo, isPollsWindowOpen]);
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
       <PollsWindowHeader />
       <div className={classes.pollCardsContrainer}>
         <div className={classes.title}>Active Polls</div>
-        <PollsList polls={polls} />
+        <PollsList polls={polls} fetchPollsInfo={fetchPollsInfo} />
       </div>
       <Button
         onClick={() => {
@@ -70,7 +89,11 @@ export default function PollsWindow() {
         Create Poll
       </Button>
       {isCreateModalOpen && (
-        <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+        <CreatePollModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          fetchPollsInfo={fetchPollsInfo}
+        />
       )}
     </aside>
   );
