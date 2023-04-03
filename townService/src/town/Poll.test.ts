@@ -17,24 +17,24 @@ describe('Polls', () => {
   let testPoll: Poll;
   const townEmitter = mock<TownEmitter>();
   let newPlayer: Player;
+  const question = 'What is the best CS class?';
+  const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
+  const creator = { id: nanoid(), name: 'Jessss' };
+  let settings: PollSettings;
+
+  const playerId1 = 'jessie';
+  const playerId2 = 'dvd';
+  const playerId3 = 'danish';
 
   beforeEach(() => {
+    settings = { anonymize: false, multiSelect: false };
     mockClear(townEmitter);
-
-    const question = 'What is the best CS class?';
-    const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
-    const creator = { id: nanoid(), name: 'Jessss' };
-    const settings: PollSettings = { anonymize: false, multiSelect: false };
     testPoll = new Poll(creator, question, options, settings);
     newPlayer = new Player(nanoid(), mock<TownEmitter>());
   });
 
   describe('userVoted', () => {
     it('userVoted returns true if a player has voted and false if they have not', () => {
-      const testVoters = ['jess', 'danish', 'tingwei', 'david'];
-      const playerId1 = 'jessie';
-      const playerId2 = 'dvd';
-      const playerId3 = 'danish';
       expect(testPoll.userVoted(playerId1)).toBe(false);
       expect(testPoll.userVoted(playerId2)).toBe(false);
 
@@ -49,22 +49,33 @@ describe('Polls', () => {
 
   describe('GetVoters', () => {
     it('getVoters returns list of unique voters', () => {
-      const testVoters = ['jess', 'danish', 'tingwei', 'david'];
-      testPoll.vote({ id: 'jess', name: 'jess' }, [0]);
-      testPoll.vote({ id: 'danish', name: 'danish' }, [0]);
-      testPoll.vote({ id: 'tingwei', name: 'tingwei' }, [2]);
-      testPoll.vote({ id: 'david', name: 'david' }, [3]);
+      const testVotersIds = [playerId1, playerId2, playerId3];
+      const testVotersNames = ['jess', 'danish', 'david'];
+      testPoll.vote({ id: playerId1, name: 'jess' }, [0]);
+      testPoll.vote({ id: playerId2, name: 'danish' }, [0]);
+      testPoll.vote({ id: playerId3, name: 'david' }, [2]);
 
-      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(testVoters);
+      expect(testPoll.getVoters().map(voter => voter.id)).toEqual(testVotersIds);
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(testVotersNames);
+    });
+
+    it('getTotalVoters returns correct number of total voters (multiselect)', () => {
+      settings = { anonymize: false, multiSelect: true };
+      testPoll = new Poll(creator, question, options, settings);
+
+      // 0 voter when no one has voted
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual([]);
+
+      testPoll.vote({ id: playerId1, name: 'jess' }, [0, 1]);
+      testPoll.vote({ id: playerId2, name: 'david' }, [1]);
+
+      expect(testPoll.getVoters().map(voter => voter.id)).toEqual([playerId1, playerId2]);
+      expect(testPoll.getVoters().map(voter => voter.name)).toEqual(['jess', 'david']);
     });
   });
 
   describe('ToModel', () => {
     it('toModel returns votes as de-anonymized if settings are true', () => {
-      const question = 'What is the best CS class?';
-      const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
-      const creatorId = nanoid();
-      const creator = { name: 'jess', id: creatorId };
       const [jess, danish, tingwei, david] = [
         { id: 'jess', name: 'jess' },
         { id: 'danish', name: 'danish' },
@@ -72,7 +83,6 @@ describe('Polls', () => {
         { id: 'david', name: 'david' },
       ];
 
-      const settings: PollSettings = { anonymize: false, multiSelect: false };
       const newPoll = new Poll(creator, question, options, settings);
       addBulkVotes(newPoll, [
         [jess, [0]],
@@ -86,10 +96,6 @@ describe('Polls', () => {
     });
 
     it('toModel returns votes as anonymized if settings.anonymize is true', () => {
-      const question = 'What is the best CS class?';
-      const options = ['CS4530', 'CS3300', 'CS3000', 'CS2500'];
-      const creatorId = nanoid();
-      const creator = { name: 'jess', id: creatorId };
       const [jess, danish, tingwei, david] = [
         { id: 'jess', name: 'jess' },
         { id: 'danish', name: 'danish' },
@@ -97,7 +103,6 @@ describe('Polls', () => {
         { id: 'david', name: 'david' },
       ];
 
-      const settings: PollSettings = { anonymize: false, multiSelect: false };
       const newPoll = new Poll(creator, question, options, { anonymize: true, multiSelect: false });
       addBulkVotes(newPoll, [
         [jess, [0]],
@@ -165,6 +170,18 @@ describe('Polls', () => {
       expect(() => testPoll.vote(testVoter, [0])).toThrowError();
     });
 
+    it('Cannot vote for an invalid option', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      // 5 is out of bounds, only 0-3 are in bounds
+      expect(() => testPoll.vote(testVoter, [5])).toThrowError();
+    });
+
+    it('Cannot vote multiple options in a non-multi-select poll', () => {
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      // 5 is out of bounds, only 0-3 are in bounds
+      expect(() => testPoll.vote(testVoter, [0, 1, 2, 3])).toThrowError();
+    });
+
     it('Cannot vote more than once in a anonymous poll', () => {
       const anonymousPoll = new Poll(
         { id: '123456789', name: 'jesssss' },
@@ -182,11 +199,35 @@ describe('Polls', () => {
         { id: '123456789', name: 'jesssss' },
         'What is the best CS class?',
         ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: false, multiSelect: true },
+      );
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      multiSelectPoll.vote(testVoter, [0, 1]);
+      expect(() => multiSelectPoll.vote(testVoter, [2])).toThrowError();
+    });
+
+    it('Cannot vote more than once in a multiselect, anonymous poll', () => {
+      const multiSelectPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
         { anonymize: true, multiSelect: true },
       );
       const testVoter = { id: '123456789', name: 'jesssss' };
       multiSelectPoll.vote(testVoter, [0, 1]);
       expect(() => multiSelectPoll.vote(testVoter, [2])).toThrowError();
+    });
+
+    it('Cannot vote for an invalid option in multi-select poll', () => {
+      const multiSelectPoll = new Poll(
+        { id: '123456789', name: 'jesssss' },
+        'What is the best CS class?',
+        ['CS4530', 'CS3300', 'CS3000', 'CS2500'],
+        { anonymize: true, multiSelect: true },
+      );
+      const testVoter = { id: '123456789', name: 'jesssss' };
+      // 5 is out of bounds, only 0-3 are in bounds
+      expect(() => multiSelectPoll.vote(testVoter, [5, 1])).toThrowError();
     });
 
     it('getUserVotes returns empty list if user has not voted', () => {

@@ -93,6 +93,7 @@ export interface PollInfo {
   question: string,
 	options: string[],
   voted: boolean,
+  totalVoters: number;
 }
 
 export interface ServerToClientEvents {

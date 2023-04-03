@@ -9,5 +9,6 @@ export type PollInfo = {
     question: string;
     options: Array<string>;
     voted: boolean;
+    totalVoters: number;
 };
 

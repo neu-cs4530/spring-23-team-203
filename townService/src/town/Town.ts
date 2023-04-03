@@ -433,6 +433,14 @@ export default class Town {
     }
   }
 
+  /**
+   * Create a poll to add to the town.
+   * @param creator PlayerPartial creator of the poll
+   * @param question string question the poll asks
+   * @param options list of string options the poll responses can be
+   * @param settings PollSettings specifying the customization of the poll
+   * @returns pollID string of the created poll
+   */
   public createPoll(
     creator: PlayerPartial,
     question: string,
@@ -446,7 +454,7 @@ export default class Town {
 
   /**
    * Casts vote for the given option by the given voter in the given poll
-   * @param pollID
+   * @param pollID string ID of the poll to vote in
    * @param voter partial player of voter
    * @param userVotes option indices to be voted for
    */
@@ -510,6 +518,12 @@ export default class Town {
     this._validateInteractables();
   }
 
+  /**
+   * Converts given Poll to PollInfo with the given userID to determine if they have voted in it
+   * @param userId string ID of user
+   * @param poll Poll to convert
+   * @returns PollInfo of converted poll based on the given user
+   */
   private _toPollInfo(userId: string, poll: Poll): PollInfo {
     const pollInfo = {
       pollId: poll.pollId,
@@ -518,6 +532,7 @@ export default class Town {
       question: poll.question,
       options: poll.options,
       voted: poll.userVoted(userId),
+      totalVoters: poll.getVoters().length,
     };
     return pollInfo;
   }
