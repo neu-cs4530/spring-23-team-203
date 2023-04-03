@@ -35,13 +35,22 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     pollCardsContrainer: {
       padding: '1em 1em 1em 1em',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    pollCardsHeader: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '1rem',
       overflowY: 'auto',
     },
     title: {
       fontWeight: 'bold',
       textAlign: 'left',
       fontSize: 20,
-      padding: '0 0 1em 0.5em',
     },
     hide: {
       display: 'none',
@@ -79,15 +88,19 @@ export default function PollsWindow() {
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
       <PollsWindowHeader />
       <div className={classes.pollCardsContrainer}>
-        <div className={classes.title}>Active Polls</div>
+        <div className={classes.pollCardsHeader}>
+          <div className={classes.title}>Active Polls</div>
+          <Button
+            colorScheme='blue'
+            borderRadius='20'
+            onClick={() => {
+              setIsCreateModalOpen(true);
+            }}>
+            New +
+          </Button>
+        </div>
         <PollsList polls={polls} fetchPollsInfo={fetchPollsInfo} />
       </div>
-      <Button
-        onClick={() => {
-          setIsCreateModalOpen(true);
-        }}>
-        Create Poll
-      </Button>
       {isCreateModalOpen && (
         <CreatePollModal
           isOpen={isCreateModalOpen}
