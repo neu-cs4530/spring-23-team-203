@@ -9,12 +9,25 @@ const useStyles = makeStyles({
     textAlign: 'center',
     margin: '3rem',
   },
+  heading: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginBottom: '1.5rem',
+  },
   question: {
     fontSize: '1.25rem',
     fontWeight: 600,
   },
   pollCreator: {
-    marginBottom: '1.5rem',
+    fontSize: '0.875rem',
+  },
+  info: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginTop: '2rem',
+    gap: '0.5rem',
     fontSize: '0.875rem',
   },
   checkmark: {
@@ -55,6 +68,7 @@ export default function VotePollModalBody({
   creator,
   options,
   setOptions,
+  anonymous,
   multiSelect,
 }: {
   loading: boolean;
@@ -63,6 +77,7 @@ export default function VotePollModalBody({
   creator: string;
   options: Option[];
   setOptions: React.Dispatch<React.SetStateAction<Option[]>>;
+  anonymous: boolean;
   multiSelect: boolean;
 }) {
   const classes = useStyles();
@@ -83,7 +98,11 @@ export default function VotePollModalBody({
     },
     [setOptions, multiSelect],
   );
-  console.log(loading);
+
+  const multiSelectText = 'Vote for any number of options.';
+  const singleSelectText = 'Vote for only one option.';
+  const anonymousText = 'No one can see how you vote.';
+  const notAnonymousText = 'People can see how you vote.';
 
   if (loading) {
     return <p className={classes.specialMessage}>Loading poll results...</p>;
@@ -97,7 +116,7 @@ export default function VotePollModalBody({
 
   return (
     <div>
-      <div>
+      <div className={classes.heading}>
         <div className={classes.question}>{question}</div>
         <div className={classes.pollCreator}>Asked by {creator}</div>
       </div>
@@ -118,6 +137,18 @@ export default function VotePollModalBody({
           </Button>
         ))}
       </Stack>
+      <div className={classes.info}>
+        <p>
+          This poll is
+          {multiSelect ? <strong> multi-select. </strong> : <strong> single-select. </strong>}
+          {multiSelect ? multiSelectText : singleSelectText}
+        </p>
+        <p>
+          This poll is
+          {anonymous ? <strong> anonymous. </strong> : <strong> not anonymous. </strong>}
+          {anonymous ? anonymousText : notAnonymousText}
+        </p>
+      </div>
     </div>
   );
 }
