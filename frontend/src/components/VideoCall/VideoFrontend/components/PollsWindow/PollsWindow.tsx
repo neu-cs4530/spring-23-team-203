@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
       'top': 0,
       'right': 350,
       'max-width': '350px',
+      'overflowY': 'auto',
     },
     pollCardsContrainer: {
       padding: '1em 1em 1em 1em',
