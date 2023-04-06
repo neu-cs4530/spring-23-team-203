@@ -647,7 +647,9 @@ describe('Town', () => {
         );
 
         town.voteInPoll(whichLetterPollId, { id: player.id, name: player.userName }, [0]);
-        town.voteInPoll(whichLetterPollId, { id: secondPlayer.id, name: secondPlayer.userName }, [1]);
+        town.voteInPoll(whichLetterPollId, { id: secondPlayer.id, name: secondPlayer.userName }, [
+          1,
+        ]);
 
         town.voteInPoll(beanPollId, { id: player.id, name: player.userName }, [1]);
         town.voteInPoll(beanPollId, { id: secondPlayer.id, name: secondPlayer.userName }, [2]);
@@ -659,10 +661,15 @@ describe('Town', () => {
         expect(town.getAllPolls(secondPlayer.id).map(p => p.pollId)).toEqual([beanPollId, yesNo]);
 
         // Ensure that votes from the first player are still present
-        expect(town.getPoll(beanPollId).getVoters().map(pp => pp.id)).toStrictEqual([player.id, secondPlayer.id]);
-        });
+        expect(
+          town
+            .getPoll(beanPollId)
+            .getVoters()
+            .map(pp => pp.id),
+        ).toStrictEqual([player.id, secondPlayer.id]);
       });
-      
+    });
+
     describe('playerMovement', () => {
       const newLocation: PlayerLocation = {
         x: 100,
