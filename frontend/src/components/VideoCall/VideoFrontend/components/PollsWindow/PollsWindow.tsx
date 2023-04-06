@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import useServiceContext from '../../hooks/useServiceContext/useServiceContext';
 import PollsWindowHeader from './PollsWindowHeader/PollsWindowHeader';
 import PollsList from './PollsList/PollsList';
-import { Poll } from '../../../../../types/CoveyTownSocket';
+import { PollInfo } from '../../../../../generated/client/models/PollInfo';
 import { Button } from '@chakra-ui/react';
 import { CreatePollModal } from './CreatePoll/CreatePollModal';
-import ResultsModal from './Results/ResultsModal';
+import useTownController from '../../../../../hooks/useTownController';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,12 +35,22 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     pollCardsContrainer: {
       padding: '1em 1em 1em 1em',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+    },
+    pollCardsHeader: {
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: '1rem',
+      overflowY: 'auto',
     },
     title: {
       fontWeight: 'bold',
       textAlign: 'left',
       fontSize: 20,
-      padding: '0 0 1em 0.5em',
     },
     hide: {
       display: 'none',
@@ -48,51 +58,55 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-const poll = {
-  pollId: '1',
-  creator: {id: '00000', name: "tingwei"},
-  question: 'Do you like beans?',
-  options: ['Yes', 'No'],
-  responses: [[{id: '00000', name: "danish"}, {id: '01111', name: "jess"}], [{id:'00001', name: "davod"}]],
-  settings: { anonymize: false, multiSelect: false },
-};
-
-const poll2 = {
-  pollId: '2',
-  creator: {id: '00001', name: "davod"},
-  question: 'Do you like bees?',
-  options: ['Yes', 'No'],
-  responses: [
-    ['00000', '01111', '12345', '11111', '33333', '21324'],
-    ['00001', '54321', '22222'],
-  ].map(optionVotes => optionVotes.map(voter => ({ id: voter , name: voter }))),
-  settings: { anonymize: false, multiSelect: false },
-};
-
 // In this component, we are toggling the visibility of the PollsWindow with CSS instead of
 // conditionally rendering the component in the DOM. This is done so that the PollsWindow is
 // not unmounted while a file upload is in progress.
 export default function PollsWindow() {
+  const coveyTownController = useTownController();
   const classes = useStyles();
   const { isPollsWindowOpen } = useServiceContext();
-  const polls: Poll[] = [poll, poll2];
+  const [polls, setPolls] = useState<PollInfo[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  const fetchPollsInfo = useCallback(async () => {
+    setPolls(await coveyTownController.getAllPolls());
+  }, [coveyTownController]);
+
+  useEffect(() => {
+    fetchPollsInfo();
+
+    const interval = setInterval(() => {
+      fetchPollsInfo();
+    }, 10000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [coveyTownController, fetchPollsInfo, isPollsWindowOpen]);
 
   return (
     <aside className={clsx(classes.pollsWindowContainer, { [classes.hide]: !isPollsWindowOpen })}>
       <PollsWindowHeader />
       <div className={classes.pollCardsContrainer}>
-        <div className={classes.title}>Active Polls</div>
-        <PollsList polls={polls} />
+        <div className={classes.pollCardsHeader}>
+          <div className={classes.title}>Active Polls</div>
+          <Button
+            colorScheme='blue'
+            borderRadius='20'
+            onClick={() => {
+              setIsCreateModalOpen(true);
+            }}>
+            New +
+          </Button>
+        </div>
+        <PollsList polls={polls} fetchPollsInfo={fetchPollsInfo} />
       </div>
-      <Button
-        onClick={() => {
-          setIsCreateModalOpen(true);
-        }}>
-        Create Poll
-      </Button>
       {isCreateModalOpen && (
-        <CreatePollModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} />
+        <CreatePollModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          fetchPollsInfo={fetchPollsInfo}
+        />
       )}
     </aside>
   );

@@ -294,21 +294,26 @@ export class TownsController extends Controller {
     @Header('X-Session-Token') sessionToken: string,
     @Body() requestBody: CreatePollRequest,
   ): Promise<CreatePollResponse> {
+    // ensures the town ID is valid
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
 
+    // ensures the player can be retrieved from the session token
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
 
+    // extract the parameters needed from the request
     const creator = { id: player.id, name: player.userName };
     const { question, options, settings } = requestBody;
+    // ensure the question and options are valid
     if (question.length === 0 || options.some(opt => opt.length === 0)) {
       throw new InvalidParametersError('Question and options must not be empty');
     }
+    // ensure the options are the right amount, between 2 and 8 inclusive
     if (options.length < 2 || options.length > 8) {
       throw new InvalidParametersError('Number of options must be between 2 and 8');
     }
@@ -364,18 +369,21 @@ export class TownsController extends Controller {
     @Header('X-Session-Token') sessionToken: string,
     @Body() requestBody: VoteRequest,
   ): Promise<void> {
+    // ensures the town ID is valid
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
+    // ensures the player can be retrieved from the session token
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
 
+    // extract the parameters needed from the request
     const voter = { id: player.id, name: player.userName };
     const { userVotes } = requestBody;
-
+    // validation of userVotes takes place in the vote method on the Poll class
     curTown.voteInPoll(pollID, voter, userVotes);
   }
 
@@ -398,16 +406,18 @@ export class TownsController extends Controller {
     @Path() pollID: string,
     @Header('X-Session-Token') sessionToken: string,
   ): Promise<GetPollResultsResponse> {
+    // ensures the town ID is valid
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
-
+    // ensures the player can be retrieved from the session token
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
 
+    // ensures the poll ID is valid
     let poll;
     try {
       poll = curTown.getPoll(pollID);
@@ -438,18 +448,24 @@ export class TownsController extends Controller {
     @Path() pollID: string,
     @Header('X-Session-Token') sessionToken: string,
   ): Promise<void> {
+    // ensures the town ID is valid
     const curTown = this._townsStore.getTownByID(townID);
     if (!curTown) {
       throw new InvalidParametersError('Invalid town ID');
     }
-
+    // ensures the player can be retrieved from the session token
     const player = curTown.getPlayerBySessionToken(sessionToken);
     if (!player) {
       throw new InvalidParametersError('Invalid session ID');
     }
 
     const userID = player.id;
-    // TODO
+
+    try {
+      curTown.deletePoll(userID, pollID);
+    } catch (e) {
+      throw new InvalidParametersError((e as Error).message);
+    }
   }
 
   /**

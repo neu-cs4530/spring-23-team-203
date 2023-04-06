@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { nanoid } from 'nanoid';
 import { Poll as PollModel, PollSettings, PlayerPartial } from '../types/CoveyTownSocket';
 
 export default class Poll {
@@ -50,7 +50,9 @@ export default class Poll {
     options: string[],
     settings: PollSettings,
   ) {
-    this._pollId = randomUUID();
+    // create unique id
+    this._pollId = nanoid();
+    // set other fields to the given fields
     this._creator = creator;
     this._question = question;
     this._options = options;
@@ -65,12 +67,15 @@ export default class Poll {
    * @param userVotes - List of indices of the options the player is voting for
    */
   public vote(voter: PlayerPartial, userVotes: number[]) {
+    // check if the option indices are valid
     if (userVotes.some(voteIndex => voteIndex < 0 || voteIndex >= this._options.length)) {
       throw new Error('vote index out of bounds');
     }
+    // ensure poll has multi-select enabled if multiple votes submitted
     if (!this._settings.multiSelect && userVotes.length > 1) {
       throw new Error('multiple votes not allowed in this poll');
     }
+    // ensure the voter is not re-submitting a vote
     this._votes.forEach(votes => {
       const index = votes.findIndex(vote => vote.id === voter.id);
       if (index !== -1) {
@@ -78,6 +83,7 @@ export default class Poll {
       }
     });
 
+    // cast the vote by storing it in the poll votes
     userVotes.forEach(voteIndex => {
       this._votes[voteIndex].push(voter);
     });
@@ -85,7 +91,7 @@ export default class Poll {
 
   /**
    * Get the list of all unique voters
-   * @returns list of unique voter player IDs
+   * @returns list of unique players (id and name)
    */
   public getVoters(): PlayerPartial[] {
     const voters = new Set<PlayerPartial>();
@@ -122,16 +128,7 @@ export default class Poll {
   }
 
   /**
-   * Get the index of the given option in the poll's options list
-   * @param option string option to find
-   */
-  public getOptionIndex(option: string) {
-    return this._options.indexOf(option);
-  }
-
-  /**
-   * Convert this Poll instance to a simple PollModel suitable for
-   * transporting over a socket to a client.
+   * Convert this Poll instance to a simple PollModel
    */
   public toModel(): PollModel {
     return {

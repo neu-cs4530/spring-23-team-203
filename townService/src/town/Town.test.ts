@@ -968,6 +968,7 @@ describe('Town', () => {
           question: testQuestion1,
           options: testOptions1,
           voted: false,
+          totalVoters: 0,
         };
 
         expectedPollInfo2 = {
@@ -977,6 +978,7 @@ describe('Town', () => {
           question: testQuestion2,
           options: testOptions2,
           voted: false,
+          totalVoters: 0,
         };
       });
       it('Successfully get all active polls', async () => {
@@ -998,6 +1000,7 @@ describe('Town', () => {
 
         town.voteInPoll(poll2, testVoter2, [1]);
         expectedPollInfo2.voted = true;
+        expectedPollInfo2.totalVoters += 1;
         expect(town.getAllPolls(testVoter2.id)).toStrictEqual([
           expectedPollInfo1,
           expectedPollInfo2,
@@ -1006,11 +1009,50 @@ describe('Town', () => {
         town.voteInPoll(poll1, testVoter1, [1]);
         town.voteInPoll(poll2, testVoter1, [0]);
         expectedPollInfo1.voted = true;
+        expectedPollInfo1.totalVoters += 1;
+        expectedPollInfo2.totalVoters += 1;
 
         expect(town.getAllPolls(testVoter1.id)).toStrictEqual([
           expectedPollInfo1,
           expectedPollInfo2,
         ]);
+      });
+    });
+
+    describe('Delete a poll', () => {
+      const testQuestion = 'What?';
+      const testCreator = { id: 'Jess', name: 'Jessssss' };
+      const testOptions: string[] = ['because', 'yes', 'no'];
+      let testSettings: PollSettings;
+      let newPollId: string;
+      let newPoll: Poll;
+
+      beforeEach(async () => {
+        testSettings = {
+          anonymize: true,
+          multiSelect: false,
+        };
+        newPollId = town.createPoll(testCreator, testQuestion, testOptions, testSettings);
+        newPoll = town.getPoll(newPollId);
+
+        mockReset(townEmitter);
+      });
+
+      it('Throws error if the poll does not exist', async () => {
+        expect(() => town.deletePoll(testCreator.id, 'non-existing poll')).toThrowError();
+      });
+
+      it('Throws error if the user is not the creator of the poll', async () => {
+        expect(() => town.deletePoll('not-the-creator', newPollId)).toThrowError();
+      });
+
+      it('Creator can delete the poll if it exists', async () => {
+        // poll exists before the deletion
+        expect(town.getPoll(newPollId)).toStrictEqual(newPoll);
+        // delete the poll
+        town.deletePoll(testCreator.id, newPollId);
+        // poll no longer exists in town
+        expect(() => town.getPoll(newPollId)).toThrowError();
       });
     });
 

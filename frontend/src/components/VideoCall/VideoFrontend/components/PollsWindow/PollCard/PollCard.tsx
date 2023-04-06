@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
-import { PlayerPartial, Poll } from '../../../../../../types/CoveyTownSocket';
 import CloseIcon from '../../../icons/CloseIcon';
+import { PollInfo } from '../../../../../../generated/client/models/PollInfo';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -70,39 +70,27 @@ const useStyles = makeStyles({
 });
 
 interface PollCardProps {
-  body: Poll;
-  isCreator: boolean;
-  clickViewResults: (pollID: string) => void;
+  body: PollInfo;
+  clickVoteOrViewResults: (pollID: string, userHasVoted: boolean) => void;
 }
 
-// calculate the total number of votes of a poll given a list of votes
-function totalVotes(votes: number[] | PlayerPartial[][]) {
-  if (Array.isArray(votes[0])) {
-    votes = votes as PlayerPartial[][];
-    return votes.reduce(
-      (count: number, voteOption: PlayerPartial[]) => count + voteOption.length,
-      0,
-    );
-  } else {
-    votes = votes as number[];
-    return votes.reduce((count: number, voteOption: number) => count + voteOption, 0);
-  }
-}
-
-export default function PollCard({ body, isCreator, clickViewResults }: PollCardProps) {
+export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps) {
   const classes = useStyles();
 
-  const viewResults = () => {
-    clickViewResults(body.pollId);
+  const voteOrViewResults = () => {
+    clickVoteOrViewResults(body.pollId, body.voted);
   };
+
+  const buttonText: string = body.voted ? 'View Results' : 'Vote';
+  const totalVotersText: string = body.totalVoters + (body.totalVoters < 2 ? ' Voter' : ' Voters');
 
   return (
     <div>
       <div className={classes.pollCard}>
         <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
-          <div className={classes.creatorInfo}>Asked by {body.creator.name}</div>
-          <div> {totalVotes(body.responses)} votes</div>
+          <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
+          <div> {totalVotersText}</div>
         </div>
         <button className={classes.deleteButton}>
           <CloseIcon />
@@ -112,8 +100,8 @@ export default function PollCard({ body, isCreator, clickViewResults }: PollCard
           mr={3}
           borderRadius={20}
           className={classes.button}
-          onClick={viewResults}>
-          View Results
+          onClick={voteOrViewResults}>
+          {buttonText}
         </Button>
       </div>
     </div>
