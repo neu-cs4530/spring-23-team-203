@@ -62,6 +62,8 @@ export default function ResultsModalBody({
     );
   }
 
+  const totalText = `${total}${total === 1 ? ' vote' : ' votes'}`;
+
   return (
     <div>
       <div className={classes.question}>{question}</div>
@@ -71,7 +73,7 @@ export default function ResultsModalBody({
         yourVote={yourVote}
         resultsDisplay={resultsDisplay}
       />
-      <div className={classes.totalVotes}>{`${total} votes`}</div>
+      <div className={classes.totalVotes}>{totalText}</div>
     </div>
   );
 }

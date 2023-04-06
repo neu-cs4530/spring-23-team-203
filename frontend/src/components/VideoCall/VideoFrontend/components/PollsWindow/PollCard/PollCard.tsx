@@ -73,7 +73,8 @@ export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps
   };
 
   const buttonText: string = body.voted ? 'View Results' : 'Vote';
-  const totalVotersText: string = body.totalVoters + (body.totalVoters < 2 ? ' Voter' : ' Voters');
+  const totalVotersText: string =
+    body.totalVoters + (body.totalVoters === 1 ? ' Voter' : ' Voters');
 
   return (
     <div>

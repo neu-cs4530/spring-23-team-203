@@ -105,12 +105,12 @@ export default function VotePollModalBody({
   const notAnonymousText = 'People can see how you vote.';
 
   if (loading) {
-    return <p className={classes.specialMessage}>Loading poll results...</p>;
+    return <p className={classes.specialMessage}>Loading poll options...</p>;
   }
 
   if (error) {
     return (
-      <p className={classes.specialMessage}>Sorry, there was an error fetching poll results.</p>
+      <p className={classes.specialMessage}>Sorry, there was an error fetching poll options.</p>
     );
   }
 

@@ -32,7 +32,7 @@ interface GetResultsDisplayOutputs {
 
 export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
   const coveyTownController = useTownController();
-  const pollInfo = usePollInfo(pollID);
+  const { pollInfo, loaded } = usePollInfo(pollID);
 
   const [question, setQuestion] = useState<string>('');
   const [creatorName, setCreatorName] = useState<string>('');
@@ -94,42 +94,41 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
   );
 
   const getResults = useCallback(async () => {
-    try {
-      if (!pollInfo) {
-        setError(true);
-        setLoading(true);
-        return;
-      }
-
-      const {
-        pollQuestion,
-        pollCreatorName,
-        pollYourVote,
-        pollOptions,
-        pollResponses,
-        pollAnonymize,
-      } = pollInfo;
-
-      // set the question, creator name, and what you voted for
-      setQuestion(pollQuestion);
-      setCreatorName(pollCreatorName);
-      setYourVote(pollYourVote);
-      setAnonymous(pollAnonymize);
-
-      // format the display of results, including the total number of votes
-      const { total: newTotal, results: newResults } = getResultsDisplay({
-        anonymize: pollAnonymize,
-        options: pollOptions,
-        responses: pollResponses,
-      });
-      setTotal(newTotal);
-      setResultsDisplay(newResults);
-    } catch (e) {
-      setError(true);
+    if (!loaded) {
+      return;
     }
 
+    if (!pollInfo) {
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
+    const {
+      pollQuestion,
+      pollCreatorName,
+      pollYourVote,
+      pollOptions,
+      pollResponses,
+      pollAnonymize,
+    } = pollInfo;
+
+    // set the question, creator name, and what you voted for
+    setQuestion(pollQuestion);
+    setCreatorName(pollCreatorName);
+    setYourVote(pollYourVote);
+    setAnonymous(pollAnonymize);
+
+    // format the display of results, including the total number of votes
+    const { total: newTotal, results: newResults } = getResultsDisplay({
+      anonymize: pollAnonymize,
+      options: pollOptions,
+      responses: pollResponses,
+    });
+    setTotal(newTotal);
+    setResultsDisplay(newResults);
     setLoading(false);
-  }, [getResultsDisplay, pollInfo]);
+  }, [getResultsDisplay, pollInfo, loaded]);
 
   // get results from the API and store them in React state
   useEffect(() => {

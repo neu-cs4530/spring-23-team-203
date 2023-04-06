@@ -29,7 +29,7 @@ interface Option {
 
 export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VotePollModalProps) {
   const coveyTownController = useTownController();
-  const pollInfo = usePollInfo(pollID);
+  const { pollInfo, loaded } = usePollInfo(pollID);
 
   const [question, setQuestion] = useState<string>('');
   const [creator, setCreator] = useState<string>('');
@@ -53,35 +53,34 @@ export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VoteP
   // get results from the API and store them in React state
   useEffect(() => {
     const getPollContent = async () => {
-      try {
-        if (!pollInfo) {
-          setError(true);
-          setLoading(true);
-          return;
-        }
+      if (!loaded) {
+        return;
+      }
 
-        const { pollQuestion, pollCreatorName, pollAnonymize, pollMultiSelect, pollOptions } =
-          pollInfo;
-        setQuestion(pollQuestion);
-        setCreator(pollCreatorName);
-        setAnonymous(pollAnonymize);
-        setMultiSelect(pollMultiSelect);
-
-        const newOptions = pollOptions.map((option, index) => ({
-          id: index,
-          text: option,
-          selected: false,
-        }));
-        setOptions(newOptions);
-        setLoading(false);
-      } catch (e) {
+      if (!pollInfo) {
         setError(true);
         setLoading(false);
+        return;
       }
+
+      const { pollQuestion, pollCreatorName, pollAnonymize, pollMultiSelect, pollOptions } =
+        pollInfo;
+      setQuestion(pollQuestion);
+      setCreator(pollCreatorName);
+      setAnonymous(pollAnonymize);
+      setMultiSelect(pollMultiSelect);
+
+      const newOptions = pollOptions.map((option, index) => ({
+        id: index,
+        text: option,
+        selected: false,
+      }));
+      setOptions(newOptions);
+      setLoading(false);
     };
 
     getPollContent();
-  }, [pollInfo]);
+  }, [pollInfo, loaded]);
 
   const closeModal = useCallback(() => {
     coveyTownController.unPause();
@@ -115,7 +114,6 @@ export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VoteP
           status: 'error',
         });
       } else {
-        console.trace(err);
         toast({
           title: 'Unexpected Error',
           status: 'error',
