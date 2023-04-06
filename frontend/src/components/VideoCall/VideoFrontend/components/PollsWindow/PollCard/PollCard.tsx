@@ -85,8 +85,9 @@ export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps
           <div> {totalVotersText}</div>
         </div>
         <Button
-          colorScheme='blue'
+          colorScheme={body.voted ? 'green' : 'facebook'}
           mr={3}
+          variant='solid'
           borderRadius={20}
           className={classes.button}
           onClick={voteOrViewResults}>

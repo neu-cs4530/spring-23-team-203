@@ -1,4 +1,4 @@
-import { Button, Stack } from '@chakra-ui/react';
+import { Button, Stack, Tag, TagLabel, Tooltip } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback } from 'react';
 
@@ -13,7 +13,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    marginBottom: '1.5rem',
+    marginBottom: '0.5rem',
   },
   question: {
     fontSize: '1.25rem',
@@ -24,11 +24,9 @@ const useStyles = makeStyles({
   },
   info: {
     display: 'flex',
-    flexDirection: 'column',
     alignItems: 'flex-start',
-    marginTop: '2rem',
+    marginBottom: '2.5rem',
     gap: '0.5rem',
-    fontSize: '0.875rem',
   },
   checkmark: {
     marginLeft: '0.5rem',
@@ -120,6 +118,24 @@ export default function VotePollModalBody({
         <div className={classes.question}>{question}</div>
         <div className={classes.pollCreator}>Asked by {creator}</div>
       </div>
+      <div className={classes.info}>
+        <Tooltip
+          label={multiSelect ? multiSelectText : singleSelectText}
+          placement='bottom-start'
+          hasArrow={true}>
+          <Tag size='md' key='md' variant='subtle' colorScheme='twitter'>
+            <TagLabel>{multiSelect ? 'multi-select' : 'single-select'}</TagLabel>
+          </Tag>
+        </Tooltip>
+        <Tooltip
+          label={anonymous ? anonymousText : notAnonymousText}
+          placement='bottom-start'
+          hasArrow={true}>
+          <Tag size='md' key='md' variant='subtle' colorScheme='whatsapp'>
+            <TagLabel>{anonymous ? 'anonymous' : 'not anonymous'}</TagLabel>
+          </Tag>
+        </Tooltip>
+      </div>
       <Stack direction='column' spacing={4} align='center'>
         {options.map(option => (
           <Button
@@ -127,28 +143,16 @@ export default function VotePollModalBody({
             value={option.text}
             variant={option.selected ? 'solid' : 'outline'}
             height='48px'
-            width='90%'
+            width='100%'
             border='4px'
             style={{ borderRadius: '1rem' }}
-            colorScheme='blue'
+            colorScheme='facebook'
             onClick={() => updateOptions(option.id)}>
             {option.text}
             {option.selected && <Checkmark />}
           </Button>
         ))}
       </Stack>
-      <div className={classes.info}>
-        <p>
-          This poll is
-          {multiSelect ? <strong> multi-select. </strong> : <strong> single-select. </strong>}
-          {multiSelect ? multiSelectText : singleSelectText}
-        </p>
-        <p>
-          This poll is
-          {anonymous ? <strong> anonymous. </strong> : <strong> not anonymous. </strong>}
-          {anonymous ? anonymousText : notAnonymousText}
-        </p>
-      </div>
     </div>
   );
 }

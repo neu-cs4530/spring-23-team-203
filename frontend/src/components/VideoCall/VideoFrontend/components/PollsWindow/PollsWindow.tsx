@@ -92,7 +92,7 @@ export default function PollsWindow() {
         <div className={classes.pollCardsHeader}>
           <div className={classes.title}>Active Polls</div>
           <Button
-            colorScheme='blue'
+            colorScheme='facebook'
             borderRadius='20'
             onClick={() => {
               setIsCreateModalOpen(true);
