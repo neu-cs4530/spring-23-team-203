@@ -9,9 +9,10 @@ import {
   ModalOverlay,
   useToast,
 } from '@chakra-ui/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import useTownController from '../../../../../../hooks/useTownController';
 import VotePollModalBody from './VotePollModalBody';
+import usePollInfo from '../../../hooks/usePollInfo/usePollInfo';
 
 interface VotePollModalProps {
   isOpen: boolean;
@@ -28,17 +29,18 @@ interface Option {
 
 export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VotePollModalProps) {
   const coveyTownController = useTownController();
+  const { pollInfo, loaded } = usePollInfo(pollID);
 
   const [question, setQuestion] = useState<string>('');
   const [creator, setCreator] = useState<string>('');
   const [options, setOptions] = useState<Option[]>([]);
-  const [multiSelect, setMultiSelect] = useState(false);
+
+  const [anonymous, setAnonymous] = useState<boolean>(false);
+  const [multiSelect, setMultiSelect] = useState<boolean>(false);
 
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const toast = useToast();
-
-  console.log(loading);
 
   useEffect(() => {
     if (isOpen) {
@@ -51,67 +53,50 @@ export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VoteP
   // get results from the API and store them in React state
   useEffect(() => {
     const getPollContent = async () => {
-      try {
-        const poll = await coveyTownController.getPollResults(pollID);
-        if (!poll) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
+      if (!loaded) {
+        return;
+      }
 
-        const {
-          question: pollQuestion,
-          creator: pollCreator,
-          options: pollOptions,
-          settings: pollSettings,
-        } = poll;
-        if (!pollCreator || !pollQuestion || !pollOptions || !pollSettings) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        const { name: pollCreatorName } = pollCreator;
-        const { multiSelect: pollMultiSelect } = pollSettings;
-        if (!pollCreatorName || pollMultiSelect === undefined) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-
-        // set the question, creator name, options, and multiselect
-        setQuestion(pollQuestion);
-        setCreator(pollCreatorName);
-        setMultiSelect(pollMultiSelect);
-
-        const newOptions = pollOptions.map((option, index) => ({
-          id: index,
-          text: option,
-          selected: false,
-        }));
-        setOptions(newOptions);
-        setLoading(false);
-      } catch (e) {
+      if (!pollInfo) {
         setError(true);
         setLoading(false);
+        return;
       }
+
+      const { pollQuestion, pollCreatorName, pollAnonymize, pollMultiSelect, pollOptions } =
+        pollInfo;
+      setQuestion(pollQuestion);
+      setCreator(pollCreatorName);
+      setAnonymous(pollAnonymize);
+      setMultiSelect(pollMultiSelect);
+
+      const newOptions = pollOptions.map((option, index) => ({
+        id: index,
+        text: option,
+        selected: false,
+      }));
+      setOptions(newOptions);
+      setLoading(false);
     };
+
     getPollContent();
-  }, [coveyTownController, pollID, isOpen, toast]);
+  }, [pollInfo, loaded]);
 
   const closeModal = useCallback(() => {
     coveyTownController.unPause();
     onClose();
   }, [coveyTownController, onClose]);
 
+  const selectedOptions: number[] = useMemo(() => {
+    return options.reduce(
+      (selectedSoFar: number[], currOption: Option) =>
+        currOption.selected ? [...selectedSoFar, currOption.id] : selectedSoFar,
+      [],
+    );
+  }, [options]);
+
   const votePoll = useCallback(async () => {
     try {
-      const selectedOptions: number[] = options.reduce(
-        (selectedSoFar: number[], currOption: Option) =>
-          currOption.selected ? [...selectedSoFar, currOption.id] : selectedSoFar,
-        [],
-      );
-
       await coveyTownController.voteInPoll(pollID, selectedOptions);
 
       closeModal();
@@ -129,14 +114,13 @@ export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VoteP
           status: 'error',
         });
       } else {
-        console.trace(err);
         toast({
           title: 'Unexpected Error',
           status: 'error',
         });
       }
     }
-  }, [closeModal, coveyTownController, pollID, question, toast, options]);
+  }, [coveyTownController, pollID, selectedOptions, closeModal, fetchPollsInfo, question, toast]);
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal}>
@@ -153,12 +137,18 @@ export function VotePollModal({ isOpen, onClose, pollID, fetchPollsInfo }: VoteP
               creator={creator}
               options={options}
               setOptions={setOptions}
+              anonymous={anonymous}
               multiSelect={multiSelect}
             />
           </ModalBody>
           <ModalFooter>
             {!loading && !error && (
-              <Button colorScheme='blue' mr={3} onClick={votePoll}>
+              <Button
+                as='button'
+                colorScheme='blue'
+                mr={3}
+                onClick={votePoll}
+                isDisabled={!selectedOptions.length}>
                 Submit
               </Button>
             )}

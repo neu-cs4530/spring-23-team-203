@@ -11,6 +11,7 @@ import { PlayerPartial } from '../../../../../../types/CoveyTownSocket';
 import ResultsModalBody from './ResultsModalBody';
 import useTownController from '../../../../../../hooks/useTownController';
 import { ResultsDisplay } from '../../../../../../types/CoveyTownSocket';
+import usePollInfo from '../../../hooks/usePollInfo/usePollInfo';
 
 interface ResultsModalProps {
   isOpen: boolean;
@@ -31,6 +32,7 @@ interface GetResultsDisplayOutputs {
 
 export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalProps) {
   const coveyTownController = useTownController();
+  const { pollInfo, loaded } = usePollInfo(pollID);
 
   const [question, setQuestion] = useState<string>('');
   const [creatorName, setCreatorName] = useState<string>('');
@@ -43,6 +45,14 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
 
   const [error, setError] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (isOpen) {
+      coveyTownController.pause();
+    } else {
+      coveyTownController.unPause();
+    }
+  }, [coveyTownController, isOpen]);
 
   const getResultsDisplay = useCallback(
     ({ anonymize, options, responses }: GetResultsDisplayInputs): GetResultsDisplayOutputs => {
@@ -84,60 +94,41 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
   );
 
   const getResults = useCallback(async () => {
-    try {
-      const results = await coveyTownController.getPollResults(pollID);
-      const {
-        creator: pollCreator,
-        userVotes: pollYourVote,
-        question: pollQuestion,
-        options: pollOptions,
-        responses: pollResponses,
-        settings: pollSettings,
-      } = results;
-
-      if (!pollSettings) {
-        setError(true);
-        return;
-      }
-
-      const { anonymize } = pollSettings;
-
-      if (
-        anonymize === undefined ||
-        !pollCreator ||
-        !pollYourVote ||
-        !pollQuestion ||
-        !pollOptions ||
-        !pollResponses ||
-        !pollOptions.length ||
-        !pollResponses.length ||
-        !pollYourVote.length ||
-        pollOptions.length !== pollResponses.length
-      ) {
-        setError(true);
-        return;
-      }
-
-      // set the question, creator name, and what you voted for
-      setQuestion(pollQuestion);
-      setCreatorName(pollCreator.name);
-      setYourVote(pollYourVote);
-      setAnonymous(anonymize);
-
-      // format the display of results, including the total number of votes
-      const { total: newTotal, results: newResults } = getResultsDisplay({
-        anonymize: anonymize,
-        options: pollOptions,
-        responses: pollResponses,
-      });
-      setTotal(newTotal);
-      setResultsDisplay(newResults);
-    } catch (e) {
-      setError(true);
+    if (!loaded) {
+      return;
     }
 
+    if (!pollInfo) {
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
+    const {
+      pollQuestion,
+      pollCreatorName,
+      pollYourVote,
+      pollOptions,
+      pollResponses,
+      pollAnonymize,
+    } = pollInfo;
+
+    // set the question, creator name, and what you voted for
+    setQuestion(pollQuestion);
+    setCreatorName(pollCreatorName);
+    setYourVote(pollYourVote);
+    setAnonymous(pollAnonymize);
+
+    // format the display of results, including the total number of votes
+    const { total: newTotal, results: newResults } = getResultsDisplay({
+      anonymize: pollAnonymize,
+      options: pollOptions,
+      responses: pollResponses,
+    });
+    setTotal(newTotal);
+    setResultsDisplay(newResults);
     setLoading(false);
-  }, [coveyTownController, pollID, getResultsDisplay]);
+  }, [getResultsDisplay, pollInfo, loaded]);
 
   // get results from the API and store them in React state
   useEffect(() => {
