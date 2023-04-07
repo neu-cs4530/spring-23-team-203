@@ -465,7 +465,7 @@ export class TownsController extends Controller {
     try {
       curTown.deletePoll(userID, pollID);
     } catch (e) {
-      throw e;
+      throw new InvalidParametersError((e as Error).message);
     }
   }
 

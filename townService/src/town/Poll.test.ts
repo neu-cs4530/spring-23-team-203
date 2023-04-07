@@ -77,7 +77,6 @@ describe('Polls', () => {
   });
 
   describe('ToModel', () => {
-    
     it('toModel returns model version of poll', () => {
       const [jess, danish, tingwei, david] = [
         { id: 'jess', name: 'jess' },
@@ -95,13 +94,14 @@ describe('Polls', () => {
       ]);
 
       const pollModel = newPoll.toModel();
-      expect(pollModel).toEqual(
-        {
-          "creator": creator, "options": options, 
-          "pollId": newPoll.pollId, "question": question, 
-          "responses": [2, 0, 1, 1], 
-          "settings": {"anonymize": true, "multiSelect": false}
-        });
+      expect(pollModel).toEqual({
+        creator,
+        options,
+        pollId: newPoll.pollId,
+        question,
+        responses: [2, 0, 1, 1],
+        settings: { anonymize: true, multiSelect: false },
+      });
     });
 
     it('toModel returns votes as de-anonymized if settings are true', () => {
