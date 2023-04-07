@@ -4,6 +4,8 @@ import Player from '../lib/Player';
 import { PollSettings, TownEmitter, PlayerPartial } from '../types/CoveyTownSocket';
 import Poll from './Poll';
 
+// testing util helper function: an easy way to add many votes at once to test different
+// poll states
 function addBulkVotes(poll: Poll, votes: [PlayerPartial, number[]][]) {
   votes.forEach(([player, option]) => {
     poll.vote(player, option);
@@ -48,7 +50,7 @@ describe('Polls', () => {
   });
 
   describe('GetVoters', () => {
-    it('getVoters returns list of unique voters', () => {
+    it('getVoters returns list of unique voters when no one has voted multiple times', () => {
       const testVotersIds = [playerId1, playerId2, playerId3];
       const testVotersNames = ['jess', 'danish', 'david'];
       testPoll.vote({ id: playerId1, name: 'jess' }, [0]);
@@ -59,7 +61,7 @@ describe('Polls', () => {
       expect(testPoll.getVoters().map(voter => voter.name)).toEqual(testVotersNames);
     });
 
-    it('getTotalVoters returns correct number of total voters (multiselect)', () => {
+    it('getVoters returns correct number of total voters (multiselect)', () => {
       settings = { anonymize: false, multiSelect: true };
       testPoll = new Poll(creator, question, options, settings);
 
@@ -75,6 +77,33 @@ describe('Polls', () => {
   });
 
   describe('ToModel', () => {
+    it('toModel returns model version of poll', () => {
+      const [jess, danish, tingwei, david] = [
+        { id: 'jess', name: 'jess' },
+        { id: 'danish', name: 'danish' },
+        { id: 'tingwei', name: 'tingwei' },
+        { id: 'david', name: 'david' },
+      ];
+
+      const newPoll = new Poll(creator, question, options, { anonymize: true, multiSelect: false });
+      addBulkVotes(newPoll, [
+        [jess, [0]],
+        [danish, [0]],
+        [tingwei, [2]],
+        [david, [3]],
+      ]);
+
+      const pollModel = newPoll.toModel();
+      expect(pollModel).toEqual({
+        creator,
+        options,
+        pollId: newPoll.pollId,
+        question,
+        responses: [2, 0, 1, 1],
+        settings: { anonymize: true, multiSelect: false },
+      });
+    });
+
     it('toModel returns votes as de-anonymized if settings are true', () => {
       const [jess, danish, tingwei, david] = [
         { id: 'jess', name: 'jess' },
@@ -172,7 +201,7 @@ describe('Polls', () => {
 
     it('Cannot vote for an invalid option', () => {
       const testVoter = { id: '123456789', name: 'jesssss' };
-      // 5 is out of bounds, only 0-3 are in bounds
+      // 5 is out of bounds, only 0-3 are in bounds in this test poll
       expect(() => testPoll.vote(testVoter, [5])).toThrowError();
     });
 
@@ -182,7 +211,7 @@ describe('Polls', () => {
       expect(() => testPoll.vote(testVoter, [0, 1, 2, 3])).toThrowError();
     });
 
-    it('Cannot vote more than once in a anonymous poll', () => {
+    it('Cannot vote more than once in a non-multi-select anonymous poll', () => {
       const anonymousPoll = new Poll(
         { id: '123456789', name: 'jesssss' },
         'What is the best CS class?',
@@ -194,7 +223,7 @@ describe('Polls', () => {
       expect(() => anonymousPoll.vote(testVoter, [0])).toThrowError();
     });
 
-    it('Cannot vote more than once in a multiselect poll', () => {
+    it('Cannot vote more than once in a multiselect nonanonymous poll', () => {
       const multiSelectPoll = new Poll(
         { id: '123456789', name: 'jesssss' },
         'What is the best CS class?',

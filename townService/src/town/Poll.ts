@@ -105,8 +105,8 @@ export default class Poll {
 
   /**
    * Given a userId, returns if the user has voted in this poll.
-   * @param userId the id of the player.
-   * @returns a boolean indicates whether the user has voted in this poll.
+   * @param userId the id of the player
+   * @returns a boolean indicates whether the user has voted in this poll
    */
   public userVoted(userId: string): boolean {
     const user = this._votes.find(opt => opt.find(voter => voter.id === userId));
@@ -115,7 +115,7 @@ export default class Poll {
 
   /**
    * Get the options that the player with the given id has voted for
-   * @param playerId string id of player
+   * @param playerId string id of voting player
    */
   public getUserVotes(playerId: string): number[] {
     const userVotes: number[] = [];

@@ -7,7 +7,8 @@ import {
   Interactable,
   TownEmitter,
   ViewingArea,
-  Poll,
+  PollInfo,
+  PollSettings,
 } from '../types/CoveyTownSocket';
 import TownsStore from '../lib/TownsStore';
 import {
@@ -369,7 +370,112 @@ describe('TownsController integration tests', () => {
     let testingTown: TestTownData;
     let player: MockedPlayer;
     let sessionToken: string;
-    let polls: Poll[];
+    let polls: PollInfo[];
+    const pollId = 'testpollid';
+    const question = 'What are you thinking about?';
+    const options: string[] = ['Class', 'dogs', 'the Duolingo owl'];
+    const settings: PollSettings = { anonymize: false, multiSelect: true };
+
+    describe('Create Polls', () => {
+      beforeEach(async () => {
+        testingTown = await createTownForTesting(undefined, true);
+        player = mockPlayer(testingTown.townID);
+        await controller.joinTown(player.socket);
+        const initialData = getLastEmittedEvent(player.socket, 'initialize');
+        sessionToken = initialData.sessionToken;
+      });
+
+      it('Executes without error when creating a new poll', async () => {
+        await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+      });
+      it('Returns an error message if the town ID is invalid', async () => {
+        await expect(
+          controller.createPoll(nanoid(), sessionToken, { question, options, settings }),
+        ).rejects.toThrow();
+      });
+      it('Checks for a valid session token before creating a conversation area', async () => {
+        const invalidSessionToken = nanoid();
+
+        await expect(
+          controller.createPoll(testingTown.townID, invalidSessionToken, {
+            question,
+            options,
+            settings,
+          }),
+        ).rejects.toThrow();
+      });
+      it('Returns an error message if createPoll fails', async () => {
+        await expect(
+          controller.createPoll(testingTown.townID, sessionToken, {
+            question,
+            options: [],
+            settings,
+          }),
+        ).rejects.toThrow();
+      });
+    });
+
+    describe('Vote in Polls', () => {
+      beforeEach(async () => {
+        testingTown = await createTownForTesting(undefined, true);
+        player = mockPlayer(testingTown.townID);
+        await controller.joinTown(player.socket);
+        const initialData = getLastEmittedEvent(player.socket, 'initialize');
+        sessionToken = initialData.sessionToken;
+      });
+
+      it('Executes without error when voting successfully in new poll', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        await controller.voteInPoll(testingTown.townID, poll.pollId, sessionToken, {
+          userVotes: [0],
+        });
+      });
+      it('Returns an error message if the town ID is invalid', async () => {
+        await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+
+        await expect(
+          controller.voteInPoll(nanoid(), pollId, sessionToken, { userVotes: [0] }),
+        ).rejects.toThrow();
+      });
+      it('Checks for a valid session token before creating a poll', async () => {
+        const invalidSessionToken = nanoid();
+
+        await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+
+        await expect(
+          controller.voteInPoll(testingTown.townID, pollId, invalidSessionToken, {
+            userVotes: [0],
+          }),
+        ).rejects.toThrow();
+      });
+      it('Returns an error message if vote fails', async () => {
+        await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+
+        await expect(
+          controller.voteInPoll(testingTown.townID, pollId, sessionToken, { userVotes: [] }),
+        ).rejects.toThrow();
+      });
+    });
 
     describe('Get All Polls', () => {
       beforeEach(async () => {
@@ -378,15 +484,236 @@ describe('TownsController integration tests', () => {
         await controller.joinTown(player.socket);
         const initialData = getLastEmittedEvent(player.socket, 'initialize');
         sessionToken = initialData.sessionToken;
-        // polls = testingTown.polls;
       });
-      it('Successfully get all polls', async () => {
-        // TODO
+
+      it('Successfully gets all polls when there are none', async () => {
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+
+        expect(polls).toMatchObject([]);
+      });
+
+      it('Successfully gets all polls when there is one', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+        const pollsContents = Object.assign(polls[0]);
+        delete pollsContents.creatorId;
+
+        expect(polls).toHaveLength(1);
+        expect(pollsContents).toMatchObject({
+          pollId: poll.pollId,
+          creatorName: player.userName,
+          question,
+          options,
+          voted: false,
+          totalVoters: 0,
+        });
+      });
+
+      it('Successfully gets all polls when there are multiple', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        const poll2 = await controller.createPoll(testingTown.townID, sessionToken, {
+          question: 'Why do you think?',
+          options,
+          settings,
+        });
+        const poll3 = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings: { anonymize: true, multiSelect: true },
+        });
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+        const pollsContents = Object.assign(polls);
+        delete pollsContents[0].creatorId;
+        delete pollsContents[1].creatorId;
+        delete pollsContents[2].creatorId;
+
+        expect(polls).toHaveLength(3);
+        expect(pollsContents).toMatchObject([
+          {
+            pollId: poll.pollId,
+            creatorName: player.userName,
+            question,
+            options,
+            voted: false,
+            totalVoters: 0,
+          },
+          {
+            pollId: poll2.pollId,
+            creatorName: player.userName,
+            question: 'Why do you think?',
+            options,
+            voted: false,
+            totalVoters: 0,
+          },
+          {
+            pollId: poll3.pollId,
+            creatorName: player.userName,
+            question,
+            options,
+            voted: false,
+            totalVoters: 0,
+          },
+        ]);
+      });
+
+      it('Throws error if town ID is invalid', async () => {
+        await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        await expect(controller.getAllPolls(nanoid(), sessionToken)).rejects.toThrow();
+      });
+
+      it('Throws error if sessionToken is invalid', async () => {
+        await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        await expect(controller.getAllPolls(testingTown.townID, nanoid())).rejects.toThrow();
       });
     });
 
     describe('Delete Poll', () => {
-      // Integration tests to be added later
+      beforeEach(async () => {
+        testingTown = await createTownForTesting(undefined, true);
+        player = mockPlayer(testingTown.townID);
+        await controller.joinTown(player.socket);
+        const initialData = getLastEmittedEvent(player.socket, 'initialize');
+        sessionToken = initialData.sessionToken;
+      });
+
+      it('Successfully deletes poll when there is only one', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+        expect(polls).toHaveLength(1);
+
+        await controller.deletePoll(testingTown.townID, poll.pollId, sessionToken);
+
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+        expect(polls).toMatchObject([]);
+        expect(polls).toHaveLength(0);
+      });
+
+      it('Successfully deletes polls when there are multiple', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        const poll2 = await controller.createPoll(testingTown.townID, sessionToken, {
+          question: 'Why do you think?',
+          options,
+          settings,
+        });
+        const poll3 = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings: { anonymize: true, multiSelect: true },
+        });
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+
+        let pollsContents = Object.assign(polls);
+        delete pollsContents[0].creatorId;
+        delete pollsContents[1].creatorId;
+        delete pollsContents[2].creatorId;
+
+        expect(polls).toHaveLength(3);
+
+        await controller.deletePoll(testingTown.townID, poll2.pollId, sessionToken);
+
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+
+        pollsContents = Object.assign(polls);
+        delete pollsContents[0].creatorId;
+        delete pollsContents[1].creatorId;
+
+        expect(polls).toHaveLength(2);
+        expect(pollsContents).toMatchObject([
+          {
+            pollId: poll.pollId,
+            creatorName: player.userName,
+            question,
+            options,
+            voted: false,
+            totalVoters: 0,
+          },
+          {
+            pollId: poll3.pollId,
+            creatorName: player.userName,
+            question,
+            options,
+            voted: false,
+            totalVoters: 0,
+          },
+        ]);
+
+        await controller.deletePoll(testingTown.townID, poll3.pollId, sessionToken);
+
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+
+        pollsContents = Object.assign(polls);
+        delete pollsContents[0].creatorId;
+
+        expect(polls).toHaveLength(1);
+        expect(pollsContents).toMatchObject([
+          {
+            pollId: poll.pollId,
+            creatorName: player.userName,
+            question,
+            options,
+            voted: false,
+            totalVoters: 0,
+          },
+        ]);
+
+        await controller.deletePoll(testingTown.townID, poll.pollId, sessionToken);
+
+        polls = await controller.getAllPolls(testingTown.townID, sessionToken);
+
+        expect(polls).toMatchObject([]);
+        expect(polls).toHaveLength(0);
+      });
+
+      it('Throws error when trying to delete nonexistent poll', async () => {
+        await expect(
+          controller.deletePoll(testingTown.townID, nanoid(), sessionToken),
+        ).rejects.toThrow();
+      });
+
+      it('Throws error if town ID is invalid', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        await expect(controller.deletePoll(nanoid(), poll.pollId, sessionToken)).rejects.toThrow();
+      });
+
+      it('Throws error if sessionToken is invalid', async () => {
+        const poll = await controller.createPoll(testingTown.townID, sessionToken, {
+          question,
+          options,
+          settings,
+        });
+        await expect(
+          controller.deletePoll(testingTown.townID, poll.pollId, nanoid()),
+        ).rejects.toThrow();
+      });
     });
   });
 });
