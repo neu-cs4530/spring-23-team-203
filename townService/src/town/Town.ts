@@ -400,8 +400,8 @@ export default class Town {
   /**
    * Find a poll by its ID
    *
-   * @param id
-   * @returns the poll
+   * @param id the string id of the poll to get
+   * @returns the poll to get
    * @throws Error if no such poll exists
    */
   public getPoll(id: string): Poll {
@@ -414,13 +414,15 @@ export default class Town {
 
   /**
    * Delete the poll with the given id if the user is the poll creator.
-   * @param userId the user who makes the request.
-   * @param pollId the id of the poll.
+   * @param userId the string ID of user who makes the request
+   * @param pollId the id of the poll to delete
    */
   public deletePoll(userId: string, pollId: string) {
     const pollToDelete = this._polls.find(poll => poll.pollId === pollId);
 
+    // ensure the poll is in the town
     if (pollToDelete) {
+      // ensure the user requesting the delete is the poll's creator
       if (pollToDelete.creator.id === userId) {
         this._polls = this._polls.filter(poll => poll.pollId !== pollId);
       } else {
@@ -434,7 +436,7 @@ export default class Town {
   }
 
   /**
-   * Create a poll to add to the town.
+   * Create a poll and add it to the town.
    * @param creator PlayerPartial creator of the poll
    * @param question string question the poll asks
    * @param options list of string options the poll responses can be
