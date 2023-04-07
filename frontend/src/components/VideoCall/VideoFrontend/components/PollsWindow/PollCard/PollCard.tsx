@@ -73,7 +73,8 @@ export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps
   };
 
   const buttonText: string = body.voted ? 'View Results' : 'Vote';
-  const totalVotersText: string = body.totalVoters + (body.totalVoters < 2 ? ' Voter' : ' Voters');
+  const totalVotersText: string =
+    body.totalVoters + (body.totalVoters === 1 ? ' Voter' : ' Voters');
 
   return (
     <div>
@@ -84,8 +85,9 @@ export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps
           <div> {totalVotersText}</div>
         </div>
         <Button
-          colorScheme='blue'
+          colorScheme={body.voted ? 'green' : 'facebook'}
           mr={3}
+          variant='solid'
           borderRadius={20}
           className={classes.button}
           onClick={voteOrViewResults}>

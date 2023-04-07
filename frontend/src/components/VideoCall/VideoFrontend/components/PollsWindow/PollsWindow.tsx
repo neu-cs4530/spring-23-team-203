@@ -32,6 +32,7 @@ const useStyles = makeStyles((theme: Theme) =>
       'top': 0,
       'right': 350,
       'max-width': '350px',
+      'overflowY': 'auto',
     },
     pollCardsContrainer: {
       padding: '1em 1em 1em 1em',
@@ -91,7 +92,7 @@ export default function PollsWindow() {
         <div className={classes.pollCardsHeader}>
           <div className={classes.title}>Active Polls</div>
           <Button
-            colorScheme='blue'
+            colorScheme='facebook'
             borderRadius='20'
             onClick={() => {
               setIsCreateModalOpen(true);

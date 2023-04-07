@@ -1,4 +1,4 @@
-import { Button, Stack } from '@chakra-ui/react';
+import { Button, Stack, Tag, TagLabel, Tooltip } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback } from 'react';
 
@@ -9,13 +9,28 @@ const useStyles = makeStyles({
     textAlign: 'center',
     margin: '3rem',
   },
+  heading: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    marginBottom: '0.5rem',
+  },
   question: {
     fontSize: '1.25rem',
     fontWeight: 600,
   },
   pollCreator: {
-    marginBottom: '1.5rem',
     fontSize: '0.875rem',
+  },
+  info: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    marginBottom: '2.5rem',
+    gap: '0.5rem',
+  },
+  optionText: {
+    whiteSpace: 'normal',
+    overflowWrap: 'anywhere',
   },
   checkmark: {
     marginLeft: '0.5rem',
@@ -55,6 +70,7 @@ export default function VotePollModalBody({
   creator,
   options,
   setOptions,
+  anonymous,
   multiSelect,
 }: {
   loading: boolean;
@@ -63,6 +79,7 @@ export default function VotePollModalBody({
   creator: string;
   options: Option[];
   setOptions: React.Dispatch<React.SetStateAction<Option[]>>;
+  anonymous: boolean;
   multiSelect: boolean;
 }) {
   const classes = useStyles();
@@ -83,23 +100,45 @@ export default function VotePollModalBody({
     },
     [setOptions, multiSelect],
   );
-  console.log(loading);
+
+  const multiSelectText = 'Vote for any number of options.';
+  const singleSelectText = 'Vote for only one option.';
+  const anonymousText = 'No one can see how you vote.';
+  const notAnonymousText = 'People can see how you vote.';
 
   if (loading) {
-    return <p className={classes.specialMessage}>Loading poll results...</p>;
+    return <p className={classes.specialMessage}>Loading poll options...</p>;
   }
 
   if (error) {
     return (
-      <p className={classes.specialMessage}>Sorry, there was an error fetching poll results.</p>
+      <p className={classes.specialMessage}>Sorry, there was an error fetching poll options.</p>
     );
   }
 
   return (
     <div>
-      <div>
+      <div className={classes.heading}>
         <div className={classes.question}>{question}</div>
         <div className={classes.pollCreator}>Asked by {creator}</div>
+      </div>
+      <div className={classes.info}>
+        <Tooltip
+          label={multiSelect ? multiSelectText : singleSelectText}
+          placement='bottom-start'
+          hasArrow={true}>
+          <Tag size='md' key='md' variant='subtle' colorScheme='twitter'>
+            <TagLabel>{multiSelect ? 'multi-select' : 'single-select'}</TagLabel>
+          </Tag>
+        </Tooltip>
+        <Tooltip
+          label={anonymous ? anonymousText : notAnonymousText}
+          placement='bottom-start'
+          hasArrow={true}>
+          <Tag size='md' key='md' variant='subtle' colorScheme='whatsapp'>
+            <TagLabel>{anonymous ? 'anonymous' : 'not anonymous'}</TagLabel>
+          </Tag>
+        </Tooltip>
       </div>
       <Stack direction='column' spacing={4} align='center'>
         {options.map(option => (
@@ -107,13 +146,16 @@ export default function VotePollModalBody({
             key={option.id}
             value={option.text}
             variant={option.selected ? 'solid' : 'outline'}
-            height='48px'
-            width='90%'
+            height='auto'
+            width='100%'
             border='4px'
-            style={{ borderRadius: '1rem' }}
-            colorScheme='blue'
+            style={{
+              borderRadius: '1rem',
+              padding: '0.5rem 1rem 0.5rem 1rem',
+            }}
+            colorScheme='facebook'
             onClick={() => updateOptions(option.id)}>
-            {option.text}
+            <p className={classes.optionText}>{option.text}</p>
             {option.selected && <Checkmark />}
           </Button>
         ))}
