@@ -42,7 +42,6 @@ const useStyles = makeStyles({
     fontWeight: 700,
     color: 'black',
     textAlign: 'left',
-    whiteSpace: 'normal',
     overflowWrap: 'anywhere',
   },
   checkmark: {
