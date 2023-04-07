@@ -8,6 +8,7 @@ interface ResultsModalOptionProps {
   index: number;
   accordion: boolean;
   yourVote: number[];
+  anonymous: boolean;
 }
 
 const useStyles = makeStyles({
@@ -40,6 +41,9 @@ const useStyles = makeStyles({
     fontSize: '1rem',
     fontWeight: 700,
     color: 'black',
+    textAlign: 'left',
+    whiteSpace: 'normal',
+    overflowWrap: 'anywhere',
   },
   checkmark: {
     marginLeft: '0.5rem',
@@ -52,6 +56,7 @@ const useStyles = makeStyles({
     gridColumn: '1 / 1',
     justifySelf: 'end',
     justifyContent: 'flex-end',
+    alignItems: 'center',
     marginRight: '1rem',
   },
   percentage: {
@@ -73,6 +78,7 @@ export default function ResultsModalOption({
   index,
   accordion,
   yourVote,
+  anonymous,
 }: ResultsModalOptionProps) {
   const classes = useStyles();
   const youVotedFor = yourVote.some((vote: number) => vote === index);
@@ -85,7 +91,7 @@ export default function ResultsModalOption({
           backgroundColor: youVotedFor ? 'rgba(49, 130, 206, 0.75)' : 'rgba(49, 130, 206, 0.20)',
         }}
         className={classes.bar}></div>
-      <div className={classes.leftSide}>
+      <div className={classes.leftSide} style={{ width: anonymous ? '77%' : '70%' }}>
         <div className={classes.optionText}>{result.option}</div>
         {youVotedFor && (
           <div className={classes.checkmark}>
