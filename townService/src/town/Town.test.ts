@@ -969,6 +969,7 @@ describe('Town', () => {
           options: testOptions1,
           voted: false,
           totalVoters: 0,
+          isCreator: false,
         };
 
         expectedPollInfo2 = {
@@ -979,10 +980,27 @@ describe('Town', () => {
           options: testOptions2,
           voted: false,
           totalVoters: 0,
+          isCreator: false,
         };
       });
       it('Successfully get all active polls', async () => {
         expect(town.getAllPolls('randomPlayer')).toStrictEqual([
+          expectedPollInfo1,
+          expectedPollInfo2,
+        ]);
+      });
+
+      it('Correctly display the isCreator field', async () => {
+        expectedPollInfo1.isCreator = true;
+        expect(town.getAllPolls(testCreator1.id)).toStrictEqual([
+          expectedPollInfo1,
+          expectedPollInfo2,
+        ]);
+
+        expectedPollInfo1.isCreator = false;
+        expectedPollInfo2.isCreator = true;
+
+        expect(town.getAllPolls(testCreator2.id)).toStrictEqual([
           expectedPollInfo1,
           expectedPollInfo2,
         ]);

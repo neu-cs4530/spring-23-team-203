@@ -10,5 +10,6 @@ export type PollInfo = {
     options: Array<string>;
     voted: boolean;
     totalVoters: number;
+    isCreator: boolean;
 };
 

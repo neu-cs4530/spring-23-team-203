@@ -249,6 +249,9 @@
 					"totalVoters": {
 						"type": "number",
 						"format": "double"
+					},
+					"isCreator": {
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -258,7 +261,8 @@
 					"question",
 					"options",
 					"voted",
-					"totalVoters"
+					"totalVoters",
+					"isCreator"
 				],
 				"type": "object",
 				"additionalProperties": false
