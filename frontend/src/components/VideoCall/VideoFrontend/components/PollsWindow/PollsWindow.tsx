@@ -72,6 +72,11 @@ export default function PollsWindow() {
     setPolls(await coveyTownController.getAllPolls());
   }, [coveyTownController]);
 
+  const deletePoll = async (pollId: string) => {
+    await coveyTownController.deletePoll(pollId);
+    setPolls(await coveyTownController.getAllPolls());
+  };
+
   useEffect(() => {
     fetchPollsInfo();
 
@@ -99,7 +104,7 @@ export default function PollsWindow() {
             New +
           </Button>
         </div>
-        <PollsList polls={polls} fetchPollsInfo={fetchPollsInfo} />
+        <PollsList polls={polls} fetchPollsInfo={fetchPollsInfo} deletePoll={deletePoll} />
       </div>
       {isCreateModalOpen && (
         <CreatePollModal
