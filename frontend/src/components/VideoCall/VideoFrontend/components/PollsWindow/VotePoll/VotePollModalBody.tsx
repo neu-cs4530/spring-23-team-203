@@ -28,6 +28,10 @@ const useStyles = makeStyles({
     marginBottom: '2.5rem',
     gap: '0.5rem',
   },
+  optionText: {
+    whiteSpace: 'normal',
+    overflowWrap: 'anywhere',
+  },
   checkmark: {
     marginLeft: '0.5rem',
     display: 'flex',
@@ -142,13 +146,16 @@ export default function VotePollModalBody({
             key={option.id}
             value={option.text}
             variant={option.selected ? 'solid' : 'outline'}
-            height='48px'
+            height='auto'
             width='100%'
             border='4px'
-            style={{ borderRadius: '1rem' }}
+            style={{
+              borderRadius: '1rem',
+              padding: '0.5rem 1rem 0.5rem 1rem',
+            }}
             colorScheme='facebook'
             onClick={() => updateOptions(option.id)}>
-            {option.text}
+            <p className={classes.optionText}>{option.text}</p>
             {option.selected && <Checkmark />}
           </Button>
         ))}

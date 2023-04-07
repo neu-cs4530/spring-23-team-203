@@ -39,6 +39,7 @@ export default function ResultsModalContent({
               index={index}
               accordion={false}
               yourVote={yourVote}
+              anonymous={anonymous}
             />
           </div>
         ))}
@@ -56,6 +57,7 @@ export default function ResultsModalContent({
               index={index}
               accordion={true}
               yourVote={yourVote}
+              anonymous={anonymous}
             />
           </AccordionButton>
           <AccordionPanel style={{ padding: '0.5rem 1rem 0.5rem 1rem' }}>
