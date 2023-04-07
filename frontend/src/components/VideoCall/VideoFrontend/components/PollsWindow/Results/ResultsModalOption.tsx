@@ -91,7 +91,7 @@ export default function ResultsModalOption({
           backgroundColor: youVotedFor ? 'rgba(49, 130, 206, 0.75)' : 'rgba(49, 130, 206, 0.20)',
         }}
         className={classes.bar}></div>
-      <div className={classes.leftSide} style={{ width: anonymous ? '77%' : '70%' }}>
+      <div className={classes.leftSide} style={{ marginRight: anonymous ? '4.5rem' : '6rem' }}>
         <div className={classes.optionText}>{result.option}</div>
         {youVotedFor && (
           <div className={classes.checkmark}>
