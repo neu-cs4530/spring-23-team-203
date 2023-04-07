@@ -124,9 +124,11 @@ export default function PollCard({ body, clickVoteOrViewResults, deletePoll }: P
             </AlertDialogContent>
           </AlertDialogOverlay>
         </AlertDialog>
-        <Button onClick={onOpen} className={classes.deleteButton}>
-          <CloseIcon />
-        </Button>
+        {body.isCreator ? (
+          <Button onClick={onOpen} className={classes.deleteButton}>
+            <CloseIcon />
+          </Button>
+        ) : null}
         <Button
           colorScheme='blue'
           mr={3}
