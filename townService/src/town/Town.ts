@@ -202,6 +202,7 @@ export default class Town {
     }
     this._players = this._players.filter(p => p.id !== player.id);
     this._broadcastEmitter.emit('playerDisconnect', player.toPlayerModel());
+    this._polls = this._polls.filter(poll => poll.creator.id !== player.id);
   }
 
   /**

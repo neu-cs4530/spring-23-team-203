@@ -616,7 +616,60 @@ describe('Town', () => {
         disconnectPlayer(playerTestData);
         expect(viewingArea.occupantsByID).toEqual([]);
       });
+
+      it('Removes polls created by the player on disconnect', async () => {
+        // Load in a map with a conversation area
+        town.initializeFromMap(testingMaps.twoConvOneViewing);
+
+        const secondPlayerTestData = mockPlayer(town.townID);
+        const secondPlayer = await town.addPlayer(playerTestData.userName, playerTestData.socket);
+        secondPlayerTestData.player = secondPlayer;
+
+        const whichLetterPollId = town.createPoll(
+          { id: player.id, name: player.userName },
+          'which letter is best?',
+          ['a', 'b', 'c'],
+          { anonymize: false, multiSelect: false },
+        );
+
+        const beanPollId = town.createPoll(
+          { id: secondPlayer.id, name: secondPlayer.userName },
+          'which bean is best?',
+          ['fava', 'kidney', 'refried'],
+          { anonymize: false, multiSelect: false },
+        );
+
+        const yesNo = town.createPoll(
+          { id: secondPlayer.id, name: secondPlayer.userName },
+          'yes or no?',
+          ['yes', 'no'],
+          { anonymize: false, multiSelect: false },
+        );
+
+        town.voteInPoll(whichLetterPollId, { id: player.id, name: player.userName }, [0]);
+        town.voteInPoll(whichLetterPollId, { id: secondPlayer.id, name: secondPlayer.userName }, [
+          1,
+        ]);
+
+        town.voteInPoll(beanPollId, { id: player.id, name: player.userName }, [1]);
+        town.voteInPoll(beanPollId, { id: secondPlayer.id, name: secondPlayer.userName }, [2]);
+
+        // Disconnect the first player and make sure the poll they created is gone
+        expect(town.getAllPolls(secondPlayer.id)).toHaveLength(3);
+        disconnectPlayer(playerTestData);
+        expect(town.getAllPolls(secondPlayer.id)).toHaveLength(2);
+        expect(town.getAllPolls(secondPlayer.id).map(p => p.pollId)).toEqual([beanPollId, yesNo]);
+
+        // Ensure that votes from the first player are still present
+        expect(
+          town
+            .getPoll(beanPollId)
+            .getVoters()
+            .map(pp => pp.id),
+        ).toStrictEqual([player.id, secondPlayer.id]);
+      });
     });
+
     describe('playerMovement', () => {
       const newLocation: PlayerLocation = {
         x: 100,
