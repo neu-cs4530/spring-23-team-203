@@ -53,7 +53,7 @@ const useStyles = makeStyles({
     textAlign: 'left',
     fontWeight: 'bold',
     fontSize: 18,
-    padding: '1em 1em 0.1em 0.8em',
+    padding: '1em 4em 0.1em 0.8em',
     gridRow: '1 / span 1',
     gridColumn: '1 / span 2',
   },
