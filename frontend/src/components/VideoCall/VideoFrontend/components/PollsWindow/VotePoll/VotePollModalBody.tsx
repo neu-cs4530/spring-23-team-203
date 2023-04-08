@@ -121,7 +121,9 @@ export default function VotePollModalBody({
     <div>
       <div className={classes.heading}>
         <div className={classes.question}>{question}</div>
-        <div className={classes.pollCreator}><em>Asked by {creator}</em></div>
+        <div className={classes.pollCreator}>
+          <em>Asked by {creator}</em>
+        </div>
       </div>
       <div className={classes.info}>
         <Tooltip
@@ -156,7 +158,11 @@ export default function VotePollModalBody({
             }}
             colorScheme='facebook'
             onClick={() => updateOptions(option.id)}>
-            <TextWithHyperlink className={classes.optionText} text={option.text} selected={option.selected}/>
+            <TextWithHyperlink
+              className={classes.optionText}
+              text={option.text}
+              selected={option.selected}
+            />
             {option.selected && <Checkmark />}
           </Button>
         ))}

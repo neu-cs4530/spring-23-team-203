@@ -93,7 +93,7 @@ export default function ResultsModalOption({
         className={classes.bar}></div>
       <div className={classes.leftSide} style={{ marginRight: anonymous ? '4.5rem' : '6.25rem' }}>
         <div className={classes.optionText}>
-          <TextWithHyperlink className={classes.optionText} text={result.option} selected={false}/>
+          <TextWithHyperlink className={classes.optionText} text={result.option} selected={false} />
         </div>
         {youVotedFor && (
           <div className={classes.checkmark}>
