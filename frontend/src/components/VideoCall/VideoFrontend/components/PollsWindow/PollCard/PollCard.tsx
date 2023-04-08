@@ -1,6 +1,16 @@
-import React from 'react';
-import { Button } from '@chakra-ui/react';
+import React, { useRef } from 'react';
+import {
+  Button,
+  useDisclosure,
+  AlertDialog,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+} from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
+import CloseIcon from '../../../icons/CloseIcon';
 import { PollInfo } from '../../../../../../generated/client/models/PollInfo';
 
 const useStyles = makeStyles({
@@ -43,7 +53,7 @@ const useStyles = makeStyles({
     textAlign: 'left',
     fontWeight: 'bold',
     fontSize: 18,
-    padding: '1em 1em 0.1em 0.8em',
+    padding: '1em 4em 0.1em 0.8em',
     gridRow: '1 / span 1',
     gridColumn: '1 / span 2',
   },
@@ -58,15 +68,26 @@ const useStyles = makeStyles({
     gridRow: '2 / span 1',
     gridColumn: '2 / span 1',
   },
+  deleteButton: {
+    margin: '0.5rem',
+    justifySelf: 'end',
+    flexDirection: 'column',
+    float: 'right',
+    gridRow: '1 / span 1',
+    gridColumn: '2 / span 1',
+  },
 });
 
 interface PollCardProps {
   body: PollInfo;
-  clickVoteOrViewResults: (pollID: string, userHasVoted: boolean) => void;
+  clickVoteOrViewResults: (pollId: string, userHasVoted: boolean) => void;
+  deletePoll: (pollId: string) => void;
 }
 
-export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps) {
+export default function PollCard({ body, clickVoteOrViewResults, deletePoll }: PollCardProps) {
   const classes = useStyles();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
 
   const voteOrViewResults = () => {
     clickVoteOrViewResults(body.pollId, body.voted);
@@ -84,6 +105,31 @@ export default function PollCard({ body, clickVoteOrViewResults }: PollCardProps
           <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
           <div> {totalVotersText}</div>
         </div>
+        <AlertDialog isOpen={isOpen} onClose={onClose} leastDestructiveRef={cancelRef}>
+          <AlertDialogOverlay>
+            <AlertDialogContent>
+              <AlertDialogHeader fontSize='lg' fontWeight='bold'>
+                Delete Poll
+              </AlertDialogHeader>
+
+              <AlertDialogBody>Are you sure you want to delete this poll?</AlertDialogBody>
+
+              <AlertDialogFooter>
+                <Button ref={cancelRef} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button colorScheme='red' onClick={() => deletePoll(body.pollId)} ml={3}>
+                  Delete
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialogOverlay>
+        </AlertDialog>
+        {body.isCreator ? (
+          <Button onClick={onOpen} className={classes.deleteButton}>
+            <CloseIcon />
+          </Button>
+        ) : null}
         <Button
           colorScheme={body.voted ? 'green' : 'facebook'}
           mr={3}

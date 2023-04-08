@@ -7,9 +7,10 @@ import { VotePollModal } from '../VotePoll/VotePollModal';
 interface PollsListProps {
   polls: PollInfo[];
   fetchPollsInfo: () => void;
+  deletePoll: (pollId: string) => void;
 }
 
-export default function PollsList({ polls, fetchPollsInfo }: PollsListProps) {
+export default function PollsList({ polls, fetchPollsInfo, deletePoll }: PollsListProps) {
   const [selectedPollID, setSelectedPollID] = useState<string>('');
   const [isResultsModalOpen, setIsResultsModalOpen] = useState<boolean>(false);
   const [isVoteModalOpen, setIsVoteModalOpen] = useState(false);
@@ -38,7 +39,11 @@ export default function PollsList({ polls, fetchPollsInfo }: PollsListProps) {
       {polls.map(poll => {
         return (
           <React.Fragment key={poll.pollId}>
-            <PollCard body={poll} clickVoteOrViewResults={clickVoteOrViewResults} />
+            <PollCard
+              body={poll}
+              clickVoteOrViewResults={clickVoteOrViewResults}
+              deletePoll={deletePoll}
+            />
           </React.Fragment>
         );
       })}

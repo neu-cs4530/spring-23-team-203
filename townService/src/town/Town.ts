@@ -536,6 +536,7 @@ export default class Town {
       options: poll.options,
       voted: poll.userVoted(userId),
       totalVoters: poll.getVoters().length,
+      isCreator: userId === poll.creator.id,
     };
     return pollInfo;
   }
