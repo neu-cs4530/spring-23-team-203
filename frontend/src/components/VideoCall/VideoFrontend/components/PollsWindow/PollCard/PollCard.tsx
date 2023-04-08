@@ -12,7 +12,6 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '../../../icons/CloseIcon';
 import { PollInfo } from '../../../../../../generated/client/models/PollInfo';
-import TextWithHyperlink from '../TextWithHyperlink';
 
 const useStyles = makeStyles({
   messageContainer: {
@@ -101,9 +100,7 @@ export default function PollCard({ body, clickVoteOrViewResults, deletePoll }: P
   return (
     <div>
       <div className={classes.pollCard}>
-        <div className={classes.question}>
-          <TextWithHyperlink text={body.question} linkDisplay='this (external link)' />
-        </div>
+        <div className={classes.question}>{body.question}</div>
         <div className={classes.info}>
           <div className={classes.creatorInfo}>Asked by {body.creatorName}</div>
           <div> {totalVotersText}</div>

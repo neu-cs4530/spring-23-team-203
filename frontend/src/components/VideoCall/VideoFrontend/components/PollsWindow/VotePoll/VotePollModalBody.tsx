@@ -1,7 +1,6 @@
 import { Button, Stack, Tag, TagLabel, Tooltip } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback } from 'react';
-import TextWithHyperlink from '../TextWithHyperlink';
 
 const useStyles = makeStyles({
   specialMessage: {
@@ -120,9 +119,7 @@ export default function VotePollModalBody({
   return (
     <div>
       <div className={classes.heading}>
-        <div className={classes.question}>
-          <TextWithHyperlink text={question} />
-        </div>
+        <div className={classes.question}>{question}</div>
         <div className={classes.pollCreator}>Asked by {creator}</div>
       </div>
       <div className={classes.info}>
@@ -158,7 +155,7 @@ export default function VotePollModalBody({
             }}
             colorScheme='facebook'
             onClick={() => updateOptions(option.id)}>
-            <TextWithHyperlink text={option.text} option={true} />
+            <p className={classes.optionText}>{option.text}</p>
             {option.selected && <Checkmark />}
           </Button>
         ))}

@@ -2,7 +2,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import ResultsModalContent from './ResultsModalContent';
 import { ResultsDisplay } from '../../../../../../types/CoveyTownSocket';
-import TextWithHyperlink from '../TextWithHyperlink';
 
 interface ResultsModalBodyProps {
   question: string;
@@ -67,9 +66,7 @@ export default function ResultsModalBody({
 
   return (
     <div>
-      <div className={classes.question}>
-        <TextWithHyperlink text={question} />
-      </div>
+      <div className={classes.question}>{question}</div>
       <div className={classes.pollCreator}>Asked by {creator}</div>
       <ResultsModalContent
         anonymous={anonymous}

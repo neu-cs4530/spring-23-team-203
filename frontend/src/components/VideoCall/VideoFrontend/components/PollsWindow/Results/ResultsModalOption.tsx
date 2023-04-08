@@ -2,7 +2,6 @@ import { AccordionIcon } from '@chakra-ui/react';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { ResultsDisplay } from '../../../../../../types/CoveyTownSocket';
-import TextWithHyperlink from '../TextWithHyperlink';
 
 interface ResultsModalOptionProps {
   result: ResultsDisplay;
@@ -92,9 +91,7 @@ export default function ResultsModalOption({
         }}
         className={classes.bar}></div>
       <div className={classes.leftSide} style={{ marginRight: anonymous ? '4.5rem' : '6.25rem' }}>
-        <div className={classes.optionText}>
-          <TextWithHyperlink className={classes.optionText} text={result.option} option={true} />
-        </div>
+        <div className={classes.optionText}>{result.option}</div>
         {youVotedFor && (
           <div className={classes.checkmark}>
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='18' height='18'>
