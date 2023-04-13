@@ -93,55 +93,47 @@ export default function ResultsModal({ isOpen, onClose, pollID }: ResultsModalPr
     [],
   );
 
-  const getResults = useCallback(async () => {
-    if (!loaded) {
-      return;
-    }
-
-    if (!pollInfo) {
-      setError(true);
-      setLoading(false);
-      return;
-    }
-
-    const {
-      pollQuestion,
-      pollCreatorName,
-      pollYourVote,
-      pollOptions,
-      pollResponses,
-      pollAnonymize,
-    } = pollInfo;
-
-    // set the question, creator name, and what you voted for
-    setQuestion(pollQuestion);
-    setCreatorName(pollCreatorName);
-    setYourVote(pollYourVote);
-    setAnonymous(pollAnonymize);
-
-    // format the display of results, including the total number of votes
-    const { total: newTotal, results: newResults } = getResultsDisplay({
-      anonymize: pollAnonymize,
-      options: pollOptions,
-      responses: pollResponses,
-    });
-    setTotal(newTotal);
-    setResultsDisplay(newResults);
-    setLoading(false);
-  }, [getResultsDisplay, pollInfo, loaded]);
-
   // get results from the API and store them in React state
   useEffect(() => {
-    getResults();
+    const getResults = async () => {
+      if (!loaded) {
+        return;
+      }
 
-    const interval = setInterval(() => {
-      getResults();
-    }, 5000);
+      if (!pollInfo) {
+        setError(true);
+        setLoading(false);
+        return;
+      }
 
-    return () => {
-      clearInterval(interval);
+      const {
+        pollQuestion,
+        pollCreatorName,
+        pollYourVote,
+        pollOptions,
+        pollResponses,
+        pollAnonymize,
+      } = pollInfo;
+
+      // set the question, creator name, and what you voted for
+      setQuestion(pollQuestion);
+      setCreatorName(pollCreatorName);
+      setYourVote(pollYourVote);
+      setAnonymous(pollAnonymize);
+
+      // format the display of results, including the total number of votes
+      const { total: newTotal, results: newResults } = getResultsDisplay({
+        anonymize: pollAnonymize,
+        options: pollOptions,
+        responses: pollResponses,
+      });
+      setTotal(newTotal);
+      setResultsDisplay(newResults);
+      setLoading(false);
     };
-  }, [getResults]);
+
+    getResults();
+  }, [pollInfo, loaded, getResultsDisplay]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

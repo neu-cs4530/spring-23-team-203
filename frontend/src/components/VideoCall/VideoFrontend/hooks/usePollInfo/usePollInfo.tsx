@@ -76,6 +76,14 @@ export default function usePollInfo(pollID: string) {
     };
 
     getPollInfo();
+
+    const interval = setInterval(() => {
+      getPollInfo();
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [coveyTownController, pollID]);
 
   return { pollInfo, loaded };
